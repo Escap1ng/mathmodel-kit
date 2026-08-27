@@ -602,7 +602,7 @@ def read_excel(file_path):
 
 | 需求 | 使用技能 |
 | ---- | ---- |
-| 数据图表（三维曲面/热力图/拟合+残差/收敛/Pareto/折线/柱状/箱线/饼/条形/云雨/ROC/Taylor/SHAP 等 21 种模板） | `mathmodel-figure`：`python3 code/tools/render_template.py <模板id>` 直接渲染；统一样式模块 `code/style/plot_style.py`（色板/字体回退/save_fig）随模板复制到工作区 |
+| 数据图表（三维曲面/热力图/拟合+残差/收敛/Pareto/折线/柱状/箱线/饼/条形/云雨/ROC/Taylor/SHAP 等 20 种模板） | `mathmodel-figure`：`python3 code/tools/render_template.py <模板id>` 直接渲染；统一样式模块 `code/style/plot_style.py`（色板/字体回退/save_fig）随模板复制到工作区 |
 | 学术示意图（技术路线图、研究框架图、阶段流程图、任务流水线图、**第二章问题分析流程图**、算法/系统架构图） | `mathmodel-diagram`：5 个 JSON 驱动模板（含 `problem-flow`），matplotlib 渲染产出 PNG(300DPI)+PDF |
 
 **硬性要求（全流程强制，与专项技能一致）**：每道小题至少 1 张彩色图（建议 2–3 张）；第二章问题分析必须插入问题分析图（用 `mathmodel-diagram` 的 `problem-flow` 模板）；全文建议 6 张以上、保底 4 张；图片紧邻对应分析文字就近插入（图题在图下方），禁止集中堆放在文末；每张图前后必须有文字引导与解读；拟合结果与误差分析必须可视化；所有图表 ≥300 DPI 出版级质量（密度类图分级策略见 visualization-rules.md）；配色、线型、图例、黑白打印等细则见 visualization-rules.md。

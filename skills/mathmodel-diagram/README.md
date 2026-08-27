@@ -25,7 +25,7 @@ mathmodel-diagram/
 │   │   ├── problem-flow.md
 │   │   └── adding-templates.md  # 新增模板的契约与交付清单
 │   └── guides/             #   通用方法论（不绑定具体模板）
-│       ├── authoring.md          # 从零手写：骨架、基元速查、字宽预算、连接器
+│       ├── authoring.md          # 从零手写：骨架、基元速查、字宽预算、连接器、四个必踩的坑
 │       ├── replication.md        # 高保真复刻：标定、四件产物、迭代闭环
 │       └── self-check.md         # 九区盘点、红队复审、评分卡、交付清单
 └── examples/               # 模板示例（可复现源），每个模板一个目录
@@ -44,8 +44,8 @@ mathmodel-diagram/
 
 ## 技术栈约定
 
-- 渲染一律经 `code/common.py`：坐标系 1 px = 0.01 inch、y 轴向下，drawio 时代标定的几何常量原值复用；
-- 每个模板写文件前逐槽中文字宽校验（全角=字号、半角=字号/2、行高=字号+3），超框非零退出报预算；
+- 渲染一律经 `code/common.py`：坐标系 1 px = 0.01 inch、y 轴向下，几何常量沿用原 drawio 稿的标定值；
+- 每个模板写文件前逐槽中文字宽校验（全角=字号、半角=字号/2、行高=字号+3），字数超框时以非零码退出并报出预算；
 - 产物固定为 PNG 300dpi + 同名矢量 PDF（`pdf.fonttype=42`，中文在 PDF 里保持可编辑文本）。
 
 ## 扩展约定

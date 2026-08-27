@@ -16,7 +16,7 @@ os.environ.setdefault("MPLCONFIGDIR", str(ROOT / ".mplconfig"))
 import matplotlib.pyplot as plt
 from plot_style import COLOR_INK, COLOR_ROCK, save_fig
 
-PIE_COLORS = ["#7F99C5", "#D38083", "#B7CAE4", "#E5BFC0"]   # 低饱和发散族：柔蓝/柔红/淡蓝/淡红
+PIE_COLORS = ["#9DA5E2", "#DA8293", "#C9CFEC", "#ECC0C7"]   # coolwarm 衍生族：柔蓝/柔红/淡蓝/淡红
 
 
 def make_figure(output_stem: Path) -> None:

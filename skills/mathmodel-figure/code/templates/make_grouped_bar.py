@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from plot_style import COLOR_INK, save_fig
 
-GROUP_COLORS = ["#7F99C5", "#D38083", "#B7CAE4"]   # 组内低饱和衍生色板：柔蓝/柔红/淡蓝
+GROUP_COLORS = ["#9DA5E2", "#DA8293", "#C9CFEC"]   # 组内 coolwarm 衍生色板：柔蓝/柔红/淡蓝
 
 
 def make_figure(output_stem: Path) -> None:

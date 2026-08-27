@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import font_manager
 
-# ===== Master Palette（学术低饱和，与可视化规范配色方案一致；禁纯黑 #000000） =====
-COLOR_MAIN    = '#4C72B0'   # 主色A 学术蓝：核心数据/模型结果
-COLOR_ACCENT  = '#C44E52'   # 辅色B 绛红：对比/误差/负面
+# ===== Master Palette（coolwarm 学术色板，与可视化规范配色方案一致；禁纯黑 #000000） =====
+COLOR_MAIN    = '#3B4CC0'   # 主色A coolwarm蓝：核心数据/模型结果
+COLOR_ACCENT  = '#B40426'   # 辅色B coolwarm红：对比/误差/负面
 COLOR_SAGE    = '#55A868'   # 辅色C 苔绿：辅助/正向
 COLOR_MUSTARD = '#DD8452'   # 辅色D 赭橙：强调/极值
 COLOR_ROCK    = '#8E9AAF'   # 中性色E 岩石灰：基准/背景
@@ -18,11 +18,8 @@ COLOR_INK     = '#2F353B'   # 深色F 炭墨黑：文字/轴线/边框
 LINE_PALETTE = [COLOR_MAIN, COLOR_ACCENT, COLOR_SAGE, COLOR_ROCK]
 FILL_ALPHA = 0.2
 HATCH_SEQUENCE = ['', '---', '|||']   # 可选纹理：无/横线/竖线（基础图表不默认斜线圆点）
-from matplotlib.colors import LinearSegmentedColormap
-SURFACE_CMAP   = LinearSegmentedColormap.from_list('academic_seq',
-    ['#2F4B7C', '#4C72B0', '#8E9AAF', '#E9EFF7'])   # 波谷深蓝→波峰极浅蓝灰（3D曲面单色渐变，"石膏雕塑感"）
-DIVERGENT_CMAP = LinearSegmentedColormap.from_list('academic_div',
-    ['#4C72B0', '#F5F5F5', '#C44E52'])              # 负蓝→中心灰白→正红（热力图发散学术低饱和）
+DIVERGENT_CMAP = plt.get_cmap('coolwarm')   # 蓝→灰白→红（热力图/发散数据，与 rf-tpe-surface 同款）
+SURFACE_CMAP   = DIVERGENT_CMAP             # 与 DIVERGENT_CMAP 同一色图，供 3D 曲面/热力图使用
 FIG_FULL = (6.3, 4.0)   # 整版宽图（A4 版心 16cm ≈ 6.3in）
 FIG_TALL = (6.3, 5.5)   # 双子图竖版（拟合+残差等）
 
@@ -35,22 +32,33 @@ def pick_cjk_font(candidates=('SimHei', 'Microsoft YaHei', 'Noto Sans CJK SC', '
     warnings.warn('未找到任何中文字体，图中中文将显示为方框！请安装 SimHei 或 Noto Sans CJK。')
     return 'sans-serif'
 
+def pick_cjk_serif(candidates=('SimSun', 'NSimSun', 'Songti SC', 'Noto Serif CJK SC', 'STSong')):
+    # 中文优先衬线（宋体族）以匹配 Times New Roman；全缺时回退无衬线中文字体（沿用上方告警）
+    installed = {f.name for f in font_manager.fontManager.ttflist}
+    for name in candidates:
+        if name in installed:
+            return name
+    return pick_cjk_font()
+
 def apply_style():
-    # font 必须用字体族别名 'sans-serif'：硬编码具体字体名（如 'SimHei'）会使 font.family
-    # 固定为该字体，字体缺失时直接回退 DejaVu Sans，跳过 font.sans-serif 回退列表，
-    # 导致 pick_cjk_font 的检测回退机制失效（缺字体环境中文显示方框）
-    sns.set_theme(style='ticks', palette=LINE_PALETTE, font='sans-serif', font_scale=1.1,
+    # font.family 必须传具体字体名列表：matplotlib 的字形回退（3.6+）只在 family 为
+    # 多字体列表时生效——逐字体查找缺失字形。若用 'serif' 别名，findfont 只取
+    # font.serif 里第一个可用字体，中文缺字形时不会回退到列表后续字体（直接方框）。
+    # 顺序：Times 覆盖西文/数字 → DejaVu Serif 兜底符号 → 中文衬线（缺时回退无衬线并告警）。
+    sns.set_theme(style='ticks', palette=LINE_PALETTE, font_scale=1.1,
                   rc={'axes.axisbelow': True, 'axes.edgecolor': COLOR_INK,
                       'axes.labelcolor': COLOR_INK, 'axes.spines.top': False,
                       'axes.spines.right': False, 'xtick.color': COLOR_INK,
                       'ytick.color': COLOR_INK, 'figure.frameon': False})
     plt.rcParams.update({          # 覆盖顺序：set_theme 在前，微调在后
-        'font.sans-serif': [pick_cjk_font()],
+        'font.family': ['Times New Roman', 'DejaVu Serif', pick_cjk_serif()],
         'axes.unicode_minus': False,
+        'svg.fonttype': 'none',   # SVG 中文字保留为可编辑文本（与 rf-tpe-surface 一致）
+        'pdf.fonttype': 42,       # PDF 嵌入 TrueType 字体，便于排版软件编辑
         'figure.dpi': 100,         # 仅影响屏幕交互渲染速度；存图一律 savefig.dpi，与正式版同品质
         'savefig.dpi': 300,        # 输出出版级分辨率（预览与正式同品质）
         'font.size': 11,
-        'axes.linewidth': 1.2,
+        'axes.linewidth': 0.8,
     })
 
 def save_fig(fig, path, vector=False, close=True, dpi=300):

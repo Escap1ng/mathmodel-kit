@@ -1,15 +1,15 @@
-# Plot Recipes
+# 模板定制配方
 
-Use bundled scripts first. These notes are only for customization after a template has been copied into the workspace.
+优先使用内置脚本；本节只供模板复制到工作区后的定制参考，对应 11 个高端组合类模板。
 
-- SHAP composite: stacked horizontal mean-absolute importance bars plus class/model beeswarm strips and a feature-value colorbar.
-- Paired raincloud: half-violins, jittered observations, box geometry, mean diamonds, and connected mean trends.
-- ROC with CI: fold curves interpolated to a shared FPR grid, mean curve, standard-deviation band, AUC mean ± sd legend, and diagonal baseline.
-- Taylor diagram: polar coordinates with angle `arccos(correlation)` and radius as model standard deviation.
-- Correlation grid: lower scatter/fitted CI, diagonal histograms, upper coefficient cells with diverging colors and stars.
-- Prediction marginal grid: predicted-vs-actual scatter plus top/right histograms and KDE-like curves.
-- 3D tuning surface: `mpl_toolkits.mplot3d`, smooth response surface, colorbar, and checked camera angle.
-- Split violin + correlation matrix: signed lower-triangle marker matrix plus left/right half-violin distribution comparison.
-- Circular heatmap: polar bars, flipped outer labels, central legend, and ring-specific color scales.
-- Chord diagram: outer `Wedge` sectors and translucent Bezier `PathPatch` ribbons.
-- Urban cooling composite: stacked city bars, raincloud metric panels, city legend, and boxplots with connected means.
+- SHAP 组合：水平堆叠的平均绝对重要性柱状图，加各分类/模型的蜂群条带与特征取值 colorbar。
+- 配对云雨：半边小提琴 + 抖动观测点 + 箱体几何 + 均值菱形，并用折线连接各均值。
+- ROC 带置信区间：各折曲线插值到统一 FPR 网格，画均值曲线与标准差带，图例给 AUC 均值 ± 标准差，附对角基线。
+- 泰勒图：极坐标，角度取 `arccos(相关系数)`，半径取模型标准差。
+- 相关矩阵 pairgrid：下三角散点 + 拟合置信带，对角线直方图，上三角发散色系数格加显著性星号。
+- 预测-真实边缘分布：预测值 vs 真实值散点，加上侧/右侧直方图与类 KDE 曲线。
+- 3D 调参曲面：`mpl_toolkits.mplot3d` 平滑响应曲面 + colorbar，并选定核对过的视角。
+- 半边小提琴 + 相关矩阵：带符号的下三角标记矩阵，加左右半边小提琴的分布对比。
+- 环形热图：极坐标柱，外圈标签朝外翻转，图例居中，各环独立色标。
+- 和弦图：外圈 `Wedge` 扇区加半透明贝塞尔 `PathPatch` 缎带。
+- 城市降温组合：城市堆叠柱、云雨指标面板、城市图例，以及连接均值的箱线图。
