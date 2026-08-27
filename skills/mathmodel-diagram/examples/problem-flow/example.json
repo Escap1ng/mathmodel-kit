@@ -1,24 +1,35 @@
 {
-  "canvas": { "w": 800, "h": 650 },
+  "canvas": { "w": 880, "h": 660 },
   "font_size": 16,
-  "title": "问题分析流程图",
+  "title": "空气质量评价与预测问题分析流程图",
   "modules": [
-    { "id": "prep", "text": "数据预处理", "kind": "config",
-      "x": 250, "y": 56, "w": 300, "h": 70, "icon": "" },
-    { "id": "algo_a", "text": "算法模块A", "kind": "algo",
-      "x": 80, "y": 260, "w": 240, "h": 90, "icon": "" },
-    { "id": "algo_b", "text": "算法模块B", "kind": "algo",
-      "x": 480, "y": 260, "w": 240, "h": 90, "icon": "" },
-    { "id": "out", "text": "结果输出", "kind": "output",
-      "x": 250, "y": 480, "w": 300, "h": 80, "icon": "" }
+    { "id": "data", "text": "空气质量监测与\n气象统计数据", "kind": "config",
+      "x": 320, "y": 64, "w": 240, "h": 84, "icon": "" },
+    { "id": "prep", "text": "缺失值处理与\n标准化预处理", "kind": "config",
+      "x": 320, "y": 204, "w": 240, "h": 84, "icon": "" },
+    { "id": "algo_corr", "text": "相关性分析与\n特征工程", "kind": "algo",
+      "x": 60, "y": 350, "w": 220, "h": 84, "icon": "" },
+    { "id": "algo_eval", "text": "熵权-TOPSIS\n综合评价模型", "kind": "algo",
+      "x": 330, "y": 350, "w": 220, "h": 84, "icon": "" },
+    { "id": "algo_pred", "text": "GM(1,1) 灰色\n预测模型", "kind": "algo",
+      "x": 600, "y": 350, "w": 220, "h": 84, "icon": "" },
+    { "id": "res", "text": "综合评价与\n预测结果", "kind": "output",
+      "x": 330, "y": 500, "w": 220, "h": 84, "icon": "" },
+    { "id": "sens", "text": "灵敏度检验与\n误差分析", "kind": "config",
+      "x": 600, "y": 500, "w": 220, "h": 84, "icon": "" }
   ],
   "edges": [
-    { "from": "prep", "to": "algo_a" },
-    { "from": "prep", "to": "algo_b" },
-    { "from": "algo_a", "to": "out" },
-    { "from": "algo_b", "to": "out" },
-    { "from": "out", "to": "algo_b", "primary": false,
-      "from_side": "right", "to_side": "bottom",
-      "via": [[600, 520]] }
+    { "from": "data", "to": "prep" },
+    { "from": "prep", "to": "algo_corr" },
+    { "from": "prep", "to": "algo_eval" },
+    { "from": "prep", "to": "algo_pred" },
+    { "from": "algo_corr", "to": "res" },
+    { "from": "algo_eval", "to": "res" },
+    { "from": "algo_pred", "to": "res" },
+    { "from": "res", "to": "sens",
+      "from_side": "right", "to_side": "left" },
+    { "from": "sens", "to": "algo_pred", "primary": false,
+      "from_side": "right", "to_side": "right",
+      "via": [[860, 542], [860, 392]] }
   ]
 }
