@@ -1,0 +1,24 @@
+{
+  "canvas": { "w": 800, "h": 650 },
+  "font_size": 16,
+  "title": "问题分析流程图",
+  "modules": [
+    { "id": "prep", "text": "数据预处理", "kind": "config",
+      "x": 250, "y": 56, "w": 300, "h": 70, "icon": "" },
+    { "id": "algo_a", "text": "算法模块A", "kind": "algo",
+      "x": 80, "y": 260, "w": 240, "h": 90, "icon": "" },
+    { "id": "algo_b", "text": "算法模块B", "kind": "algo",
+      "x": 480, "y": 260, "w": 240, "h": 90, "icon": "" },
+    { "id": "out", "text": "结果输出", "kind": "output",
+      "x": 250, "y": 480, "w": 300, "h": 80, "icon": "" }
+  ],
+  "edges": [
+    { "from": "prep", "to": "algo_a" },
+    { "from": "prep", "to": "algo_b" },
+    { "from": "algo_a", "to": "out" },
+    { "from": "algo_b", "to": "out" },
+    { "from": "out", "to": "algo_b", "primary": false,
+      "from_side": "right", "to_side": "bottom",
+      "via": [[600, 520]] }
+  ]
+}

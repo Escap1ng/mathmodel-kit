@@ -28,3 +28,6 @@ tmp/
 *.log
 *.drawio.bkp
 ~$*.drawio
+
+# ---- Trae ¹¤×÷Ä¿Â¼ ----
+.trae/

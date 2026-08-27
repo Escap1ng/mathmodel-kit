@@ -1,0 +1,131 @@
+% 出处：主技能 skills/math-modeling-helper/SKILL.md「LaTeX模板（精简版）」小节（原样提取，占位示例保留）
+% 用法：复制到工作区 paper/paper.tex 填写内容 → xelatex 编译两遍 → pandoc paper.tex -o paper.docx → python code/word_postprocess.py paper/paper.docx 版式微调
+\documentclass[12pt,a4paper]{article}
+
+% ========== 编码与中文支持 ==========
+\usepackage{ctex}                    % 中文支持（禁止inputenc）
+
+% ========== 宏包 ==========
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{bm}                      % 矩阵/向量加粗
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}                % 三线表
+\usepackage{array}                   % m{}列类型（垂直居中）
+\usepackage{tabularx}                % X列类型（自动宽度换行）
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{seqsplit}                % 长单词断行
+
+% ========== 西文字体 Times New Roman ==========
+\setmainfont{Times New Roman}        % 西文和数字使用 Times New Roman
+
+% ========== 页面设置（四边2.5cm） ==========
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+% ========== 标题格式（2026规范） ==========
+\renewcommand{\thesection}{\chinese{section}}  % 一级标题使用中文数字
+\titleformat{\section}{\centering\heiti\fontsize{14}{18}\selectfont}{\thesection、}{1em}{}  % 标题显示加顿号，交叉引用不受影响
+\titleformat{\subsection}{\heiti\fontsize{12}{16}\selectfont}{\arabic{section}.\arabic{subsection}}{1em}{}
+\titleformat{\subsubsection}{\heiti\fontsize{12}{16}\selectfont}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}{1em}{}
+
+% ========== 正文格式 ==========
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\renewcommand{\baselinestretch}{1}  % 1倍行距
+
+% ========== 图表标题 ==========
+\captionsetup{font=small, labelsep=space, skip=6pt}
+\captionsetup[figure]{position=below}
+\captionsetup[table]{position=above}
+
+% ========== 页眉页脚：禁止页眉；页码从第一页（摘要页）起页尾居中 ==========
+\pagestyle{fancy}
+\fancyhf{}                        % 清空页眉页脚（页眉必须留空）
+\fancyfoot[C]{\thepage}           % 页尾居中页码，从摘要页第1页开始
+\renewcommand{\headrulewidth}{0pt} % 禁止页眉横线（保证无页眉）
+
+% ========== 代码样式 ==========
+\lstset{
+    basicstyle=\small\ttfamily,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red!70!black},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    frame=single,
+    breaklines=true
+}
+
+\begin{document}
+
+% ========== 第一页：题目 + 摘要 + 关键词（必须同页，页码从本页开始） ==========
+\title{\heiti\fontsize{16}{20}\selectfont 论文题目}
+\author{}
+\date{}
+\maketitle
+\thispagestyle{fancy}  % 覆盖 \maketitle 默认的 plain 样式，确保首页页脚与正文一致
+
+\vspace{0.3cm}
+
+% 摘要（与标题、关键词同一页，手动格式与正文一致）
+\noindent{\heiti\fontsize{14}{18}\selectfont 摘要：}\par
+\setlength{\parindent}{2em}
+\normalsize
+本文针对[问题描述]，综合运用[方法A]、[方法B]和[方法C]，建立了[模型名称]模型，对[核心研究对象]进行了深入研究。
+
+\vspace{0.2cm}
+
+\noindent{\heiti 关键词：}关键词1；关键词2；关键词3
+
+% ========== 关键词后换页，正文从第2页开始 ==========
+\newpage
+
+% ========== 正文内容 ==========
+% 一、问题背景与重述
+% 二、问题分析
+% 三、模型假设
+\section{模型假设}
+
+针对本题实际情况，在建模前提出如下假设，如表\ref{tab:assumptions}所示。
+
+\begin{table}[H]
+\centering
+\caption{模型假设}
+\label{tab:assumptions}
+\begin{tabularx}{\textwidth}{c X X}
+\toprule
+编号 & \multicolumn{1}{c}{假设内容} & \multicolumn{1}{c}{合理性说明} \\
+\midrule
+1 & 假设数据在采集过程中无系统性偏差 & 依据题目说明，数据经标准化预处理 \\
+2 & 假设各周期决策相互独立，无跨周期资源传递 & 题目未声明资源可累积，故按独立处理 \\
+3 & 假设模型参数在求解周期内保持恒定 & 短时间尺度内参数漂移可忽略\cite{ref1} \\
+4 & 假设随机扰动服从均值为零的正态分布 & 依据中心极限定理，多源扰动叠加趋近正态 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% 四、符号说明
+% 五、模型建立与求解（若所有问题共用一套数据，则先设"五、数据处理"，本章顺延为第六章，后续章节类推）
+% 六、模型的评价、改进与推广
+
+% ========== 参考文献（另起一页，页码连续） ==========
+\newpage
+\begin{thebibliography}{99}
+\bibitem{ref1} ...
+\end{thebibliography}
+
+% ========== 附录/支撑材料（另起一页，页码连续） ==========
+\newpage
+\section*{附录}
+% 附录A 支撑材料清单
+% 附录B 核心代码
+
+\end{document}

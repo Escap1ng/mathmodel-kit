@@ -1,54 +1,22 @@
-# picture-box
+# mathmodel-kit
 
-> TODO：一句话说明这个仓库是做什么的。
+数学建模竞赛（国赛/高教社杯）技能集：一个主技能编排「赛题分析 → 建模 → 求解 → 论文」全流程，三个专项技能分别负责数据图表、学术示意图与论文排版，可独立调用。
 
-## 包含的技能
+## 技能
 
 | 技能 | 用途 |
 |---|---|
-| [`scibox-diagram`](skills/scibox-diagram/SKILL.md) | 制作与修改可编辑的 draw.io / diagrams.net 示意图（技术路线图、研究框架图、阶段流程图、任务流水线图），产出 `.drawio` + PNG/PDF |
-| [`scibox-figure`](skills/scibox-figure/SKILL.md) | 科研数据图表绘制（相关性、热图、ROC、Taylor 图、雨云图等），基于 Python 模板渲染 |
-
-## 目录结构
-
-```
-.
-├── LICENSE                 # Apache-2.0
-├── README.md
-└── skills/
-    ├── scibox-diagram/     # SKILL.md + assets/ references/ scripts/
-    └── scibox-figure/      # SKILL.md + assets/ references/ scripts/
-```
+| [`math-modeling-helper`](skills/math-modeling-helper/SKILL.md) | 主技能：赛题分析、算法优选、代码实现、论文写作与评分 |
+| [`mathmodel-figure`](skills/mathmodel-figure/SKILL.md) | 数据图表：21 个 matplotlib 模板，一条命令产出 PNG/PDF/SVG |
+| [`mathmodel-diagram`](skills/mathmodel-diagram/SKILL.md) | 学术示意图：5 个 JSON 驱动模板（技术路线图、框架图、流程图等） |
+| [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | 论文排版：LaTeX 骨架、pandoc 转 Word、python-docx 版式微调 |
 
 ## 使用
 
-TODO：说明技能安装位置与调用方式。
+把 `skills/` 下需要的技能目录复制到 agent 的技能目录（如 `~/.claude/skills/`）即可。
 
-## 第三方素材
-
-`skills/scibox-diagram/assets/icons/tabler/` 为 [Tabler Icons](https://tabler.io/icons)（MIT 许可，版权归 Paweł Kuna），
-许可证原文随文件保留于同目录 `LICENSE`，请勿删除。详见 [ATTRIBUTION.md](skills/scibox-diagram/ATTRIBUTION.md)。
-
-## 来源与致谢
-
-本仓库内容在 [jihe520/sci-box](https://github.com/jihe520/sci-box) 基础上整理而来。
+依赖：Python 3 + `matplotlib` / `seaborn` / `numpy` / `pandas`；论文输出需 `xelatex` 与 `pandoc`（Word 微调需 `python-docx`）。
 
 ## License
 
-采用 [Apache License 2.0](LICENSE)。
-
-```
-Copyright 2026 Escap1ng
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+[Apache License 2.0](LICENSE)
