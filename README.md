@@ -6,11 +6,11 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/%E8%AE%B8%E5%8F%AF%E8%AF%81-Apache--2.0-1A6FC4?style=flat-square" alt="许可证">
-  <img src="https://img.shields.io/badge/Python-3-2E9E44?style=flat-square" alt="Python">
-  <img src="https://img.shields.io/badge/%E6%8A%80%E8%83%BD-4-7B5FD6?style=flat-square" alt="技能数">
-  <img src="https://img.shields.io/badge/%E6%A8%A1%E6%9D%BF-25-E28E2C?style=flat-square" alt="模板数">
-  <img src="https://img.shields.io/badge/%E4%BA%A7%E7%89%A9-300DPI_%C2%B7_%E7%9F%A2%E9%87%8F-767676?style=flat-square" alt="产物规格">
+  <img src="https://img.shields.io/badge/%E8%AE%B8%E5%8F%AF%E8%AF%81-Apache--2.0-1A6FC4?style=flat" alt="许可证">
+  <img src="https://img.shields.io/badge/Python-3-2E9E44?style=flat" alt="Python">
+  <img src="https://img.shields.io/badge/%E6%8A%80%E8%83%BD-4-7B5FD6?style=flat" alt="技能数">
+  <img src="https://img.shields.io/badge/%E6%A8%A1%E6%9D%BF-25-E28E2C?style=flat" alt="模板数">
+  <img src="https://img.shields.io/badge/%E4%BA%A7%E7%89%A9-300DPI_%C2%B7_%E7%9F%A2%E9%87%8F-767676?style=flat" alt="产物规格">
 </p>
 
 <p align="center">
@@ -28,12 +28,14 @@
 
 ## 这是什么
 
-`mathmodel-kit` 把一场数学建模竞赛的产出拆成四个可组合的 agent 技能：一个主技能负责编排与评分，
-三个专项技能分别负责数据图表、学术示意图与论文成稿。它们既能被主技能串成闭环，也能单独调用——
-只画一张图、只重排一张路线图、只把 `.tex` 转成 Word，都可以直接进门。
+`mathmodel-kit` 是一套面向数学建模竞赛的 agent 技能集，共四个技能，可单独使用，也可由主技能串成闭环：
 
-套件的设计前提是：**机械正确性交给工具，建模判断留给人**。方法选型、结果解释、创新点表述由使用者决定；
-技能负责让数据可复现、图不裁切不重叠、论文里的数字对得上代码产物、格式过得了自检清单。
+- `math-modeling-helper`（主技能）：按「赛题分析 → 模型构建 → 算法实现 → 论文输出 → 评分优化」六个阶段编排全程，附带代码规范与评分口径；
+- `mathmodel-figure`（数据图表）：内置 20 个 matplotlib 模板，模板不匹配时按 [`nature-standard.md`](skills/mathmodel-figure/docs/guides/nature-standard.md) 的规范现绘；
+- `mathmodel-diagram`（学术示意图）：内置 5 个 JSON 驱动的版式模板，也支持从零手绘与照参考图高保真复刻；
+- `mathmodel-paper`（论文输出）：提供 LaTeX 骨架，编译成 PDF 后转 Word，并按竞赛口径微调版式。
+
+分工原则：**机械正确性交给技能，建模判断留给人**。数据可复现、图表不裁切不重叠、论文数字可追溯到脚本产物、格式过自检清单，这些由技能保证；方法选型、结果解释、创新点表述仍由使用者决定。
 
 ## 技能矩阵
 

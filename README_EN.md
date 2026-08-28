@@ -6,11 +6,11 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/License-Apache--2.0-1A6FC4?style=flat-square" alt="License">
-  <img src="https://img.shields.io/badge/Python-3-2E9E44?style=flat-square" alt="Python">
-  <img src="https://img.shields.io/badge/Skills-4-7B5FD6?style=flat-square" alt="Skills">
-  <img src="https://img.shields.io/badge/Templates-25-E28E2C?style=flat-square" alt="Templates">
-  <img src="https://img.shields.io/badge/Output-300DPI_%C2%B7_Vector-767676?style=flat-square" alt="Output spec">
+  <img src="https://img.shields.io/badge/License-Apache--2.0-1A6FC4?style=flat" alt="License">
+  <img src="https://img.shields.io/badge/Python-3-2E9E44?style=flat" alt="Python">
+  <img src="https://img.shields.io/badge/Skills-4-7B5FD6?style=flat" alt="Skills">
+  <img src="https://img.shields.io/badge/Templates-25-E28E2C?style=flat" alt="Templates">
+  <img src="https://img.shields.io/badge/Output-300DPI_%C2%B7_Vector-767676?style=flat" alt="Output spec">
 </p>
 
 <p align="center">
@@ -30,15 +30,22 @@
 
 ## What is this
 
-`mathmodel-kit` splits the output of a modeling contest into four composable agent skills: one orchestrator
-handles planning and grading, while three specialists cover data figures, academic diagrams and paper
-production. They chain into a closed loop under the orchestrator, and each also works standalone — render a
-single chart, re-lay out one roadmap, or turn a `.tex` into Word, without any of the rest.
+`mathmodel-kit` is a set of agent skills for mathematical modeling competitions: four skills, usable
+separately or chained together by the orchestrator.
 
-The working premise: **tools own mechanical correctness, humans own modeling judgment**. Method choice,
-interpretation of results and the novelty claim stay with you; the skills keep data reproducible, figures
-free of clipping and overlap, every number in the paper traceable to a script output, and the layout inside
-the checklist.
+- `math-modeling-helper` (orchestrator) — runs the whole contest in six stages (problem analysis → model
+  building → implementation → paper → grading) and ships code rules plus a grading rubric;
+- `mathmodel-figure` (data figures) — 20 bundled matplotlib templates; when none fits, draw to the
+  [`nature-standard.md`](skills/mathmodel-figure/docs/guides/nature-standard.md) spec instead;
+- `mathmodel-diagram` (academic diagrams) — 5 JSON-driven layouts, plus authoring from scratch and
+  high-fidelity replication of a reference image;
+- `mathmodel-paper` (paper output) — a LaTeX skeleton compiles to PDF, converts to Word, and receives
+  contest-style layout fine-tuning.
+
+The division of labour: **the skills own mechanical correctness, the user owns modeling judgment**.
+Reproducible data, figures free of clipping and overlap, paper numbers traceable to script output, and
+layout passing self-checks are guaranteed by the skills; method choice, result interpretation and novelty
+claims stay with the user.
 
 ## Skill matrix
 
