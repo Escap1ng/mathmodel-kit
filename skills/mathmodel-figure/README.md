@@ -6,11 +6,11 @@
 
 ```
 mathmodel-figure/
-├── SKILL.md                # 技能入口：匹配模板 → 调渲染器 → 返回产物路径
+├── SKILL.md                # 技能入口：匹配模板 → 调渲染器 → 渲染自检 → 返回产物路径
 ├── README.md               # 本文件：结构说明
 ├── code/                   # 全部 Python 源码
 │   ├── style/
-│   │   └── plot_style.py   #   统一样式模块（学术色板、字体回退、save_fig；规范条文见 docs/guides/）
+│   │   └── plot_style.py   #   统一样式模块（Nature 色板与样式助手、字体回退、save_fig；规范条文见 docs/guides/）
 │   ├── templates/          #   20 个图模板（自带确定性模拟数据，可直接运行）
 │   │   └── make_<template>.py
 │   └── tools/              #   通用工具
@@ -19,7 +19,8 @@ mathmodel-figure/
 │   ├── templates/
 │   │   └── figure-catalog.md    # 模板目录：id ↔ 脚本 ↔ 图题 对照表
 │   └── guides/
-│       ├── visualization-rules.md  # 出图可视化规范（配色/图型/强制要求，唯一权威出处）
+│       ├── visualization-rules.md  # 出图可视化规范（配色/版式/图型/强制要求/渲染自检，唯一权威出处）
+│       ├── nature-standard.md      # Nature 出图标准（模板库外现绘：六条硬标准 + 最小骨架 + 图型选择表）
 │       └── plot-recipes.md         # 模板定制实现配方
 └── examples/
     └── previews/           # 20 张模板效果预览（<template>_replica.png），与 code/templates/ 同名对齐
@@ -34,7 +35,7 @@ mathmodel-figure/
 ## 两套模板家族
 
 - **高端组合类**（11 个，自带配色体系）：SHAP、配对云雨、ROC、Taylor、pairgrid、边缘分布、TPE 曲面、半边小提琴、环形热图、城市公园降温组合、和弦；
-- **基础与高频类**（9 个，统一使用 `plot_style.py` 学术色板）：相关热图、拟合+残差、收敛、Pareto、折线、分组柱状、箱线+抖动、饼、条形。
+- **基础与高频类**（9 个，统一使用 `plot_style.py` 的 Nature 样式系统）：相关热图、拟合+残差、收敛、Pareto、折线、分组柱状、箱线+抖动、环形占比、条形。
 
 ## 扩展约定
 
@@ -53,4 +54,6 @@ SKILL.md                                    # 模板清单加一行
 - 文件头设置 `MPLCONFIGDIR`（先于 import matplotlib）；
 - 使用确定性随机种子；
 - 默认输出路径为 `ROOT / "outputs"`（渲染器复制到工作区后依赖该相对结构）；
-- 依赖样式模块的模板写 `from plot_style import ...`，渲染器会自动把 `code/style/plot_style.py` 一并复制进工作区 `scripts/`。
+- 依赖样式模块的模板写 `from plot_style import ...`，渲染器会自动把 `code/style/plot_style.py` 一并复制进工作区 `scripts/`；
+- 基础类模板的尺寸、字号、色值一律取自 `plot_style`（`FIG_*`、`FS_*`、语义色常量），
+  坐标框架与标注走 `style_axes` / `add_panel_label` / `annotate_bars` 助手，不在脚本里硬编码。

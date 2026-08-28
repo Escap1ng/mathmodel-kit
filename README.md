@@ -11,14 +11,14 @@
 | 技能 | 定位 |
 |---|---|
 | [`math-modeling-helper`](skills/math-modeling-helper/SKILL.md) | 主技能编排 · 赛题分析、算法优选、代码实现、论文写作与评分 |
-| [`mathmodel-figure`](skills/mathmodel-figure/SKILL.md) | 数据图表 · 20 个 matplotlib 模板，一条命令产出 PNG / PDF / SVG |
+| [`mathmodel-figure`](skills/mathmodel-figure/SKILL.md) | 数据图表 · 20 个 matplotlib 模板 + Nature 出图标准（模板外按标准现绘），一条命令产出 PNG / PDF / SVG |
 | [`mathmodel-diagram`](skills/mathmodel-diagram/SKILL.md) | 学术示意图 · 5 个 JSON 驱动模板（路线图 / 框架图 / 流程图 / 问题分析图） |
 | [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | 论文输出 · LaTeX 骨架 → PDF → Word，及版式微调 |
 
 ## 特性
 
 - **全流程覆盖** — 单一入口贯通「赛题理解 → 模型构建 → 算法实现 → 论文输出」，专项技能亦可按需独立调用。
-- **出版级默认** — 数据图表 300 DPI、矢量优先，统一 coolwarm 学术色板与 Times 衬线字体；示意图逐槽中文字宽校验，超框即报错。
+- **出版级默认** — 数据图表 300 DPI、矢量优先，统一 Nature 风格配色（身份/方向/层级三色职责）与 Arial 无衬线字体；示意图逐槽中文字宽校验，超框即报错。
 - **确定性与可复现** — 图表模板自带种子化模拟数据；示意图由 content JSON 驱动，产物可随时重渲、二次修改。
 - **机器化质量门禁** — 容量校验非零退出、九区盘点、红队复审与自评分卡，共同约束交付质量。
 

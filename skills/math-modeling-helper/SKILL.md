@@ -92,7 +92,7 @@ description: "数学建模竞赛全流程辅助：赛题分析、算法优选、
 - 使用 numpy 向量化操作
 - 关键参数通过注释说明
 - 输出清晰的结果摘要
-- 可视化保存至 `figures/final/`，学术风格，≥300 DPI；数据图表优先用 `mathmodel-figure` 技能模板渲染（统一样式模块 `plot_style.py` 随模板自动复制到工作区），示意图用 `mathmodel-diagram` 技能
+- 可视化保存至 `figures/final/`，学术风格，≥300 DPI；数据图表优先复用 `mathmodel-figure` 技能模板（统一样式模块 `plot_style.py` 随模板自动复制到工作区），模板不匹配时按该技能的 `docs/guides/nature-standard.md` 现绘，示意图用 `mathmodel-diagram` 技能
 
 ### 阶段五：论文输出
 
@@ -602,8 +602,19 @@ def read_excel(file_path):
 
 | 需求 | 使用技能 |
 | ---- | ---- |
-| 数据图表（三维曲面/热力图/拟合+残差/收敛/Pareto/折线/柱状/箱线/饼/条形/云雨/ROC/Taylor/SHAP 等 20 种模板） | `mathmodel-figure`：`python3 code/tools/render_template.py <模板id>` 直接渲染；统一样式模块 `code/style/plot_style.py`（色板/字体回退/save_fig）随模板复制到工作区 |
+| 数据图表（三维曲面/热力图/拟合+残差/收敛/Pareto/折线/柱状/箱线/环形/条形/云雨/ROC/Taylor/SHAP 等 20 种模板） | `mathmodel-figure`：`python3 code/tools/render_template.py <模板id>` 直接渲染；统一样式模块 `code/style/plot_style.py`（色板/字体回退/save_fig）随模板复制到工作区 |
+| 模板库外的自定义图型（等高线、相图、堆叠面积、雷达、甘特、龙卷风、平行坐标、桑基、地图热力、小多图、双轴图等） | `mathmodel-figure`：按 `docs/guides/nature-standard.md` 的 Nature 出图标准现绘（六条硬标准 + 最小起图骨架 + 图型选择表），样式仍取自 `code/style/plot_style.py` |
 | 学术示意图（技术路线图、研究框架图、阶段流程图、任务流水线图、**第二章问题分析流程图**、算法/系统架构图） | `mathmodel-diagram`：5 个 JSON 驱动模板（含 `problem-flow`），matplotlib 渲染产出 PNG(300DPI)+PDF |
+
+**图型按需求选，不过度依赖模板库**：模板只是省时间的加速器，不是可选图型的边界。
+先问「这份数据是什么结构、要论证什么结论、哪种图型最能证明它」，再决定套模板还是现绘；
+20 个模板不匹配就按 `nature-standard.md` 起图，**禁止为套用模板而改数据语义、
+禁止把不相干的图硬凑成多子图**，也禁止用图型堆砌代替论证。
+
+**全文风格统一（模板图与现绘图一律同一套样式）**：颜色与字号只从 `plot_style.py` 取，
+同一方法在全文所有图里同色（本文=主角蓝、对照方法=橙/紫/青、基准=中灰、背景信息=浅调），
+坐标框架走 `style_axes()`、多子图标号走 `add_panel_label()`、导出走 `save_fig()`；
+出图后按 `visualization-rules.md` 的渲染自检清单看产物，代码跑通不算通过。
 
 **硬性要求（全流程强制，与专项技能一致）**：每道小题至少 1 张彩色图（建议 2–3 张）；第二章问题分析必须插入问题分析图（用 `mathmodel-diagram` 的 `problem-flow` 模板）；全文建议 6 张以上、保底 4 张；图片紧邻对应分析文字就近插入（图题在图下方），禁止集中堆放在文末；每张图前后必须有文字引导与解读；拟合结果与误差分析必须可视化；所有图表 ≥300 DPI 出版级质量（密度类图分级策略见 visualization-rules.md）；配色、线型、图例、黑白打印等细则见 visualization-rules.md。
 
@@ -652,7 +663,7 @@ def read_excel(file_path):
 - 必须设置负号正常显示：`plt.rcParams['axes.unicode_minus'] = False`
 - 保存时指定 `bbox_inches='tight'`
 - 缺字体环境（Linux/macOS 容器）使用检测回退：优先探测可用中文字体（SimHei → Microsoft YaHei → Noto Sans CJK SC → WenQuanYi），全部缺失时显式警告，禁止静默输出方框
-- 图内字号与正文对应：整版宽图（约6.3in）图内标签 ≥9pt（font.size=11 满足）；图缩至半版心（约3.2in）展示时须将 `font_scale` 提至 1.3 以上，保证印刷等效字号 ≥9pt
+- 图内字号与正文对应：整版宽图（约6.3in）图内标签 ≥9pt（`mathmodel-figure` 的 `plot_style.FS_LABEL=9.5` 满足，刻度 8.5pt）；图缩至半版心（约3.2in）展示时须将 `font_scale` 提至 1.3 以上，保证印刷等效字号 ≥9pt
 - LaTeX中图片宽度不超过 `\textwidth`
 
 **3. 中文编码规范**：
@@ -1090,6 +1101,7 @@ def read_excel(file_path):
 | 折线图曲线过多难区分 | 同图≤5条，线型+标记区分，超限分图         |
 | 性能对比图Y轴不从0起 | 强制 `ax.set_ylim(0, ...)`，避免视觉误导    |
 | 黑白打印分不清组别 | 用学术低饱和配色+明暗/透明度区分；多组年份可用横线/竖线纹理 |
+| 只会套模板、图型与数据不匹配 | 图型按数据与结论选：按 `mathmodel-figure/docs/guides/nature-standard.md` 现绘，样式仍取自 `plot_style.py`，保证与模板图同风格 |
 | 文字超出纸张    | 使用 seqsplit，tabularx，[H]定位         |
 | caption报错 | 使用 font=small，禁止 font={font=10.5pt} |
 | 假设用列表非表格   | 改用 tabular 三线表，表题在上方，含合理性说明        |

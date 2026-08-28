@@ -16,14 +16,14 @@
 | `urban-park-cooling-combo` | `make_urban_park_cooling_combo.py` | 堆叠图 + 云雨图 + 箱线图组合图 |
 | `nature-chord-diagram` | `make_nature_chord_diagram.py` | Nature 风格和弦图 |
 | `heatmap-annotated` | `make_heatmap_annotated.py` | 相关热力图（数值标注 + 上三角遮罩） |
-| `fit-conf-residual` | `make_fit_confidence_residual.py` | 拟合对比图（置信带 + 残差子图） |
-| `convergence-curve` | `make_convergence_curve.py` | 迭代收敛曲线（种群散点 + 最优/均值线） |
-| `pareto-front` | `make_pareto_front.py` | Pareto 前沿图（双目标非支配解集） |
-| `line-compare` | `make_line_compare.py` | 性能对比折线图（线型+标记冗余编码） |
-| `grouped-bar` | `make_grouped_bar.py` | 分组柱状图（多方案指标对比） |
+| `fit-conf-residual` | `make_fit_confidence_residual.py` | 拟合对比图（置信带 + 残差双子图 a/b） |
+| `convergence-curve` | `make_convergence_curve.py` | 迭代收敛曲线（最优/均值 + 收敛代数标注） |
+| `pareto-front` | `make_pareto_front.py` | Pareto 前沿图（非支配解集 + 拐点与理想点） |
+| `line-compare` | `make_line_compare.py` | 性能对比折线图（线尾直接标注 + 线型标记冗余） |
+| `grouped-bar` | `make_grouped_bar.py` | 分组柱状图（多方案指标对比 + 增益标注） |
 | `boxplot-jitter` | `make_boxplot_jitter.py` | 箱线图 + 抖动散点（分布与稳定性） |
-| `pie-modules` | `make_pie_modules.py` | 模块占比饼图（≤5 类扁平低饱和） |
-| `hbar-longlabel` | `make_hbar_longlabel.py` | 长类别横向条形图 |
+| `pie-modules` | `make_pie_modules.py` | 模块占比环形图（≤5 类明度层级 + 引线直标） |
+| `hbar-longlabel` | `make_hbar_longlabel.py` | 长类别横向条形图（降序排名） |
 
 把用户要的中文图题转成上表之一的 id，然后调用 `code/tools/render_template.py <id>`
 （渲染器也接受英文别名与中文图题片段，`--list` 查看全部 id）。

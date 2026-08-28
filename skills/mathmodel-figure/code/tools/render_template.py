@@ -58,6 +58,7 @@ ALIASES = {
     "bar": "grouped-bar",
     "boxplot": "boxplot-jitter",
     "pie": "pie-modules",
+    "donut": "pie-modules",
     "hbar": "hbar-longlabel",
 }
 
@@ -90,6 +91,7 @@ CJK_HINTS = {
     "堆叠": "urban-park-cooling-combo",
     "和弦": "nature-chord-diagram",
     "circos": "nature-chord-diagram",
+    "占比": "pie-modules",
 }
 
 

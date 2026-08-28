@@ -11,14 +11,14 @@ The kit ships four coordinated agent skills: one orchestrator governs the whole 
 | Skill | Role |
 |---|---|
 | [`math-modeling-helper`](skills/math-modeling-helper/SKILL.md) | Orchestrator · problem analysis, algorithm selection, code implementation, paper writing & grading |
-| [`mathmodel-figure`](skills/mathmodel-figure/SKILL.md) | Data figures · 20 matplotlib templates, one command to PNG / PDF / SVG |
+| [`mathmodel-figure`](skills/mathmodel-figure/SKILL.md) | Data figures · 20 matplotlib templates plus a Nature figure standard for hand-drawn chart types, one command to PNG / PDF / SVG |
 | [`mathmodel-diagram`](skills/mathmodel-diagram/SKILL.md) | Academic diagrams · 5 JSON-driven templates (roadmap / framework / flow / problem analysis) |
 | [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | Paper output · LaTeX skeleton → PDF → Word, plus layout fine-tuning |
 
 ## Highlights
 
 - **Full-pipeline coverage** — a single entry point runs "problem understanding → model building → algorithm implementation → paper output" end to end; specialist skills remain independently callable.
-- **Publication-grade by default** — data figures at 300 DPI, vector-first, with a unified coolwarm academic palette and Times serif typography; diagrams validate CJK text width slot by slot and fail loudly on overflow.
+- **Publication-grade by default** — data figures at 300 DPI, vector-first, with a unified Nature-style palette (identity / direction / hierarchy roles) and Arial sans-serif typography; diagrams validate CJK text width slot by slot and fail loudly on overflow.
 - **Deterministic & reproducible** — figure templates ship seeded simulation data; diagrams are driven by content JSON, so every artifact can be re-rendered and revised at any time.
 - **Machine-checked quality gates** — non-zero-exit capacity checks, nine-zone inspection, red-team review and a self-scoring card jointly constrain delivery quality.
 
