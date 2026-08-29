@@ -6,6 +6,8 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/Escap1ng/mathmodel-kit/actions/workflows/ci.yml"><img src="https://github.com/Escap1ng/mathmodel-kit/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/Escap1ng/mathmodel-kit/actions/workflows/paper.yml"><img src="https://github.com/Escap1ng/mathmodel-kit/actions/workflows/paper.yml/badge.svg" alt="Paper LaTeX build"></a>
   <img src="https://img.shields.io/badge/%E8%AE%B8%E5%8F%AF%E8%AF%81-Apache--2.0-1A6FC4?style=flat" alt="许可证">
   <img src="https://img.shields.io/badge/Python-3-2E9E44?style=flat" alt="Python">
   <img src="https://img.shields.io/badge/%E6%8A%80%E8%83%BD-4-7B5FD6?style=flat" alt="技能数">
