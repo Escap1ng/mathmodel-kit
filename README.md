@@ -1,7 +1,10 @@
-<h1 align="center">mathmodel-kit</h1>
+<h1 align="center">数学建模竞赛技能集</h1>
+
+---
+
+<p align="center"><b>mathmodel-kit · One-stop Agent Skill Kit</b></p>
 
 <p align="center">
-  数学建模竞赛一站式 Agent 技能集<br>
   赛题分析 · 模型构建 · 算法实现 · 出版级图表 · 论文成稿与评分
 </p>
 
