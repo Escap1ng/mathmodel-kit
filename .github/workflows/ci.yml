@@ -1,0 +1,104 @@
+# 轻量验证：全部 Python 脚本语法 + 20 个数据图表模板渲染 + 5 个示意图模板校验/渲染
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  syntax:
+    name: Python syntax (compileall)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile all bundled scripts
+        run: python -m compileall -q skills
+
+  figures:
+    name: Figure templates render (20)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install CJK fonts (图内中文渲染)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install matplotlib numpy seaborn
+      - name: Render every template and verify PNG/PDF/SVG outputs
+        shell: bash
+        run: |
+          cd skills/mathmodel-figure
+          count=0
+          for id in $(python code/tools/render_template.py --list); do
+            echo "::group::render $id"
+            python code/tools/render_template.py "$id" --project "$RUNNER_TEMP/ci-figs/$id"
+            out="$RUNNER_TEMP/ci-figs/$id/outputs"
+            for suffix in png pdf svg; do
+              if ! compgen -G "$out/*_replica.$suffix" > /dev/null; then
+                echo "ERROR: missing *_replica.$suffix output for $id"
+                exit 1
+              fi
+            done
+            count=$((count+1))
+            echo "::endgroup::"
+          done
+          if [ "$count" -ne 20 ]; then
+            echo "ERROR: expected 20 templates, rendered $count"
+            exit 1
+          fi
+          echo "All $count figure templates rendered with PNG/PDF/SVG outputs."
+
+  diagrams:
+    name: Diagram templates check & render (5)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install CJK fonts (容量校验与图内中文量宽)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install matplotlib numpy
+      - name: Capacity checks (--check on bundled examples)
+        shell: bash
+        run: |
+          cd skills/mathmodel-diagram
+          for entry in "problem_flow problem-flow" "framework_3col framework-3col" "roadmap_5band roadmap-5band" "stageflow_3col stageflow-3col" "taskflow_land taskflow-land"; do
+            set -- $entry
+            echo "::group::$1 --check"
+            python "code/templates/$1.py" "examples/$2/example.json" --check
+            echo "::endgroup::"
+          done
+      - name: Render bundled examples and verify PNG/PDF outputs
+        shell: bash
+        run: |
+          cd skills/mathmodel-diagram
+          for entry in "problem_flow problem-flow" "framework_3col framework-3col" "roadmap_5band roadmap-5band" "stageflow_3col stageflow-3col" "taskflow_land taskflow-land"; do
+            set -- $entry
+            echo "::group::render $1"
+            python "code/templates/$1.py" "examples/$2/example.json" -o "$RUNNER_TEMP/ci-diag/$2.png"
+            test -s "$RUNNER_TEMP/ci-diag/$2.png" || { echo "ERROR: missing PNG for $1"; exit 1; }
+            test -s "$RUNNER_TEMP/ci-diag/$2.pdf" || { echo "ERROR: missing PDF for $1"; exit 1; }
+            echo "::endgroup::"
+          done
+          echo "All 5 diagram examples passed capacity checks and rendered PNG+PDF."

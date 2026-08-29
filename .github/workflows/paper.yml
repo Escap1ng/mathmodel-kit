@@ -1,0 +1,43 @@
+# 重量验证：paper.tex 骨架用 xelatex 编译成 PDF（拉 TeX Live 镜像较慢，仅在论文模板相关改动时触发）
+name: Paper LaTeX build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "skills/mathmodel-paper/**"
+      - ".github/workflows/paper.yml"
+  pull_request:
+    paths:
+      - "skills/mathmodel-paper/**"
+      - ".github/workflows/paper.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: paper-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    name: Compile skeleton with XeLaTeX
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Swap Times New Roman for metric-compatible TeX Gyre Termes
+        # Times New Roman 是微软商业字体，TeX Live 镜像不含此字体；
+        # TeX Gyre Termes 与其度量兼容，仅影响 CI 冒烟编译，不动仓库源文件
+        run: |
+          sed -i 's/\\setmainfont{Times New Roman}/\\setmainfont{TeX Gyre Termes}/' \
+            skills/mathmodel-paper/templates/paper.tex
+      - name: Build PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: skills/mathmodel-paper/templates/paper.tex
+          compiler: xelatex
+          work_in_root_file_dir: true
+      - name: Verify PDF artifact
+        run: test -s skills/mathmodel-paper/templates/paper.pdf
+      - uses: actions/upload-artifact@v4
+        with:
+          name: paper-skeleton-pdf
+          path: skills/mathmodel-paper/templates/paper.pdf
