@@ -66,12 +66,6 @@ Data figures (`mathmodel-figure`)
 |---|---|---|
 | <img src="skills/mathmodel-figure/examples/previews/grouped_bar_replica.png" width="330"> | <img src="skills/mathmodel-figure/examples/previews/paired_raincloud_replica.png" width="330"> | <img src="skills/mathmodel-figure/examples/previews/nature_chord_diagram_replica.png" width="330"> |
 
-Academic diagrams (`mathmodel-diagram`)
-
-| Five-band roadmap | Problem-analysis flow | Three-column stage flow |
-|---|---|---|
-| <img src="skills/mathmodel-diagram/examples/roadmap-5band/preview.png" width="240"> | <img src="skills/mathmodel-diagram/examples/problem-flow/preview.png" width="330"> | <img src="skills/mathmodel-diagram/examples/stageflow-3col/preview.png" width="330"> |
-
 Every preview maps 1:1 to its template script: restyle, re-render, overwrite.
 
 ## Design principles

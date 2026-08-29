@@ -56,12 +56,6 @@
 |---|---|---|
 | <img src="skills/mathmodel-figure/examples/previews/grouped_bar_replica.png" width="330"> | <img src="skills/mathmodel-figure/examples/previews/paired_raincloud_replica.png" width="330"> | <img src="skills/mathmodel-figure/examples/previews/nature_chord_diagram_replica.png" width="330"> |
 
-学术示意图（`mathmodel-diagram`）
-
-| 五带技术路线图 | 问题分析流程图 | 三栏阶段流程图 |
-|---|---|---|
-| <img src="skills/mathmodel-diagram/examples/roadmap-5band/preview.png" width="240"> | <img src="skills/mathmodel-diagram/examples/problem-flow/preview.png" width="330"> | <img src="skills/mathmodel-diagram/examples/stageflow-3col/preview.png" width="330"> |
-
 全部预览图与模板脚本 1:1 对应，改样式后重新渲染即可覆盖。
 
 ## 设计取向
