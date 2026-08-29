@@ -49,7 +49,7 @@
 | [`math-modeling-helper`](skills/math-modeling-helper/SKILL.md) | 主技能编排：赛题分析、算法选择、代码实现、论文写作与评分 | 提交赛题或建模需求即触发 | 工作目录骨架、代码与结果、论文与评分报告 |
 | [`mathmodel-figure`](skills/mathmodel-figure/SKILL.md) | 数据图表：20 个 matplotlib 模板 + 模板库外的 Nature 出图标准 | `python3 code/tools/render_template.py <模板id>` | PNG(300 DPI) + PDF + SVG + 可改脚本 |
 | [`mathmodel-diagram`](skills/mathmodel-diagram/SKILL.md) | 学术示意图：5 个 JSON 驱动模板，另支持手写与高保真复刻 | `python3 code/templates/<模板>.py content.json` | PNG(300 DPI) + 矢量 PDF + content JSON |
-| [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | 论文输出：LaTeX 骨架 → PDF → Word，含竞赛版式微调 | `xelatex` + `code/word_postprocess.py` | 合规 `.pdf` 与 `.docx`、摘要模板 |
+| [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | 论文输出：LaTeX 骨架 → PDF → Word，含竞赛版式微调与零宽字符清理 | `xelatex` + `code/word_postprocess.py` + `code/strip_invisible.py` | 合规 `.pdf` 与 `.docx`（无不可见字符）、摘要模板 |
 
 ## 效果预览
 
@@ -137,8 +137,10 @@ python3 code/templates/roadmap_5band.py content.json --check      # 只做容量
 三条路径：套模板（5 个内置版式）、从零手写（算法/架构/机制图）、高保真复刻（照参考图重画）。
 
 **4. 论文输出** — 复制 `skills/mathmodel-paper/templates/paper.tex` 到工作区填写占位，
-`xelatex` 编译两遍生成 PDF，`pandoc` 转 Word，再用 `code/word_postprocess.py` 按竞赛口径微调版式；
-摘要写法与检查项见 `templates/abstract-template.md`。
+先 `code/strip_invisible.py --clean paper.tex` 清理源文件，`xelatex` 编译两遍生成 PDF，
+`pandoc` 转 Word，再用 `code/word_postprocess.py` 按竞赛口径微调版式；
+最终 PDF 与 Word 交付前必须再过一遍 `strip_invisible.py`（清理 + 复检退出码 0，
+去除零宽/不可见 Unicode 字符）；摘要写法与检查项见 `templates/abstract-template.md`。
 
 ## 仓库结构
 
@@ -164,6 +166,7 @@ mathmodel-kit/
     └── mathmodel-paper/            # 论文输出技能
         ├── templates/              #   paper.tex 骨架、摘要模板
         └── code/                   #   word_postprocess.py：Word 版式后处理
+                                    #   strip_invisible.py：零宽/不可见 Unicode 清理（tex/docx/pdf）
 ```
 
 ## 依赖与自测环境

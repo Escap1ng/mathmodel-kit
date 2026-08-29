@@ -1,6 +1,6 @@
 ---
 name: mathmodel-paper
-description: 数学建模论文排版模板工具链：LaTeX 论文骨架（paper.tex）、pandoc 转 Word、python-docx 版式微调（页眉留空/页码/中文字体/三线表）、摘要写作模板。当用户要论文模板或骨架、生成/微调 Word 论文版式、写摘要时触发。建模、算法选择、正文写作规范、评分自检请改用主技能 math-modeling-helper。
+description: 数学建模论文排版模板工具链：LaTeX 论文骨架（paper.tex）、pandoc 转 Word、python-docx 版式微调（页眉留空/页码/中文字体/三线表）、不可见 Unicode/零宽字符清理（strip_invisible.py）、摘要写作模板。当用户要论文模板或骨架、生成/微调 Word 论文版式、清理零宽字符、写摘要时触发。建模、算法选择、正文写作规范、评分自检请改用主技能 math-modeling-helper。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 ---
 
@@ -16,7 +16,12 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 
 ## 快速流程
 
-1. 复制 `templates/paper.tex` 到工作区 `paper/paper.tex`，按注释占位处填写题目、摘要、章节、参考文献；图片用相对路径 `../figures/final/xxx.png`。摘要写法见 `templates/abstract-template.md`。
+1. 复制 `templates/paper.tex` 到工作区 `paper/paper.tex`，按注释占位处填写题目、摘要、章节、参考文献；图片用相对路径 `../figures/final/xxx.png`。摘要写法见 `templates/abstract-template.md`。填写完成后先清理源文件（从源头杜绝零宽字符进入产物）：
+
+   ```bash
+   python3 code/strip_invisible.py --clean paper/paper.tex
+   ```
+
 2. 编译 PDF（**两遍**，交叉引用与编号才稳定）：
 
    ```bash
@@ -41,7 +46,16 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
    **禁止 `add_paragraph`/`add_table`/`add_page_break` 新增或重建内容，禁止手工插入公式**，
    否则 Word 中会丢失全部数学公式或在文档后追加重复全文。
 
-5. 核对 PDF 与 Word 一致性（主技能第 7 章「PDF 与 Word 格式一致性检查」）：题目三号黑体居中、摘要标签四号黑体、正文小四宋体 1 倍行距首行缩进 2 字符、一级标题四号黑体居中、三线表无竖线、图题在下表题在上、页码位置一致、图表编号与数值一一对应。
+5. 不可见字符清理（**强制交付门禁**，最终 PDF 与 Word 都必须运行；字符集移植自 watermarks-remover 的 Layer A：零宽家族/bidi 控制/tag 字符/变体选择符/私用区等）：
+
+   ```bash
+   python3 code/strip_invisible.py --clean paper/paper.pdf paper/paper.docx   # 就地清理（留 .bak）
+   python3 code/strip_invisible.py paper/paper.pdf paper/paper.docx           # 复检，必须退出码 0
+   ```
+
+   PDF 模式需要 PyMuPDF（`pip install pymupdf`）；tex/docx 模式仅用标准库。清理后复检仍报 `CLEANED-RESIDUAL` 时不得交付，回查 tex 源与转换链。
+
+6. 核对 PDF 与 Word 一致性（主技能第 7 章「PDF 与 Word 格式一致性检查」）：题目三号黑体居中、摘要标签四号黑体、正文小四宋体 1 倍行距首行缩进 2 字符、一级标题四号黑体居中、三线表无竖线、图题在下表题在上、页码位置一致、图表编号与数值一一对应。
 
 已知限制：pandoc 对 ctex/xelatex 专用宏包解析有限，转换前需用 pandoc 支持的等价写法或轻量预处理（如临时替换 ctex 为 CJK 包），转换后必须核对并修正中文字体/字号与三线表。
 
@@ -80,7 +94,8 @@ mathmodel-paper/
 ├── SKILL.md                    # 本文件：定位 + 快速流程 + 页面速查 + 匿名红线
 ├── README.md                   # 目录组织说明
 ├── code/
-│   └── word_postprocess.py     # pandoc 转换后的 Word 版式微调脚本（可执行，argparse 接收 docx 路径）
+│   ├── word_postprocess.py     # pandoc 转换后的 Word 版式微调脚本（可执行，argparse 接收 docx 路径）
+│   └── strip_invisible.py      # 不可见 Unicode/零宽字符清理（tex/docx/pdf，Layer A 字符集）
 └── templates/
     ├── paper.tex               # LaTeX 论文骨架（可复制填写，含全部规范注释）
     └── abstract-template.md    # 摘要写作模板 + 关键要求 + 摘要页分页规则

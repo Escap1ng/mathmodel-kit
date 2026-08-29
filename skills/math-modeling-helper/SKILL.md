@@ -24,7 +24,7 @@ description: "数学建模竞赛全流程辅助：赛题分析、算法优选、
    - 若不可用，提示安装 TeX Live 或 MiKTeX
 2. **Python依赖**：
    - 检查 `python-docx`（用于 Word 版式后处理微调）
-   - 检查 `PyMuPDF`（用于读取PDF数据）
+   - 检查 `PyMuPDF`（用于读取PDF数据；`strip_invisible.py` 的 PDF 清理模式亦依赖）
    - 检查 `openpyxl`（用于读取 .xlsx 数据）；若赛题附件含旧版 `.xls` 文件，另需 `xlrd`（openpyxl 不支持 .xls 二进制格式），缺失时安装 `pip install xlrd`
    - 若缺失，自动执行 `pip install python-docx pymupdf openpyxl`
 3. **绘图库**：
@@ -110,6 +110,9 @@ description: "数学建模竞赛全流程辅助：赛题分析、算法优选、
 **生成命令（PDF 与 Word 均需执行）**：
 
 ```bash
+# 0. 清理 tex 源（从源头杜绝零宽/不可见 Unicode 字符，脚本见 mathmodel-paper 技能）
+python ../code/strip_invisible.py --clean paper.tex
+
 # 1. 生成 PDF
 cd paper
 xelatex -interaction=nonstopmode paper.tex
@@ -118,6 +121,10 @@ xelatex -interaction=nonstopmode paper.tex
 # 2. 生成 Word（pandoc 将 LaTeX 转为 .docx，公式自动转为 Word 原生数学格式 OMML）
 pandoc paper.tex -o paper.docx
 # 若公式/表格版式需进一步微调，再用 python-docx 后处理（禁止用文本模拟公式）
+
+# 3. 交付门禁：最终 PDF 与 Word 都必须清理并复检零宽/不可见字符（退出码须为 0）
+python ../code/strip_invisible.py --clean paper.pdf paper.docx
+python ../code/strip_invisible.py paper.pdf paper.docx
 ```
 
 **技术栈**：
@@ -871,6 +878,7 @@ def read_excel(file_path):
 - `paper/paper.pdf` 必须存在且可正常打开
 - `paper/paper.docx` 必须存在且可正常打开
 - 两文件内容一致（标题、摘要、数值、图表编号对应）
+- 最终 PDF 与 Word 均通过 `mathmodel-paper` 技能 `code/strip_invisible.py --check`（退出码 0，无零宽/不可见 Unicode 字符残留；tex 源应在编译前先 `--clean`）
 
 #### [严重] PDF 与 Word 格式一致性检查（重点）
 

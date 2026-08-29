@@ -1,4 +1,4 @@
-# 轻量验证：全部 Python 脚本语法 + 20 个数据图表模板渲染 + 5 个示意图模板校验/渲染
+# 轻量验证：全部 Python 脚本语法 + 20 个数据图表模板渲染 + 5 个示意图模板校验/渲染 + 零宽字符清理器冒烟
 name: CI
 
 on:
@@ -102,3 +102,101 @@ jobs:
             echo "::endgroup::"
           done
           echo "All 5 diagram examples passed capacity checks and rendered PNG+PDF."
+
+  strip-invisible:
+    name: Invisible-char scrubber smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pymupdf python-docx
+      - name: tex / docx / pdf round-trip (FOUND -> CLEANED -> clean)
+        shell: bash
+        run: |
+          TOOL=skills/mathmodel-paper/code/strip_invisible.py
+          WORK="$RUNNER_TEMP/strip-smoke"
+          mkdir -p "$WORK"
+          python - "$WORK" "$TOOL" <<'PYEOF'
+          import subprocess, sys
+          from pathlib import Path
+
+          work, tool = Path(sys.argv[1]), sys.argv[2]
+
+          def run(args, expect):
+              r = subprocess.run([sys.executable, tool, *map(str, args)],
+                                 capture_output=True, text=True)
+              print(r.stdout.strip() or r.stderr.strip())
+              assert r.returncode == expect, f"expect {expect}, got {r.returncode}: {args}"
+
+          # tex: BOM + ZWSP + invisible times + tag char
+          tex = work / "s.tex"
+          tex.write_bytes("A\u200bB\u2062C\U000E0041\n".encode("utf-8"))
+          run([tex], 1)
+          run(["--clean", "--no-backup", tex], 0)
+          run([tex], 0)
+          assert tex.read_text(encoding="utf-8") == "ABC\n", tex.read_text()
+
+          # docx: 正文与元数据混入零宽
+          import docx
+          dx = work / "s.docx"
+          d = docx.Document()
+          d.add_paragraph("正\u200b常\ufeff文\u2062字")
+          d.core_properties.title = "零\u200b宽\U000E0020"
+          d.save(dx)
+          run([dx], 1)
+          run(["--clean", "--no-backup", dx], 0)
+          run([dx], 0)
+
+          # pdf: 手写最小 Type0/Identity-H + ToUnicode（含 200B/2060 映射）
+          tounicode = (
+              "/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n"
+              "/CMapName /Adobe-Identity-UCS def\n/CMapType 2 def\n"
+              "1 begincodespacerange\n<0000> <FFFF>\nendcodespacerange\n"
+              "4 beginbfchar\n<0041> <0041>\n<200B> <200B>\n<0042> <0042>\n<2060> <2060>\n"
+              "endbfchar\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n"
+          )
+          content = "BT /F1 24 Tf 72 720 Td <0041200B00422060> Tj ET\n"
+          objs = {
+              1: b"<< /Type /Catalog /Pages 2 0 R >>",
+              2: b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+              3: (b"<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 4 0 R >> >> "
+                  b"/MediaBox [0 0 612 792] /Contents 5 0 R >>"),
+              4: (b"<< /Type /Font /Subtype /Type0 /BaseFont /Test /Encoding /Identity-H "
+                  b"/DescendantFonts [6 0 R] /ToUnicode 7 0 R >>"),
+              5: b"<< /Length " + str(len(content)).encode() + b" >>\nstream\n"
+                 + content.encode("latin-1") + b"endstream",
+              6: (b"<< /Type /Font /Subtype /CIDFontType2 /BaseFont /Test "
+                  b"/CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> "
+                  b"/FontDescriptor 8 0 R /DW 1000 >>"),
+              7: b"<< /Length " + str(len(tounicode)).encode() + b" >>\nstream\n"
+                 + tounicode.encode("latin-1") + b"endstream",
+              8: (b"<< /Type /FontDescriptor /FontName /Test /Flags 4 "
+                  b"/FontBBox [0 0 1000 1000] /ItalicAngle 0 /Ascent 800 /Descent -200 "
+                  b"/CapHeight 800 /StemV 80 >>"),
+          }
+          out = bytearray(b"%PDF-1.4\n")
+          offs = {}
+          for num in sorted(objs):
+              offs[num] = len(out)
+              out += f"{num} 0 obj\n".encode() + objs[num] + b"\nendobj\n"
+          x = len(out)
+          out += f"xref\n0 {len(objs)+1}\n".encode() + b"0000000000 65535 f \n"
+          for num in sorted(objs):
+              out += f"{offs[num]:010d} 00000 n \n".encode()
+          out += (f"trailer\n<< /Size {len(objs)+1} /Root 1 0 R >>\n"
+                  f"startxref\n{x}\n%%EOF\n").encode()
+          pdf = work / "s.pdf"
+          pdf.write_bytes(bytes(out))
+          run([pdf], 1)
+          run(["--clean", "--no-backup", pdf], 0)
+          run([pdf], 0)
+          import fitz
+          text = fitz.open(pdf)[0].get_text()
+          assert "\u200b" not in text and "\u2060" not in text and "A" in text and "B" in text, repr(text)
+          print("strip-invisible smoke OK:", repr(text))
+          PYEOF

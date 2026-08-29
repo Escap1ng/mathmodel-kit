@@ -56,7 +56,7 @@ claims stay with the user.
 | [`math-modeling-helper`](skills/math-modeling-helper/SKILL.md) | Orchestrator: problem analysis, algorithm selection, implementation, writing & grading | Hand it the problem statement or a modeling request | Workspace skeleton, code and results, paper and grading report |
 | [`mathmodel-figure`](skills/mathmodel-figure/SKILL.md) | Data figures: 20 matplotlib templates plus a Nature standard for hand-drawn chart types | `python3 code/tools/render_template.py <template-id>` | PNG (300 DPI) + PDF + SVG + an editable script |
 | [`mathmodel-diagram`](skills/mathmodel-diagram/SKILL.md) | Academic diagrams: 5 JSON-driven templates, plus authoring from scratch and high-fidelity replication | `python3 code/templates/<template>.py content.json` | PNG (300 DPI) + vector PDF + content JSON |
-| [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | Paper output: LaTeX skeleton → PDF → Word with contest-layout fine tuning | `xelatex` + `code/word_postprocess.py` | Compliant `.pdf` and `.docx`, abstract template |
+| [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | Paper output: LaTeX skeleton → PDF → Word with contest-layout fine tuning and zero-width char scrubbing | `xelatex` + `code/word_postprocess.py` + `code/strip_invisible.py` | Compliant `.pdf` and `.docx` (invisible-char free), abstract template |
 
 ## Gallery
 
@@ -149,9 +149,11 @@ python3 code/templates/roadmap_5band.py content.json --check      # capacity che
 Three routes: use one of the 5 built-in layouts, author from scratch (algorithm / architecture / mechanism
 schematics), or replicate a reference image at high fidelity.
 
-**4. Paper** — copy `skills/mathmodel-paper/templates/paper.tex` into your workspace and fill the
-placeholders, compile twice with `xelatex` for the PDF, convert to Word with `pandoc`, then fine-tune the
-layout with `code/word_postprocess.py`; the abstract guide and its checks are in
+**4. Paper** — copy `skills/mathmodel-paper/templates/paper.tex` into your workspace, scrub the source
+with `code/strip_invisible.py --clean paper.tex`, compile twice with `xelatex` for the PDF, convert to
+Word with `pandoc`, then fine-tune the layout with `code/word_postprocess.py`; before delivery, run
+`strip_invisible.py` over the final PDF and Word (clean + re-check, exit code 0) to guarantee they are
+free of zero-width / invisible Unicode characters. The abstract guide and its checks are in
 `templates/abstract-template.md`.
 
 ## Repository layout
@@ -178,6 +180,7 @@ mathmodel-kit/
     └── mathmodel-paper/            # Paper output skill
         ├── templates/              #   paper.tex skeleton, abstract template
         └── code/                   #   word_postprocess.py: Word layout post-processing
+                                    #   strip_invisible.py: zero-width / invisible Unicode scrubber (tex/docx/pdf)
 ```
 
 ## Dependencies and tested environment
