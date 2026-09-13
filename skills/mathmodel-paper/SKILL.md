@@ -1,6 +1,6 @@
 ---
 name: mathmodel-paper
-description: 数学建模论文排版模板工具链：LaTeX 论文骨架（paper.tex）、pandoc 转 Word、python-docx 版式微调（页眉留空/页码/中文字体/三线表）、不可见 Unicode/零宽字符清理（strip_invisible.py）、摘要写作模板。当用户要论文模板或骨架、生成/微调 Word 论文版式、清理零宽字符、写摘要时触发。建模、算法选择、正文写作规范、评分自检请改用主技能 math-modeling-helper。
+description: 数学建模论文排版模板工具链：LaTeX 论文骨架（paper.tex）、pandoc 转 Word、python-docx 版式微调（页眉留空/页码/中文字体/三线表）、摘要写作模板。当用户要论文模板或骨架、生成/微调 Word 论文版式、写摘要时触发。零宽字符清理与去 AI 化改用降 AI 技能 mathmodel-deai；建模、算法选择、正文写作规范、评分自检请改用主技能 mathmodel-core。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 ---
 
@@ -8,18 +8,18 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 
 ## 定位
 
-本技能是 `math-modeling-helper` 主技能的**配套输出物工具链**，只管「论文怎么排版、怎么转成 PDF/Word」：
+本技能是 `mathmodel-core` 主技能的**配套输出物工具链**，只管「论文怎么排版、怎么转成 PDF/Word」：
 
 - 只管：LaTeX 论文骨架、编译与转换命令、Word 版式微调脚本、摘要写作模板、页面设置与匿名红线速查。
-- 不管：赛题分析、算法选择、代码实现、正文语言表述、质量自检与百分制评分——这些**规范条文与评分口径一律以主技能 `math-modeling-helper` 为准**，本技能只是其可执行落地件。
+- 不管：赛题分析、算法选择、代码实现、正文语言表述、质量自检与百分制评分——这些**规范条文与评分口径分别以主技能 `mathmodel-core`、`mathmodel-score` 为准**，本技能只是其可执行落地件。
 - 与本技能冲突时以主技能规范为准；本技能内容全部提取自主技能，未新增任何规范。
 
 ## 快速流程
 
-1. 复制 `templates/paper.tex` 到工作区 `paper/paper.tex`，按注释占位处填写题目、摘要、章节、参考文献；图片用相对路径 `../figures/final/xxx.png`。摘要写法见 `templates/abstract-template.md`。填写完成后先清理源文件（从源头杜绝零宽字符进入产物）：
+1. 复制 `templates/paper.tex` 到工作区 `paper/paper.tex`，按注释占位处填写题目、摘要、章节、参考文献；图片用相对路径 `../figures/final/xxx.png`。摘要写法见 `templates/abstract-template.md`。填写完成后先清源文件（降 AI 技能 `mathmodel-deai`，从源头杜绝零宽/不可见字符进入产物）：
 
    ```bash
-   python3 code/strip_invisible.py --clean paper/paper.tex
+   python3 ../mathmodel-deai/code/strip_invisible.py --clean paper/paper.tex
    ```
 
 2. 编译 PDF（**两遍**，交叉引用与编号才稳定）：
@@ -46,16 +46,18 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
    **禁止 `add_paragraph`/`add_table`/`add_page_break` 新增或重建内容，禁止手工插入公式**，
    否则 Word 中会丢失全部数学公式或在文档后追加重复全文。
 
-5. 不可见字符清理（**强制交付门禁**，最终 PDF 与 Word 都必须运行；字符集移植自 watermarks-remover 的 Layer A：零宽家族/bidi 控制/tag 字符/变体选择符/私用区等）：
+5. 降 AI 门禁（**强制交付门禁**）：词表级查模板腔/套话、结构级查句式与段落节奏、字符级清零宽/不可见 Unicode，均由降 AI 技能 `mathmodel-deai` 负责（规范见其 `docs/deai-rules.md`，字符集移植自 watermarks-remover 的 Layer A）：
 
    ```bash
-   python3 code/strip_invisible.py --clean paper/paper.pdf paper/paper.docx   # 就地清理（留 .bak）
-   python3 code/strip_invisible.py paper/paper.pdf paper/paper.docx           # 复检，必须退出码 0
+   python3 ../mathmodel-deai/code/check_phrasing.py paper/paper.tex           # 词表级：命中即改写（退出码 0 才算过）
+   python3 ../mathmodel-deai/code/check_style.py paper/paper.tex              # 结构级：句长/句式/段落节奏/小数位
+   python3 ../mathmodel-deai/code/strip_invisible.py --clean paper/paper.pdf paper/paper.docx   # 就地清理（留 .bak）
+   python3 ../mathmodel-deai/code/strip_invisible.py paper/paper.pdf paper/paper.docx           # 复检，必须退出码 0
    ```
 
    PDF 模式需要 PyMuPDF（`pip install pymupdf`）；tex/docx 模式仅用标准库。清理后复检仍报 `CLEANED-RESIDUAL` 时不得交付，回查 tex 源与转换链。
 
-6. 核对 PDF 与 Word 一致性（主技能第 7 章「PDF 与 Word 格式一致性检查」）：题目三号黑体居中、摘要标签四号黑体、正文小四宋体 1 倍行距首行缩进 2 字符、一级标题四号黑体居中、三线表无竖线、图题在下表题在上、页码位置一致、图表编号与数值一一对应。
+6. 核对 PDF 与 Word 一致性（`mathmodel-score/docs/self-check.md` 的「PDF 与 Word 格式一致性检查」）：题目三号黑体居中、摘要标签四号黑体、正文小四宋体 1 倍行距首行缩进 2 字符、一级标题四号黑体居中、三线表无竖线、图题在下表题在上、页码位置一致、图表编号与数值一一对应。
 
 已知限制：pandoc 对 ctex/xelatex 专用宏包解析有限，转换前需用 pandoc 支持的等价写法或轻量预处理（如临时替换 ctex 为 CJK 包），转换后必须核对并修正中文字体/字号与三线表。
 
@@ -94,8 +96,7 @@ mathmodel-paper/
 ├── SKILL.md                    # 本文件：定位 + 快速流程 + 页面速查 + 匿名红线
 ├── README.md                   # 目录组织说明
 ├── code/
-│   ├── word_postprocess.py     # pandoc 转换后的 Word 版式微调脚本（可执行，argparse 接收 docx 路径）
-│   └── strip_invisible.py      # 不可见 Unicode/零宽字符清理（tex/docx/pdf，Layer A 字符集）
+│   └── word_postprocess.py     # pandoc 转换后的 Word 版式微调脚本（可执行，argparse 接收 docx 路径）
 └── templates/
     ├── paper.tex               # LaTeX 论文骨架（可复制填写，含全部规范注释）
     └── abstract-template.md    # 摘要写作模板 + 关键要求 + 摘要页分页规则

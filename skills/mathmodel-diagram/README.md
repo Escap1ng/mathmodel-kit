@@ -38,7 +38,7 @@ mathmodel-diagram/
 
 ## 分类依据
 
-- **一级按内容类型分**（`code/` `docs/` `examples/`）：与 `mathmodel-figure`、`math-modeling-helper` 同一套目录词表，跨技能检索时语义相同。
+- **一级按内容类型分**（`code/` `docs/` `examples/`）：与 `mathmodel-figure`、`mathmodel-core` 同一套目录词表，跨技能检索时语义相同。
 - **二级按功能模块分**：`code/templates ↔ docs/templates ↔ examples` 三者以模板 id 同名对齐，改一个模板时三个位置一起改；`common.py` 是全部模板共用的基元层；`docs/guides` 收纳跨模板的通用方法论。
 - **层级最深 2 层**，命名统一小写连字符（目录/模板 id）与下划线（Python 模块）。
 

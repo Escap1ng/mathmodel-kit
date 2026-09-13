@@ -20,7 +20,7 @@ mathmodel-paper/
 - **一级按内容类型分**（`code/` `templates/`）：与 `mathmodel-figure`（`code/templates`、`code/tools`）、`mathmodel-diagram`（`code/templates`、`docs/templates`、`examples/`）共用同一份目录词表，跨技能检索时 `code/` 恒为「可执行脚本」、`templates/` 恒为「可复制骨架」，语义不变。
 - **`code/` = 可执行脚本**：命令行直接跑、有 `argparse` 入口、原地作用于产物（此处即 pandoc 生成的 `.docx`）。
 - **`templates/` = 可复制骨架**：不参与执行，复制到工作区后填写；`.tex` 是文档骨架，`.md` 是写作模板，二者同为「拿来即用」的空白件。
-- **规范条文不在此仓库复制**：论文结构、语言表述、自检清单、百分制评分留在主技能 `math-modeling-helper/SKILL.md`，本技能只放落地件与速查摘要，避免两处规范漂移。
+- **规范条文不在此仓库复制**：论文结构、语言表述留在主技能 `mathmodel-core/SKILL.md`，自检清单与百分制评分在 `mathmodel-score/docs/`，本技能只放落地件与速查摘要，避免两处规范漂移。
 - **层级最深 2 层**，新增模板只需在 `templates/` 加同名条目。
 
 ## 扩展约定

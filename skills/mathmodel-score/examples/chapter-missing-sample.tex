@@ -1,0 +1,32 @@
+% 反例：缺关键词足量、符号说明、模型评价、附录与源程序，且出现目录与指导教师信息。
+% check_chapters.py 应报出多项 hard 未过并退出 1。仅用于冒烟测试。
+\documentclass[12pt]{article}
+\usepackage{ctex}
+\tableofcontents
+
+\begin{document}
+
+\begin{abstract}
+本文研究了城市内涝问题，建立了相应的数学模型并对结果进行了分析。
+
+\noindent 关键词：城市内涝；数学建模
+\end{abstract}
+
+\section{问题重述}
+城市内涝风险评估是市政排水规划的前置环节，本文对此展开研究。
+
+\section{问题分析}
+对于问题一，需要给出风险排序；对于问题二，需要做不确定性分析。
+
+\section{模型假设}
+假设1：监测点位降雨数据均匀。假设2：指标间相互独立。假设3：历史记录完整。
+
+\section{模型建立与求解}
+建立熵权-TOPSIS 模型并求解，得到高风险街区 12 个。
+
+\section{参考文献}
+[1] 姜启源, 谢金星, 叶俊. 数学模型[M]. 5版. 北京: 高等教育出版社, 2018.
+
+指导教师：某老师
+
+\end{document}

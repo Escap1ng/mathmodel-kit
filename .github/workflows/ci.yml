@@ -1,5 +1,6 @@
 # 轻量验证：全部 Python 脚本语法 + 模板注册表一致性（含内容契约与主题契约）
-# + 20 个数据图表模板渲染 + 5 个示意图模板校验/渲染 + 零宽字符清理器冒烟
+# + 20 个数据图表模板渲染 + 5 个示意图模板校验/渲染 + 降 AI 门禁冒烟（词表级 + 结构级 + 零宽清理）
+# + 论文评分卡与章节结构冒烟（结构 hard 未过 1 / 评分卡达标 0 / 需优化 1 / 输入错误 2）
 # 模板数量与清单均由 code/**/manifest.json 派生，不再硬编码，新增模板无需改本文件。
 name: CI
 
@@ -280,7 +281,7 @@ jobs:
       - name: tex / docx / pdf round-trip (FOUND -> CLEANED -> clean)
         shell: bash
         run: |
-          TOOL=skills/mathmodel-paper/code/strip_invisible.py
+          TOOL=skills/mathmodel-deai/code/strip_invisible.py
           WORK="$RUNNER_TEMP/strip-smoke"
           mkdir -p "$WORK"
           python - "$WORK" "$TOOL" <<'PYEOF'
@@ -361,4 +362,118 @@ jobs:
           text = fitz.open(pdf)[0].get_text()
           assert "\u200b" not in text and "\u2060" not in text and "A" in text and "B" in text, repr(text)
           print("strip-invisible smoke OK:", repr(text))
+          PYEOF
+
+  deai-phrasing:
+    name: De-AI phrasing gate smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Word-list samples flagged/pass, docs self-clean (zh + en)
+        shell: bash
+        run: |
+          cd skills/mathmodel-deai
+          check() {  # $1 = file, $2 = expected exit code
+            set +e
+            python code/check_phrasing.py "$1" > /dev/null
+            got=$?
+            set -e
+            echo "$1 exit=$got (want $2)"
+            if [ "$got" -ne "$2" ]; then echo "ERROR: $1 should exit $2"; exit 1; fi
+          }
+          check examples/slop-sample.tex 1
+          check examples/clean-sample.tex 0
+          check examples/slop-sample-en.md 1
+          check examples/clean-sample-en.md 0
+          # the skill's own docs must pass the gate (examples are excluded by design)
+          python code/check_phrasing.py SKILL.md README.md docs/deai-rules.md
+          echo "deai word-list gate smoke OK (zh + en)."
+      - name: Structural gate smoke (style-slop flagged, clean passes)
+        shell: bash
+        run: |
+          cd skills/mathmodel-deai
+          set +e
+          python code/check_style.py examples/style-slop-sample.tex
+          slop=$?
+          python code/check_style.py examples/clean-sample.tex
+          clean=$?
+          set -e
+          echo "style-slop exit=$slop (want 1); clean exit=$clean (want 0)"
+          if [ "$slop" -ne 1 ]; then echo "ERROR: style-slop sample should exit 1"; exit 1; fi
+          if [ "$clean" -ne 0 ]; then echo "ERROR: clean sample should exit 0 under check_style"; exit 1; fi
+          echo "deai structural gate smoke OK."
+      - name: Cross-module docs pass the word-list gate; paper-like examples pass the structural gate
+        shell: bash
+        run: |
+          # 表述口径以去 AI 模块为准：项目说明文档过词表级；结构级指标面向论文稿与论文样例
+          cd skills/mathmodel-deai
+          python code/check_phrasing.py ../../README.md ../../README_EN.md \
+            ../mathmodel-score/SKILL.md ../mathmodel-score/README.md \
+            ../mathmodel-score/docs/rubric.md ../mathmodel-score/docs/chapter-checklist.md \
+            ../mathmodel-score/docs/self-check.md
+          python code/check_style.py ../mathmodel-score/examples/chapter-sample.tex
+          echo "cross-module de-AI gate OK."
+
+  scorecard:
+    name: Scorecard & chapter gate smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Chapter structure gate (sample passes, missing-sample fails)
+        shell: bash
+        run: |
+          cd skills/mathmodel-score
+          set +e
+          python code/check_chapters.py examples/chapter-sample.tex > /dev/null
+          ok=$?
+          python code/check_chapters.py examples/chapter-missing-sample.tex > /dev/null
+          bad=$?
+          set -e
+          echo "chapter sample exit=$ok (want 0); missing-sample exit=$bad (want 1)"
+          if [ "$ok" -ne 0 ]; then echo "ERROR: chapter sample should pass all hard checks"; exit 1; fi
+          if [ "$bad" -ne 1 ]; then echo "ERROR: chapter missing-sample should fail hard checks"; exit 1; fi
+          python code/check_chapters.py --rules mcm examples/chapter-sample.tex > /dev/null
+          python code/check_chapters.py --list-checks > /dev/null
+          python code/check_chapters.py --list-checks --json > /dev/null
+          echo "chapter structure gate smoke OK."
+      - name: Example passes (0), below-pass needs work (1), bad input is rejected (2)
+        shell: bash
+        run: |
+          cd skills/mathmodel-score
+          set +e
+          python code/score_card.py examples/example-scorecard.json > /dev/null
+          ok=$?
+          set -e
+          echo "example exit=$ok (want 0)"
+          if [ "$ok" -ne 0 ]; then echo "ERROR: example scorecard should pass"; exit 1; fi
+          python code/score_card.py --list-dimensions > /dev/null
+          python code/score_card.py --list-dimensions --json > /dev/null
+          python - <<'PYEOF'
+          import json, subprocess, sys, tempfile
+          from pathlib import Path
+
+          work = Path(tempfile.mkdtemp())
+          base = json.loads(Path("examples/example-scorecard.json").read_text(encoding="utf-8"))
+          for dim in base["dimensions"]:
+              dim["score"] = 12 if dim["id"] in ("abstract", "model", "innovation") else 8
+              dim["deductions"] = []
+          low = work / "below-pass.json"
+          low.write_text(json.dumps(base), encoding="utf-8")
+          r = subprocess.run([sys.executable, "code/score_card.py", str(low)], capture_output=True, text=True)
+          print("below-pass exit", r.returncode)
+          assert r.returncode == 1, r.stdout + r.stderr
+
+          bad = work / "bad.json"
+          bad.write_text(json.dumps({"dimensions": [{"id": "abstract", "score": 99}]}), encoding="utf-8")
+          r2 = subprocess.run([sys.executable, "code/score_card.py", str(bad)], capture_output=True, text=True)
+          print("bad-input exit", r2.returncode)
+          assert r2.returncode == 2, r2.stdout + r2.stderr
+
+          print("scorecard gate smoke OK")
           PYEOF

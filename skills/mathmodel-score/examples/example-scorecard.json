@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "paper": "第X题_赛题简称",
+  "round": 2,
+  "veto": false,
+  "dimensions": [
+    {
+      "id": "abstract",
+      "score": 26,
+      "deductions": [
+        {"item": "字数超出 800-1000 字范围", "penalty": 3, "note": "摘要 1120 字"},
+        {"item": "缺少误差/不确定度分析", "penalty": 1, "note": "仅定性提了一句"}
+      ]
+    },
+    {
+      "id": "model",
+      "score": 18,
+      "deductions": [
+        {"item": "参数设置无依据（未引用文献建议范围）", "penalty": 2, "note": "学习率未给依据"}
+      ]
+    },
+    {
+      "id": "innovation",
+      "score": 15,
+      "deductions": [
+        {"item": "创新点缺乏理论支撑", "penalty": 3, "note": "改进算子无收敛性讨论"},
+        {"item": "未构建自定义指标或改进算法", "penalty": 2, "note": "直接复用现有指标"}
+      ]
+    },
+    {
+      "id": "writing",
+      "score": 13,
+      "deductions": [
+        {"item": "存在空泛表达（黑名单词）", "penalty": 1, "note": "“较好” 1 处"},
+        {"item": "无个性化痕迹", "penalty": 1, "note": "展望无具体切入点"}
+      ]
+    },
+    {
+      "id": "layout",
+      "score": 14,
+      "deductions": [
+        {"item": "图表编号跳跃或缺失", "penalty": 1, "note": "图 3 缺失"}
+      ]
+    }
+  ]
+}

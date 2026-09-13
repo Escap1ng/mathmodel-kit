@@ -1,0 +1,86 @@
+% 正例：章节结构与格式规范齐备，check_chapters.py 应全部 hard 通过。
+% 仅用于冒烟测试，勿照抄。
+\documentclass[12pt]{article}
+\usepackage{ctex}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{listings}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+\begin{abstract}
+城市内涝频发且影响面广，如何在有限监测数据下给出可解释的风险排序，是本文要回答的核心问题。针对问题一，
+采用熵权法确定 8 项指标权重（不含主观赋权），构建风险评价模型，得到高风险街区 12 个、最高综合得分 0.83；
+针对问题二，在降雨强度 ±15\% 扰动下以蒙特卡洛模拟检验排序稳健性，结论排序的前 5 名保持不变。
+
+\noindent\textbf{关键词}：城市内涝；改进 TOPSIS；蒙特卡洛模拟；灵敏度分析
+\end{abstract}
+
+\section{问题重述}
+城市内涝风险评估是市政排水规划的前置环节。给定 18 个街区的监测数据，需要给出风险排序、识别关键致灾因子，
+并在数据不完备时给出可复现的结论。
+
+\section{问题分析}
+对于问题一，核心是把多指标评价问题转化为可比较的综合得分问题，需要熵权法定权并用 TOPSIS 排序；对于问题二，
+需要基于问题一的权重结构做不确定性传导分析。整体求解思路如图 1 所示。本阶段只界定方法与数据需求，不代入求解结论。
+
+\section{模型假设}
+假设 1：监测点位的降雨数据在该街区内均匀，忽略街区内部微地形差异——该假设会略低估局部积水风险。
+假设 2：指标间相互独立，不引入交互项。假设 3：历史内涝记录完整可靠。
+假设 4：街区面积与管网排水能力在研究期内不变。
+
+\section{符号说明}
+\begin{tabular}{lll}
+\toprule
+符号 & 说明 & 单位 \\
+\midrule
+$w_j$ & 第 $j$ 项指标权重 & --- \\
+$x_{ij}$ & 第 $i$ 个街区第 $j$ 项指标标准化值 & --- \\
+\bottomrule
+\end{tabular}
+
+\section{模型建立与求解}
+\subsection{数据处理}
+对原始数据先剔除异常值，再做极差标准化。处理前后对比如表 1 所示。
+
+\subsection{模型建立}
+目标函数为综合得分最大化，约束为权重非负且和为 1，即
+\begin{equation}
+\max S_i=\sum_{j=1}^{8} w_j x_{ij},\quad \text{s.t.}\ \sum_{j=1}^{8} w_j=1,\ w_j\ge 0 .
+\end{equation}
+
+\subsection{模型求解}
+求解得到 12 个高风险街区。最高综合得分 0.83，结果如图 1 所示。
+
+\section{模型检验}
+本文用灵敏度分析考察权重扰动下的排序变化，并用稳健性检验替换标准化方式，误差分析给出各街区得分的相对偏差。
+
+\section{模型评价}
+优点：本场景下模型可解释性强。权重来源可追溯，排序在扰动下稳定。
+缺点：模型局限于监测覆盖范围内。未覆盖的北部街区结论不可外推。
+
+\section{模型改进与推广}
+模型改进：引入空间自相关项刻画街区溢出效应。模型推广：将指标集替换为管网负荷指标后，可迁移到其他城市的排水规划评估。
+
+\section*{AI 使用声明}
+本参赛队在竞赛过程中使用了 AI 工具，主要用于语言润色与代码调试，详细使用情况见支撑材料。
+
+\section*{参考文献}
+[1] 姜启源, 谢金星, 叶俊. 数学模型[M]. 5版. 北京: 高等教育出版社, 2018.
+[2] 全国大学生数学建模竞赛组委会. 全国大学生数学建模竞赛论文格式规范(2026年修订稿)[EB/OL]. 2026.
+
+\section*{附录}
+\textbf{附录 A 支撑材料文件列表}
+\begin{itemize}
+\item code/risk\_model.py —— 熵权-TOPSIS 主程序
+\item data/rainfall\_2024.csv —— 清洗后的降雨数据
+\end{itemize}
+\textbf{附录 B 源程序}
+\begin{lstlisting}
+print("entropy weight + TOPSIS")
+\end{lstlisting}
+
+\end{document}

@@ -6,7 +6,7 @@
 
 <p align="center">
   A deterministic toolbox for modeling contests: it turns "problem analysis → model building → implementation →<br>
-  publication-grade figures → paper and grading" into contract-callable skills and machine-readable data —<br>
+  publication-grade figures → paper → de-AI and delivery checks → structure self-check and scoring" into contract-callable skills and machine-readable data —<br>
   <b>for contestants, and for researchers who need compliant figures, typesetting and delivery checks</b>.
 </p>
 
@@ -15,7 +15,7 @@
   <a href="https://github.com/Escap1ng/mathmodel-kit/actions/workflows/paper.yml"><img src="https://github.com/Escap1ng/mathmodel-kit/actions/workflows/paper.yml/badge.svg" alt="Paper LaTeX build"></a>
   <img src="https://img.shields.io/badge/License-Apache--2.0-1A6FC4?style=flat" alt="License">
   <img src="https://img.shields.io/badge/Python-3-2E9E44?style=flat" alt="Python">
-  <img src="https://img.shields.io/badge/Skills-4-7B5FD6?style=flat" alt="Skills">
+  <img src="https://img.shields.io/badge/Skills-6-7B5FD6?style=flat" alt="Skills">
   <img src="https://img.shields.io/badge/Templates-25-E28E2C?style=flat" alt="Templates">
   <a href="CONTRIBUTING_EN.md"><img src="https://img.shields.io/badge/contribute-welcome-2E9E44?style=flat" alt="Contributing"></a>
 </p>
@@ -33,7 +33,7 @@
 
 ## Quick start
 
-Four steps, each usable on its own — every skill is self-contained: copy one and it works independently.
+Six steps, each usable on its own — every skill is self-contained: copy one and it works independently.
 
 ```bash
 # 1. Install a skill: copy it into your host's skills directory — no framework to install (Claude Code shown)
@@ -55,13 +55,26 @@ python3 code/tools/validate_content.py roadmap-5band content.json             # 
 ```
 
 ```bash
-# 4. Paper output: fill the skeleton → strip source → compile → convert to Word → tune layout → delivery gate
+# 4. Paper output: fill the skeleton → compile → convert to Word → tune layout (mathmodel-paper)
 cd skills/mathmodel-paper && cp templates/paper.tex paper/
-python3 code/strip_invisible.py --clean paper/paper.tex          # strip zero-width/invisible chars before compiling
 cd paper && xelatex -interaction=nonstopmode paper.tex && xelatex -interaction=nonstopmode paper.tex
 pandoc paper.tex -o paper.docx                                   # formulas become native OMML automatically
 cd .. && python3 code/word_postprocess.py paper/paper.docx       # layout only — never rebuilds content
-python3 code/strip_invisible.py --clean paper/paper.pdf paper/paper.docx   # delivery gate: clean + re-check must exit 0
+
+# 5. De-AI gate (mathmodel-deai): word-list + structural checks, plus zero-width/invisible scrubbing
+cd ../mathmodel-deai
+python3 code/check_phrasing.py ../mathmodel-paper/paper/paper.tex                              # word list (exit 0 to pass)
+python3 code/check_style.py ../mathmodel-paper/paper/paper.tex                                 # structure + risk level
+python3 code/strip_invisible.py --clean ../mathmodel-paper/paper/paper.pdf ../mathmodel-paper/paper/paper.docx   # delivery gate
+python3 code/strip_invisible.py ../mathmodel-paper/paper/paper.pdf ../mathmodel-paper/paper/paper.docx           # re-check must exit 0
+
+# 6. Structure check and scoring (mathmodel-score): chapter gate, then the five-dimension card (>=85 passes)
+cd ../mathmodel-score
+python3 code/check_chapters.py ../mathmodel-paper/paper/paper.tex         # hard items first (exit 0 pass / 1 unmet)
+python3 code/check_chapters.py --list-checks                              # show the structure contract (hard/soft/manual)
+python3 code/score_card.py --list-dimensions                              # show the dimension contract (with maxima)
+python3 code/score_card.py scorecard.json                                 # exit 0 pass / 1 needs work / 2 bad input
+python3 code/score_card.py scorecard.json --json                          # machine-readable output with deductions
 ```
 
 When no template fits, draw it per [`nature-standard.md`](skills/mathmodel-figure/docs/guides/nature-standard.md)
@@ -69,16 +82,21 @@ When no template fits, draw it per [`nature-standard.md`](skills/mathmodel-figur
 
 ## What is this
 
-`mathmodel-kit` is an **open toolbox for math modeling**: four agent skills that work standalone or chained into a
+`mathmodel-kit` is an **open toolbox for math modeling**: six agent skills that work standalone or chained into a
 closed loop by the main skill, plus **machine-readable template registries and content contracts** — capabilities you
 can enumerate, validate and consume from other programs, not just a pile of prompts.
 
+Structure checks and scoring default to the **CUMCM** profile (aligned with the 2026 format rules) and switch to
+**MCM/ICM** with `--rules mcm`; the de-AI word list is bilingual, so English abstracts and captions are covered too.
+
 | Skill | Role | Entry point | Output |
 |---|---|---|---|
-| [`math-modeling-helper`](skills/math-modeling-helper/SKILL.md) | **Main skill**: orchestrates stages 0–6 (problem analysis → modeling → implementation → paper → grading) | Triggered by submitting a problem or modeling request | Workspace skeleton, code and results, paper and score report |
+| [`mathmodel-core`](skills/mathmodel-core/SKILL.md) | **Main skill**: orchestrates stages 0–6 (problem analysis → modeling → implementation → paper → grading) | Triggered by submitting a problem or modeling request | Workspace skeleton, code and results, paper and score report |
 | [`mathmodel-figure`](skills/mathmodel-figure/SKILL.md) | **Data figures**: 20 matplotlib templates plus a Nature standard for chart types outside the library | `python3 code/tools/render_template.py <id>` | 300 DPI PNG + vector PDF + SVG + editable script |
 | [`mathmodel-diagram`](skills/mathmodel-diagram/SKILL.md) | **Academic diagrams**: 5 JSON-driven layouts, plus hand-drawing and high-fidelity replication from a reference image | `python3 code/tools/render_template.py <id> content.json` | 300 DPI PNG + vector PDF + content JSON |
-| [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | **Paper output**: LaTeX skeleton → PDF → Word, with contest layout tuning and zero-width character scrubbing | `xelatex` + `word_postprocess.py` + `strip_invisible.py` | Compliant `.pdf` and `.docx` (no invisible characters), abstract template |
+| [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | **Paper typesetting**: LaTeX skeleton → PDF → Word, with contest layout tuning and an abstract template | `xelatex` + `word_postprocess.py` | Compliant `.pdf` and `.docx`, abstract template |
+| [`mathmodel-deai`](skills/mathmodel-deai/SKILL.md) | **De-AI and delivery checks**: word-list de-slopping (templates, platitudes, vague or faux-insight phrasing) + structural checks (long sentences, repeated openings, paragraph rhythm, decimal places) + zero-width/invisible character scrubbing | `check_phrasing.py` + `check_style.py` + `strip_invisible.py` | Phrasing report with risk level, `.pdf`/`.docx` free of invisible characters |
+| [`mathmodel-score`](skills/mathmodel-score/SKILL.md) | **Structure check and scoring**: a chapter-structure contract (three-part abstract, restatement/analysis, numbered assumptions, symbol table, model strengths/weaknesses, appendix source code, AI disclosure, anonymity — aligned with the 2026 CUMCM format rules) plus a 100-point rubric across five dimensions (abstract 30 / model 20 / innovation 20 / writing 15 / layout 15) | `check_chapters.py` + `score_card.py <scorecard.json>` | Unmet-structure list, score table with pass verdict (>=85), deduction list, revision round |
 
 ## Why use it
 
@@ -86,9 +104,11 @@ can enumerate, validate and consume from other programs, not just a pile of prom
 |---|---|---|
 | **Not bound by the template library** | The chart type follows your data structure and the claim you need to support; templates accelerate, they do not constrain | When nothing fits, draw it per [`nature-standard.md`](skills/mathmodel-figure/docs/guides/nature-standard.md) — same style constants as the templates, so mixed figures look consistent |
 | **Deterministic and reproducible** | Templates ship seeded simulated data, diagrams are driven by content JSON, and any output can be re-rendered and edited further | `--list` plus one render yields matching PNG/PDF/SVG; diagram `--check` validates without writing files |
-| **Machine-enforced gates** | Nothing relies on eyeballing: overflowing text exits non-zero, and registry/document consistency is enforced by CI | The five gates in [Workflow and quality gates](#workflow-and-quality-gates) |
+| **Machine-enforced gates** | Nothing relies on eyeballing: overflowing text exits non-zero, and registry/document consistency is enforced by CI | The full gate table in [Workflow and quality gates](#workflow-and-quality-gates) |
+| **Format rules you can point to** | The chapter structure follows the 2026 CUMCM format rules item by item (page numbering from the abstract page, body under 30 pages, runnable source code in the appendix, AI disclosure, anonymity), with a judging-focus comparison for CUMCM vs MCM/ICM | `check_chapters.py` reports hard/soft failures: hard items are fixed first and not scored, soft items are deducted per dimension |
 | **Swappable palette** | Colour is data, not code: declared in a theme file and replaceable wholesale | Edit `themes/*.theme.json` or the workspace `scripts/theme.json`; the 9 module-based templates and hand-drawn figures follow |
 | **Anti-fabrication rules** | No invented references or data; simulation must never be presented as reproducing a real result; every paper number must trace to script output | Hard requirements in the main skill's rules and self-check list |
+| **AI tells are findable and fixable** | Clichéd openers, platitudes, vague claims and faux-insight phrasing, plus structural tells (long sentences, repeated openings, paragraph rhythm), are flagged by **word-list + threshold driven** checkers whose rules are data and extendable (bilingual word list) | `check_phrasing.py` / `check_style.py` exit non-zero on any hit; adding a rule touches only `phrasing-blacklist.json`, and tuning thresholds only the constants at the top of `check_style.py` |
 
 ## Open by design
 
@@ -97,7 +117,7 @@ hand-synced list or a verbal promise:
 
 | Dimension | What is open | Artifact |
 |---|---|---|
-| **Open contracts** | Template lists, field structures, value constraints and theme structure are all machine-readable | `manifest.json`, `code/templates/schema/*.schema.json`, `themes/theme.schema.json` (JSON Schema Draft 2020-12) |
+| **Open contracts** | Template lists, field structures, value constraints, theme structure and chapter checks are all machine-readable | `manifest.json`, `code/templates/schema/*.schema.json`, `themes/theme.schema.json`, `mathmodel-score/code/chapter-checklist.json` (JSON Schema Draft 2020-12) |
 | **Open interfaces** | Capabilities can be enumerated, validated and orchestrated by other programs | Unified CLIs plus unified exit-code semantics: `0` success / `1` validation or render failure / `2` usage or environment error |
 | **Open collaboration** | Third parties can add templates, fix docs or report bugs by touching two places | One registry line + one index-doc line; CI checks all remaining consistency |
 | **Open licence** | Commercial use and redistribution allowed | [Apache-2.0](LICENSE); contributing means agreeing to the same licence |
@@ -193,7 +213,9 @@ Nothing that a machine can decide relies on eyeballing:
 | Content contract validation | When a content JSON is written or reused | Fails on JSON Schema violations (`--all` validates every bundled example) |
 | Registry consistency | Every push / PR | Registry ↔ filesystem ↔ index docs ↔ version ↔ README badges must agree |
 | Zero-width character scrubbing | Before paper delivery | Both PDF and Word must be cleaned and re-checked; delivery requires exit code 0 |
-| Self-score card | Stage 6 | 100-point five-dimension rubric; anything below target is fixed and re-scored |
+| Phrasing de-AI check | After the paper text and abstract are final | Word-list `check_phrasing.py` scans clichés/platitudes/vague claims (bilingual); structural `check_style.py` scans sentence length, repeated openings, paragraph rhythm and decimal places; any hit exits non-zero and must be rewritten and re-checked, and a `high`/`extreme` risk level blocks delivery. **This skill owns the phrasing call**, and the scoring module's docs must pass the same two checks |
+| Chapter structure check | After the paper is drafted, before scoring | `check_chapters.py` verifies the hard items (symbol table, model strengths/weaknesses, runnable appendix code, anonymity, no table of contents for CUMCM); unmet items must be fixed and are not scored, while soft items are deducted per dimension (use `--rules mcm` for the MCM profile) |
+| Self-score card | Stage 6 | Fill the five-dimension card; `score_card.py` validates and renders the verdict (>=85 passes; a veto disqualifies; the loop caps at 3 rounds) |
 
 ## Documentation map
 
@@ -203,8 +225,10 @@ The README covers "what it is and how to use it"; the detail lives in these docu
 |---|---|
 | Restyle figures, swap palettes, add a template | [`mathmodel-figure/SKILL.md`](skills/mathmodel-figure/SKILL.md) · [`themes/README.md`](skills/mathmodel-figure/themes/README.md) |
 | Write the paper, typeset to contest conventions | [`mathmodel-paper/SKILL.md`](skills/mathmodel-paper/SKILL.md) · [`abstract-template.md`](skills/mathmodel-paper/templates/abstract-template.md) |
+| Remove AI tells, scrub zero-width/invisible characters | [`mathmodel-deai/SKILL.md`](skills/mathmodel-deai/SKILL.md) · [`deai-rules.md`](skills/mathmodel-deai/docs/deai-rules.md) |
+| Score the paper, run the pre-delivery self-check | [`mathmodel-score/SKILL.md`](skills/mathmodel-score/SKILL.md) · [`rubric.md`](skills/mathmodel-score/docs/rubric.md) · [`chapter-checklist.md`](skills/mathmodel-score/docs/chapter-checklist.md) · [`self-check.md`](skills/mathmodel-score/docs/self-check.md) |
 | Draw flowcharts / roadmaps / frameworks | [`mathmodel-diagram/SKILL.md`](skills/mathmodel-diagram/SKILL.md) |
-| Run the whole contest pipeline | [`math-modeling-helper/SKILL.md`](skills/math-modeling-helper/SKILL.md) |
+| Run the whole contest pipeline | [`mathmodel-core/SKILL.md`](skills/mathmodel-core/SKILL.md) |
 | Figure rules (the single authority) | [`visualization-rules.md`](skills/mathmodel-figure/docs/guides/visualization-rules.md) · [`nature-standard.md`](skills/mathmodel-figure/docs/guides/nature-standard.md) |
 | Submit code / add a template | [`CONTRIBUTING_EN.md`](CONTRIBUTING_EN.md) ([中文](CONTRIBUTING.md)) |
 | Understand why it is designed this way | [Whitepaper](docs/upgrade-plan_EN.md) ([中文](docs/upgrade-plan.md)) · [`CHANGELOG.md`](CHANGELOG.md) |
@@ -219,10 +243,12 @@ mathmodel-kit/
 ├── LICENSE                         # Apache License 2.0
 ├── docs/upgrade-plan.md            # whitepaper: open interfaces, data contracts, governance, versioning
 └── skills/
-    ├── math-modeling-helper/       # Main skill: stages 0–6, code and writing rules, grading rubric
+    ├── mathmodel-core/             # Main skill: stages 0–6, code and writing rules
     ├── mathmodel-figure/           # Data figures: code/templates (20) · code/style · themes/ · examples/previews
     ├── mathmodel-diagram/          # Diagrams: code/templates (5) + schema/ · code/tools · examples/
-    └── mathmodel-paper/            # Paper: templates/ (paper.tex, abstract) · code/ (Word tuning, scrubbing)
+    ├── mathmodel-paper/            # Paper: templates/ (paper.tex, abstract) · code/ (Word tuning)
+    ├── mathmodel-deai/             # De-AI: code/ (phrasing checker + word list + scrubbing) · docs/ (de-AI rules) · examples/
+    └── mathmodel-score/            # Structure check and scoring: code/ (chapter contract + checker + score card) · docs/ (rubric, chapter-checklist, self-check) · examples/
 ```
 
 Every skill follows the same internal layout: `code/` (scripts and registries), `docs/` (rules), `examples/`
@@ -251,6 +277,9 @@ back — in-figure Chinese may render as boxes, so install `Noto Sans CJK SC`.
 | Want to recolour | Edit the workspace `绘图复刻/scripts/theme.json` to override the 9 module-based templates and hand-drawn figures (see [Figure style and themes](#figure-style-and-themes)) |
 | Renderer reports an unknown template | Run `--list` for ids, or match by English alias / Chinese title fragment |
 | Diagram reports a missing field | Locate it with `validate_content.py`; the full field set is in `code/templates/schema/` |
+| The paper is flagged as reading "AI-written" | Run `check_phrasing.py` for the flagged words and `check_style.py` for the risk level; the word list is extendable (adding a word touches only `phrasing-blacklist.json`), then re-check until it exits 0 |
+| The paper misses structural items (symbol table / model evaluation / appendix code) | `check_chapters.py` lists every hard/soft failure: fix the hard ones before scoring; see the full contract with `--list-checks` |
+| Not sure whether to prepare for CUMCM or MCM/ICM | Default is the CUMCM profile (aligned with the 2026 format rules); `--rules mcm` switches to MCM/ICM (relaxed table of contents, 25-page submission limit) — see the judging-focus table at the end of `mathmodel-score/docs/rubric.md` |
 
 ## Extending and contributing
 
@@ -292,6 +321,14 @@ integrity ultimately rests with the user; the skills only make the mechanical pa
 - [math-modeling-skill](https://github.com/Escap1ng/math-modeling-skill) — the predecessor project on the same
   account (a single-file `SKILL.md` modeling assistant, MIT licensed): this kit's main-skill orchestration, algorithm
   library, visualization and typesetting rules and 100-point rubric evolved from it;
+- [no-ai-slop](https://github.com/petergyang/no-ai-slop) — the phrasing-rule taxonomy of the de-AI skill (clichéd
+  openers, binary contrasts, colon reveals, faux insights, fake-profound endings, …) draws on its AI-slop pattern
+  list; the shared thesis is to **remove the AI taste without flattening the personal voice**. Its English slop
+  catalogue is kept as
+  [`no-ai-slop-reference.md`](skills/mathmodel-deai/docs/no-ai-slop-reference.md) (MIT License, Copyright (c) 2026
+  Peter Yang, upstream notice retained) and enforced as the `en-slop-*` word-list rules;
+- [watermarks-remover](https://github.com/guillaumemeyer/watermarks-remover) — the character set and protection logic
+  (Layer A) of the de-AI skill's `strip_invisible.py` come from its `text_unicode.py`;
 - The Nature colour-role split for data figures and the "look at the rendered figure before shipping" discipline draw
   on the `math-figure-generator` skill in the community repository
   [MathModeling-skills](https://github.com/zhnnky329/MathModeling-skills).

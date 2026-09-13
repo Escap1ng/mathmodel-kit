@@ -9,9 +9,10 @@
 
 ## 一、定位诊断：差距在哪
 
-当前形态是**以提示词为核心、以少量 CLI 脚本为落地件**的技能集：`math-modeling-helper` 是纯规范编排器（无代码），
+当前形态是**以提示词为核心、以少量 CLI 脚本为落地件**的技能集：`mathmodel-core` 是纯规范编排器（无代码），
 `mathmodel-figure`（20 个数据图表模板）、`mathmodel-diagram`（5 个 JSON 驱动示意图模板）、`mathmodel-paper`
-（LaTeX/Word 流水线 + 零宽字符清理）是三个专项落地件。
+（LaTeX/Word 排版流水线）、`mathmodel-deai`（去 AI 化 + 零宽字符清理）、`mathmodel-score`（论文自检 + 百分制评分）
+是五个专项落地件。
 
 「工具箱」要求的不是更多功能，而是**可被他人依赖的契约**。差距按层拆分如下：
 
@@ -99,11 +100,14 @@
 │  示意图：code/templates/*.py（5）      code/common.py           │
 │  工具：render_template.py  validate_content.py                 │
 │  工具：validate_theme.py                                       │
-│  论文：paper.tex  word_postprocess.py  strip_invisible.py       │
+│  论文：paper.tex  word_postprocess.py                           │
+│  降 AI：check_phrasing.py  check_style.py  phrasing-blacklist.json │
+│         strip_invisible.py                                     │
+│  评分：score_card.py                                          │
 └───────────────────────────────────────────────────────────────┘
               ▲ 被编排调用
 ┌─ 编排层（判断与流程）─────────────────────────────────────────┐
-│  math-modeling-helper：六阶段编排 + 写作规范 + 自检 + 评分       │
+│  mathmodel-core：六阶段编排 + 写作规范 + 自检 + 评分           │
 └───────────────────────────────────────────────────────────────┘
 ```
 
@@ -167,7 +171,11 @@
 | `code/tools/validate_content.py <id> <content.json>` | `--all`、`--schemas`、`--lang` | 内容契约校验 |
 | `code/tools/validate_theme.py [<主题文件>...]` | `--all`、`--list`、`--lang` | 主题契约校验 |
 | `code/word_postprocess.py [paper.docx]` | — | Word 版式微调 |
-| `code/strip_invisible.py <files...>` | `--clean`、`--no-backup` | 不可见字符清理 |
+| `code/check_phrasing.py <files...>` | `--json`、`--list-rules`、`--lang` | 词表级去 AI 检查（`mathmodel-deai`） |
+| `code/check_style.py <files...>` | `--json`、`--list-metrics`、`--lang` | 结构级去 AI 检查与风险等级（`mathmodel-deai`） |
+| `code/strip_invisible.py <files...>` | `--clean`、`--no-backup` | 不可见字符清理（`mathmodel-deai`） |
+| `code/check_chapters.py <论文文件...>` | `--rules cumcm\|mcm`、`--strict`、`--json`、`--list-checks`、`--lang` | 章节结构与格式规范自检（`mathmodel-score`） |
+| `code/score_card.py <评分卡.json>` | `--json`、`--list-dimensions`、`--lang` | 评分卡校验与评分表渲染（`mathmodel-score`） |
 
 **退出码语义统一**：`0` 成功 / `1` 校验或渲染失败 / `2` 用法或环境错误。
 这是让脚本能被其他程序编排的关键——机器只认退出码。
@@ -304,7 +312,7 @@
 1. **确定性与可复现**：示意图由 content JSON 驱动、图表模板自带种子化数据，任何产物都能重渲与二次修改；
    对照的是「LLM 每次生成不同结果、无法复现」的痛点；
 2. **机器化质量门禁**：字数超框即非零退出、渲染前逐槽量中文字宽、注册表与文档一致性 CI 校验、
-   论文自检清单与百分制评分——把「靠眼看」的部分尽量变成可判定；
+   论文自检与百分制评分由 `mathmodel-score` 以评分卡校验与达标判定落地——把「靠眼看」的部分尽量变成可判定；
 3. **反造假约束**：禁止编造文献与数据、模拟数据不得声称复现真实结果、论文数字须可追溯；
 4. **交付一致性**：PDF 与 Word 双产物 + 版式一致性核对 + **零宽/不可见字符清理**（含 PDF 层 ToUnicode 反查），
    这是当前同类项目普遍未覆盖的最后一公里。

@@ -1,0 +1,219 @@
+{
+  "schema_version": "1.0",
+  "locale": "zh",
+  "title": "论文章节结构自检契约",
+  "description": "mathmodel-score 的章节级结构契约：整理自《优秀论文自检表》与全国大学生数学建模竞赛论文格式规范（2026 年修订稿），并由 code/check_chapters.py 执行可判定项。每条含 level（hard 未过须先补齐再评分 / soft 未过按 docs/rubric.md 映射扣分）、type（any / all / absent / count-range / manual）、patterns（正则，MULTILINE）、requirement（要求）与 fix（修法）。hard 清单同时是人读清单 docs/chapter-checklist.md 的数据源。",
+  "usage": "python3 code/check_chapters.py <论文文件...> [--rules cumcm|mcm] [--strict] [--json] [--list-checks]",
+  "levels": {
+    "hard": "结构性硬项：缺失即先补齐，不进入评分",
+    "soft": "规范性软项：按 docs/rubric.md 的维度扣分表扣分"
+  },
+  "checks": [
+    {
+      "id": "summary-page",
+      "chapter": "摘要",
+      "item": "摘要专用页存在（标题与正文有序，不含目录）",
+      "level": "hard",
+      "type": "any",
+      "patterns": ["\\\\begin\\{abstract\\}", "^#{1,4}\\s*摘\\s*要\\s*$", "^\\s*摘\\s*要\\s*$"],
+      "requirement": "第三页为摘要专用页，含标题与正文；正文从第 4 页开始且不要目录",
+      "fix": "补摘要专用页（LaTeX 用 abstract 环境或独立 \\section*{摘要}），正文页不加 \\tableofcontents"
+    },
+    {
+      "id": "keywords",
+      "chapter": "摘要",
+      "item": "关键词一行，3-5 个，点明场景与核心方法",
+      "level": "hard",
+      "type": "keyword-count",
+      "patterns": ["关\\s*键\\s*词\\s*[：:]?\\s*([^\\n]+)"],
+      "min": 3,
+      "max": 5,
+      "requirement": "关键词一行、3-5 个，点明场景与核心方法即可",
+      "fix": "补「关键词：」一行，3-5 个词用分号或顿号分隔，勿换行"
+    },
+    {
+      "id": "no-toc",
+      "chapter": "排版",
+      "item": "国赛正文不要目录",
+      "level": "hard",
+      "type": "absent",
+      "patterns": ["\\\\tableofcontents"],
+      "tex_only": true,
+      "rules": ["cumcm"],
+      "requirement": "国赛格式规范：正文不要目录",
+      "fix": "删除 \\tableofcontents 与 \\listoffigures/\\listoftables"
+    },
+    {
+      "id": "page-numbering",
+      "chapter": "排版",
+      "item": "页码从摘要页（第 1 页）起、页脚居中、连续编号",
+      "level": "soft",
+      "type": "all",
+      "patterns": ["\\\\pagestyle\\{fancy\\}", "\\\\fancyfoot\\[C\\]"],
+      "tex_only": true,
+      "requirement": "页码位于页脚中部，用阿拉伯数字从 1 开始连续编号",
+      "fix": "\\fancyhf{} 后设 \\fancyfoot[C]{\\thepage}，摘要页起生效"
+    },
+    {
+      "id": "page-limit",
+      "chapter": "排版",
+      "item": "篇幅限制（国赛正文 ≤30 页；美赛提交内容 ≤25 页）",
+      "level": "soft",
+      "type": "manual",
+      "patterns": [],
+      "requirement": "国赛正文不超过 30 页、附录不限；美赛提交内容（含摘要、目录、注释、附录、代码）不超过 25 页",
+      "fix": "压缩推导与图表，超长材料移入支撑材料"
+    },
+    {
+      "id": "restatement",
+      "chapter": "问题重述",
+      "item": "问题背景与问题提出（背景纯文本不分点，问题提出分点且问题 X 加粗）",
+      "level": "hard",
+      "type": "any",
+      "patterns": ["问题重述", "问题的重述", "问题提出"],
+      "requirement": "背景段纯文本叙述（不含分点），问题提出分段/分节，段首「问题 X」加粗",
+      "fix": "补「问题重述」章；背景题不分点，问题提出逐问成段"
+    },
+    {
+      "id": "analysis",
+      "chapter": "问题分析",
+      "item": "逐问分析 + 统一句式 + 流程图（不代入求解结论）",
+      "level": "hard",
+      "type": "any",
+      "patterns": ["问题分析", "问题的分析"],
+      "requirement": "开头引文点题；每问用统一模板（对于问题 X，需要/核心是/旨在）；说明所用方法与前置结论；以流程图收束并写「如图 X 所示」；分析阶段不写求解结论与主观判断",
+      "fix": "补「问题分析」章并加技术路线流程图（mathmodel-diagram problem-flow 模板）"
+    },
+    {
+      "id": "assumptions",
+      "chapter": "模型假设",
+      "item": "假设分点编号（假设 1…），4-6 条，每条说明影响",
+      "level": "hard",
+      "type": "any",
+      "patterns": ["模型假设", "模型的假设", "假设与符号"],
+      "requirement": "分点列出，以「假设 X」开头，假设后带出该假设造成的影响，条件一句话说明",
+      "fix": "补「模型假设」章，分点写成 4-6 条并逐条说明影响"
+    },
+    {
+      "id": "symbols",
+      "chapter": "符号说明",
+      "item": "符号说明用二列或三列三线表（符号|说明|单位），列名不加粗",
+      "level": "hard",
+      "type": "any",
+      "patterns": ["符号说明", "符号约定", "符号与说明"],
+      "requirement": "表名直接用「符号说明」；简明、一句话说明；列名不加粗",
+      "fix": "补三线表（tabular + booktabs），列为 符号|说明|(单位)"
+    },
+    {
+      "id": "modeling",
+      "chapter": "模型建立与求解",
+      "item": "逐问的引文—分析—准备—建立—求解链条完整",
+      "level": "hard",
+      "type": "any",
+      "patterns": ["模型建立与求解", "模型的建立与求解", "模型的建立", "模型建立"],
+      "requirement": "每问按「引文 → 问题分析 → 准备工作（数据处理、建模前期准备）→ 模型建立 → 模型求解」组织，各问模型类型齐全（评价/预测/优化/数统/机理）",
+      "fix": "补齐缺环：数据处理要有公式与前后对比，建模前期准备要说明模型选型理由与优势"
+    },
+    {
+      "id": "model-evaluation",
+      "chapter": "模型评价",
+      "item": "优点与缺点分列，落在本场景的优越性与局限性",
+      "level": "hard",
+      "type": "all",
+      "patterns": ["优\\s*(点|势)", "缺\\s*点|局\\s*限"],
+      "requirement": "优点写本场景下的模型优越性（不是复述模型），缺点写本场景下的模型局限性",
+      "fix": "补「模型评价」章，优点/缺点各成段或成表，均绑定具体场景"
+    },
+    {
+      "id": "improvement",
+      "chapter": "模型改进与推广",
+      "item": "模型改进/推广（一般配合模型检验描述）",
+      "level": "soft",
+      "type": "any",
+      "patterns": ["模型改进", "模型的改进", "模型推广", "模型的推广"],
+      "requirement": "说明从本场景如何推广到一般情况，改进点与检验结论呼应",
+      "fix": "补「模型改进/推广」小节，写清推广条件与失效边界"
+    },
+    {
+      "id": "validation",
+      "chapter": "模型检验",
+      "item": "检验手段 ≥2 种（灵敏度/鲁棒性/置信区间/假设检验/误差分析等）",
+      "level": "soft",
+      "type": "count-range",
+      "patterns": ["灵敏(度|性)分析", "敏感性分析", "稳健性|鲁棒性", "置信区间", "假设检验", "误差分析|残差分析", "Lyapunov|Jacob"],
+      "min": 2,
+      "requirement": "评价类给准确率与特征贡献、优化类给最优性间隙、预测类给多维度误差；关键结论在扰动下稳定",
+      "fix": "按问题类型补检验：灵敏度/鲁棒性为主，可选置信区间、假设检验、Lyapunov 判据等"
+    },
+    {
+      "id": "figure-refs",
+      "chapter": "图表",
+      "item": "图表在正文中被引用（「如图 X 所示」）",
+      "level": "soft",
+      "type": "any",
+      "patterns": ["如\\s*图\\s*[0-9X]", "图\\s*[0-9]+\\s*所示", "如\\s*表\\s*[0-9X]", "表\\s*[0-9]+\\s*所示"],
+      "requirement": "图表在正文中有引用，且结果有必要的文字描述与分析（趋势 + 原因 + 结论）",
+      "fix": "为每张图每个表补一句正文引用与一段解读"
+    },
+    {
+      "id": "references",
+      "chapter": "参考文献",
+      "item": "参考文献存在且按 GB/T 7714-2015 著录，正文引用处标注",
+      "level": "hard",
+      "type": "any",
+      "patterns": ["参考文献"],
+      "requirement": "所有引用他人成果须列参考文献并在正文引用处标注，格式 GB/T 7714-2015",
+      "fix": "补「参考文献」章，统一为 GB/T 7714-2015，并在正文引用处标注"
+    },
+    {
+      "id": "appendix",
+      "chapter": "附录",
+      "item": "附录含支撑材料文件列表与完整可运行源程序（或声明没有）",
+      "level": "hard",
+      "type": "any",
+      "patterns": ["附\\s*录"],
+      "requirement": "附录含支撑材料文件列表；含建模所用全部完整可运行源程序代码；确无程序应写明「本论文没有用到程序」",
+      "fix": "补附录：附件说明表 + 源程序清单（或写明本论文没有用到程序 / 没有支撑材料）"
+    },
+    {
+      "id": "appendix-code",
+      "chapter": "附录",
+      "item": "附录源程序（缺失且未声明将影响评奖资格）",
+      "level": "hard",
+      "type": "any",
+      "patterns": ["本论文没有用到程序", "本论文没有支撑材料", "lstlisting", "verbatim", "源程序", "代码清单"],
+      "requirement": "国赛格式规范第五条：缺少必要源程序、程序不能运行或运行结果与论文不符，可能被取消评奖资格",
+      "fix": "把可运行源程序原文（含交互命令）放入附录；确实未用程序则明确声明"
+    },
+    {
+      "id": "ai-disclosure",
+      "chapter": "AI 使用声明",
+      "item": "AI 使用声明（当届规则要求时）",
+      "level": "soft",
+      "type": "any",
+      "patterns": ["AI\\s*使用声明", "人工智能使用声明", "AI\\s*工具"],
+      "requirement": "当届规则要求时的两种写法：未使用 →「本参赛队在竞赛过程中未使用任何 AI 工具」；已使用 →「本参赛队在竞赛过程中使用了 AI 工具，主要用于【简要用途，如语言润色、代码调试等】，详细使用情况见支撑材料」",
+      "fix": "按当届规则补 AI 使用声明，用途描述与支撑材料一致"
+    },
+    {
+      "id": "anonymity",
+      "chapter": "匿名",
+      "item": "全文无参赛者身份信息（一票否决）",
+      "level": "hard",
+      "type": "absent",
+      "patterns": ["参赛队号", "参赛学校", "指导教师", "队员姓名"],
+      "requirement": "摘要页、正文、附录任何位置不得出现参赛者姓名、学校、赛区、队号、指导教师",
+      "fix": "全文删除身份信息（含文字、图片水印、页眉页脚、代码注释、文件名）"
+    },
+    {
+      "id": "abstract-structure",
+      "chapter": "摘要",
+      "item": "摘要三段式：开头段—中间部分（逐问）—结尾段；模型检验单列",
+      "level": "soft",
+      "type": "manual",
+      "patterns": [],
+      "requirement": "开头段 1-3 行说明问题背景与核心问题；中间部分逐问一段、每段统一格式（针对问题 X：问题类型 + 所用模型 + 关键处理方法 + 结果数值与位置）；结尾段简述模型优越性与稳健性及在具体场景解决的具体问题；模型检验不要写进每问摘要",
+      "fix": "按三段式重排摘要，逐问段落统一句式，检验另起一段"
+    }
+  ]
+}

@@ -37,7 +37,7 @@ python -m compileall -q skills
 
 ## 3. Directory conventions
 
-The four skills are each self-contained. **Do not place files outside a skill directory** (`docs/` holds
+The six skills are each self-contained. **Do not place files outside a skill directory** (`docs/` holds
 external-facing planning documents only):
 
 ```

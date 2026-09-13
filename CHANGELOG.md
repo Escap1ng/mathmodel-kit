@@ -8,6 +8,51 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-13
+
+新增降 AI 与评分两个技能，把原先分散的「去 AI 化规范」「零宽/不可见字符清理」与「论文质量自检 + 百分制评分」收敛为两个独立模块。全部为向后兼容的能力新增：既有命令与产物路径不变。
+
+### 新增
+
+- **降 AI 技能 `mathmodel-deai`**：论文去 AI 化（词表级 + 结构级）与交付前不可见字符清理（字符级）三道关
+  - `code/check_phrasing.py` + 词表 `code/phrasing-blacklist.json`：19 条用词/句式规则，中文 16 条（模板腔开头、过渡词滥用、连接词链堆砌、泛化升华、模板腔结果表述、无依据断言、含糊词、权威含糊、口语化主观、二元对照、冒号揭晓、伪洞察开场、虚假深刻收尾、空泛形容词、冗长连接、模板化目的句）+ 英文 3 条（`en-slop-word` / `en-slop-phrase` / `en-slop-pattern`，用于英文摘要与图注）；按 `max_per_document` 频次上限判定，跳过围栏代码块与行内代码跨度，退出码 0/1/2
+  - `code/check_style.py`：结构级六项指标（过长被动句、句式重复、过渡词密度、长短句比例、相邻段落节奏、结果小数位）并给出 AI 痕迹风险等级（低/中/高/极高）；统计类指标在样本过小时自动跳过，列表与表格行不计入
+  - `docs/deai-rules.md`：降 AI 规范唯一权威出处（痕迹清单、改写规则、负面清单、个性化表述规范、摘要去模板化对照表、结构级十项升级细则、修订痕迹与风险等级、三关门禁与扩词流程）
+  - `docs/no-ai-slop-reference.md`：petergyang/no-ai-slop 英文 slop 模式清单的整理稿（MIT License，Copyright (c) 2026 Peter Yang，随文件保留上游版权声明与来源 commit）
+  - `examples/slop-sample.tex` / `examples/slop-sample-en.md`（词表级反例）、`examples/style-slop-sample.tex`（结构级反例）与 `examples/clean-sample.tex` / `examples/clean-sample-en.md`（正例）
+- CI 新增 `deai-phrasing` job：中英两套词表反例分别必须退出 1、正例必须退出 0，结构级反例必须退出 1，技能自身文档须通过词表级门禁
+- **评分技能 `mathmodel-score`**：论文交付前自检 + 百分制五维评分（摘要 30 / 算法模型 20 / 创新性 20 / 写作 15 / 排版 15）
+  - `code/score_card.py`：评分卡校验与评分表渲染（加权汇总、达标判定 ≥85、一票否决、熔断 3 轮提示），`--list-dimensions` 提供维度契约，退出码 0 达标 / 1 需优化 / 2 输入错误
+  - `docs/rubric.md`：百分制评分细则唯一权威出处（五维权重、各维度扣分标准、结构门槛与 soft 项维度映射、国赛/美赛口径对照、优化触发与熔断、评分表模板）
+  - `docs/chapter-checklist.md` + `code/chapter-checklist.json` + `code/check_chapters.py`：章节结构与格式规范自检（整理自《优秀论文自检表》与国赛论文格式规范 2026 修订稿），20 项检查分 hard（未过先补齐、不计分）/ soft（按维度扣分）/ 人工，支持 `--rules cumcm|mcm`，判定前剔除 LaTeX 注释与代码块，退出码 0/1/2
+  - `docs/self-check.md`：论文质量自检清单（交付前审计，致命/严重/中等/轻微四级）
+  - `examples/example-scorecard.json`（示例评分卡，总分 86）、`examples/chapter-sample.tex` / `examples/chapter-missing-sample.tex`（结构正/反例）
+- CI 新增 `scorecard` job：章节结构正例必须退出 0、反例必须退出 1；示例评分卡必须退出 0，低于达标线的评分卡必须退出 1，结构错误的输入必须退出 2
+
+### 变更
+
+- 主技能目录 `math-modeling-helper` 更名为 `mathmodel-core`（与 `mathmodel-figure` / `mathmodel-diagram` / `mathmodel-paper` / `mathmodel-deai` 前缀一致），SKILL.md 的 `name` 与全部文档/CI 引用同步更新；1.0.0 与 1.1.0 的历史条目保留当时的目录名
+- `strip_invisible.py` 从 `mathmodel-paper` 迁移到 `mathmodel-deai`（保留 git 历史），字符集与 Layer A 保护逻辑不变
+- 主技能 `mathmodel-core` 的「去 AI 化要求」「负面清单」「个性化表述规范」改为强制项摘要 + 指向 `mathmodel-deai/docs/deai-rules.md`（防双写漂移）；阶段五与自检清单中的清理命令改指向降 AI 技能
+- `mathmodel-paper` 不再包含零宽字符清理，相关命令与目录登记改由 `mathmodel-deai` 承担
+- CI `strip-invisible` job 的脚本路径更新为 `skills/mathmodel-deai/code/strip_invisible.py`
+- 主技能 `mathmodel-core` 的「论文质量自检清单」与「最终论文评分（百分制）」两节收敛为「论文质量自检与评分」强制项摘要 + 指向 `mathmodel-score`，阶段六改为调用该技能
+- 技能数 5 → 6；`mathmodel-paper`、`mathmodel-deai`、`mathmodel-figure` 文档中的自检与评分引用改指 `mathmodel-score`
+- **口径统一（表述类以 `mathmodel-deai` 为准）**：评分模块不再自定表述判据，`docs/rubric.md` 增「与去 AI 模块的分工」，只引用去 AI 技能的退出码与报告折算扣分
+- `check_style.py` 将列表项、编号分点（`假设 X`、`（1）`、`①`、`步骤 X`）与参考文献条目 `[1]` 排除在句式重复（M2）与段落节奏（M5）之外，消除与章节规范「假设 X 分点列出」的互相误伤
+- 评分模块自身文档与中英 README 改为经去 AI **词表级**门禁校验（反例词改为行内代码）；结构级指标明确只面向论文稿（`.tex` 与论文类 `.md`），项目说明文档不套用行文节奏类指标。CI `deai-phrasing` job 新增跨模块步骤：项目文档过词表级、论文样例过结构级
+- `check_style.py` 进一步排除清单块的换行续行与 README 类 HTML 区块，消除长文档的段落节奏误报
+
+### 文档
+
+- README 中英：技能表新增 `mathmodel-deai` 与 `mathmodel-score`，技能数与徽章 4 → 6，快速开始补第 5、6 步，质量门禁表补「表述级去 AI 检查」并更新「自评分卡」，仓库结构与文档地图同步并补致谢
+- 白皮书中英、`CONTRIBUTING.md` / `CONTRIBUTING_EN.md` 的技能数量表述同步为六个技能
+
+### 来源与致谢
+
+- 句式规则分类参考 [petergyang/no-ai-slop](https://github.com/petergyang/no-ai-slop)
+- 字符集与保护逻辑（Layer A）来自 [guillaumemeyer/watermarks-remover](https://github.com/guillaumemeyer/watermarks-remover)
+
 ## [1.1.0] - 2026-09-01
 
 面向「开放、可合作的数模工具箱」的首批基础设施。全部为向后兼容的能力新增：既有命令与产物路径不变。

@@ -10,10 +10,11 @@ anything inferred rather than verified is marked as such.
 
 ## 1. Positioning Diagnosis: Where the Gaps Are
 
-The current form is a **prompt-centric skill set with a small number of CLI tools**: `math-modeling-helper` is a pure
-specification orchestrator (no code), `mathmodel-figure` (20 data-chart templates), `mathmodel-diagram` (5 JSON-driven
-diagram templates) and `mathmodel-paper` (LaTeX/Word pipeline plus invisible-character scrubbing) are the three
-executable landing points.
+The current form is a **prompt-centric skill set with a small number of CLI tools**: `mathmodel-core` is a pure
+specification orchestrator (no code), while `mathmodel-figure` (20 data-chart templates), `mathmodel-diagram` (5
+JSON-driven diagram templates), `mathmodel-paper` (LaTeX/Word typesetting pipeline), `mathmodel-deai` (de-AI
+phrasing plus invisible-character scrubbing) and `mathmodel-score` (paper self-check plus 100-point scoring) are the
+five executable landing points.
 
 A "toolbox" does not require more features; it requires **contracts other people can depend on**. The gaps by layer:
 
@@ -106,11 +107,14 @@ Three layers, coupled only through files and CLIs:
 │  Diagrams: code/templates/*.py (5)       code/common.py        │
 │  Tools: render_template.py  validate_content.py                │
 │  Tools: validate_theme.py                                      │
-│  Paper: paper.tex  word_postprocess.py  strip_invisible.py     │
+│  Paper: paper.tex  word_postprocess.py                         │
+│  De-AI: check_phrasing.py  check_style.py  phrasing-blacklist.json │
+│         strip_invisible.py                                     │
+│  Score: score_card.py                                          │
 └───────────────────────────────────────────────────────────────┘
               ▲ invoked by
 ┌─ Orchestration layer (judgement and process) ─────────────────┐
-│  math-modeling-helper: six stages + writing rules + self-check │
+│  mathmodel-core: six stages + writing rules + self-check       │
 │  + scoring                                                     │
 └───────────────────────────────────────────────────────────────┘
 ```
@@ -179,7 +183,11 @@ For a skill set, "open API" means **three interface surfaces others can depend o
 | `code/tools/validate_content.py <id> <content.json>` | `--all`, `--schemas`, `--lang` | Content-contract validation |
 | `code/tools/validate_theme.py [<theme files>...]` | `--all`, `--list`, `--lang` | Theme-contract validation |
 | `code/word_postprocess.py [paper.docx]` | — | Word layout fine-tuning |
-| `code/strip_invisible.py <files...>` | `--clean`, `--no-backup` | Invisible-character scrubbing |
+| `code/check_phrasing.py <files...>` | `--json`, `--list-rules`, `--lang` | Word-list-level de-AI check (`mathmodel-deai`) |
+| `code/check_style.py <files...>` | `--json`, `--list-metrics`, `--lang` | Structural de-AI check with risk level (`mathmodel-deai`) |
+| `code/strip_invisible.py <files...>` | `--clean`, `--no-backup` | Invisible-character scrubbing (`mathmodel-deai`) |
+| `code/check_chapters.py <paper files...>` | `--rules cumcm\|mcm`, `--strict`, `--json`, `--list-checks`, `--lang` | Chapter-structure and format self-check (`mathmodel-score`) |
+| `code/score_card.py <scorecard.json>` | `--json`, `--list-dimensions`, `--lang` | Scorecard validation and score-table rendering (`mathmodel-score`) |
 
 **Unified exit-code semantics**: `0` success / `1` validation or rendering failure / `2` usage or environment error.
 This is what lets other programs orchestrate the scripts — machines only read exit codes.
@@ -326,8 +334,9 @@ no points, tokens or rankings (we cannot honour them).
 1. **Determinism and reproducibility**: diagrams are driven by content JSON and figure templates ship with seeded data,
    so any artifact can be re-rendered and re-edited — against the pain point that "LLM output differs every run";
 2. **Machine-enforced quality gates**: overflowing text exits non-zero, CJK text width is measured per slot before
-   rendering, registry/document consistency is checked in CI, and the paper has a self-check list and a 100-point scoring
-   rubric — turning as much as possible from "eyeballed" into "decidable";
+   rendering, registry/document consistency is checked in CI, and paper self-check plus 100-point scoring are landed by
+   `mathmodel-score` through scorecard validation and a pass verdict — turning as much as possible from "eyeballed"
+   into "decidable";
 3. **Anti-fabrication constraints**: no invented references or data, simulated data may not be presented as reproducing
    real results, and every number in the paper must be traceable;
 4. **Delivery consistency**: PDF and Word outputs with layout parity checks plus **zero-width / invisible character

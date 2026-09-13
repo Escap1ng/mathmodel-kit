@@ -1,0 +1,264 @@
+{
+  "schema_version": "1.0",
+  "locale": "zh",
+  "title": "去 AI 痕迹词表与句式规则",
+  "description": "降 AI 技能的第一道关（词表级）。规则以正则匹配，命中即需改写；带 max_per_document 的规则是频次上限，超出部分才算命中（例如全文用一次「综上所述」可接受，堆砌则不行）。中英双语：英文规则（en-slop-*）用于英文摘要与图注，整理自 petergyang/no-ai-slop，见 docs/no-ai-slop-reference.md。词表是数据：加词只改本文件，检查器与文档同步生效。",
+  "usage": {
+    "checker": "python3 code/check_phrasing.py <文件...> [--json] [--list-rules]",
+    "skipped_regions": "围栏代码块与行内代码跨度（反引号包裹），故规范文档里的反例不会被误报",
+    "exit_codes": "0 通过 / 1 有命中 / 2 用法或环境错误"
+  },
+  "rules": [
+    {
+      "id": "template-opener",
+      "label": "模板腔开头",
+      "severity": "high",
+      "why": "背景章以空泛的时代叙事开场，是 AI 写作最典型的痕迹，也最容易让评委判定「没读透题目」",
+      "fix": "以本题的具体矛盾、关键数字或经核实的文献切入，直入主题",
+      "patterns": [
+        "随着[^。；\\n]{0,18}(的)?(快速|迅猛|不断|持续|日益)?(发展|推进|兴起|普及|推广)",
+        "在当今(社会|时代|信息时代|背景下)",
+        "近年来[，,]?[^。\\n]{0,10}(受到|引起)了?[^。\\n]{0,6}(广泛)?(关注|重视)",
+        "众所周知"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "transition-abuse",
+      "label": "过渡词滥用",
+      "severity": "high",
+      "why": "靠「综上所述」「值得注意的是」串段落，段落之间没有信息量，读起来像模板拼装",
+      "fix": "用信息量衔接替代：呼应上文的结论或点明下文的实质任务",
+      "patterns": [
+        "综上所述",
+        "总而言之",
+        "值得注意的是",
+        "需要指出的是"
+      ],
+      "max_per_document": 1
+    },
+    {
+      "id": "connector-sequence",
+      "label": "连接词链堆砌",
+      "severity": "medium",
+      "why": "「首先…其次…再者…最后」成体系出现是机器行文特征；规范只允许在一处求解流程内部使用一次",
+      "fix": "连接链全文至多一组，且只用于单一求解流程的步骤引导；问与问之间改用信息量衔接",
+      "patterns": [
+        "首先",
+        "其次",
+        "再者",
+        "最后"
+      ],
+      "max_per_document": 3
+    },
+    {
+      "id": "empty-elevation",
+      "label": "泛化升华",
+      "severity": "high",
+      "why": "「具有重要意义」「填补空白」这类收尾不携带任何本题信息，是典型的套话",
+      "fix": "落到具体场景、具体数值或具体迁移条件",
+      "patterns": [
+        "具有[^。\\n]{0,6}(重要|重大|深远)[^。\\n]{0,8}意义",
+        "具有(一定的)?(实际|参考|指导)价值",
+        "(提供|奠定)了[^。\\n]{0,6}(有力|重要|坚实)[^。\\n]{0,4}(支撑|基础)",
+        "填补了?[^。\\n]{0,12}空白",
+        "为[^。\\n]{0,12}(提供|指明|给出)了?[^。\\n]{0,10}(参考|思路|方向)"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "vague-result",
+      "label": "模板腔结果表述",
+      "severity": "high",
+      "why": "用「较为理想」「效果较好」描述结果，等于没给结论；数模论文的结果必须是数值与对比",
+      "fix": "改为具体数值 + 对比基准（如「较基准方案下降 12.4%」）",
+      "patterns": [
+        "较为理想",
+        "效果(很|较|非常)好",
+        "取得了?(良好|不错|理想)的?(效果|结果)",
+        "结果(有所)?(提升|改善|优化)(?!\\s*\\d)"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "unsupported-claim",
+      "label": "无依据断言",
+      "severity": "medium",
+      "why": "「很明显」「大量数据表明」没有指向任何数据或文献，属于空泛表达",
+      "fix": "补上具体数值、图表编号或文献引用；补不上就删掉",
+      "patterns": [
+        "很明显|显而易见|毋庸置疑",
+        "大量(的)?(数据|实验|研究|实践)(表明|证明|显示)",
+        "效果(非常|十分|极其)显著(?!\\s*[（(]?p)"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "vague-hedge",
+      "label": "含糊词",
+      "severity": "high",
+      "why": "结论含含糊糊，评委无法据此判分；确属不确定时必须给区间或条件",
+      "fix": "给出区间、条件或阈值；无法量化就改写成明确的适用边界",
+      "patterns": [
+        "一定程度上",
+        "或许|大概|也许",
+        "可能有所(改善|提升|下降)",
+        "有望(取得|实现|达到)"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "fake-authority",
+      "label": "权威含糊（须给引用）",
+      "severity": "high",
+      "why": "「研究表明」「专家认为」不给出处，既像 AI 编的，也触碰反造假红线",
+      "fix": "补上可核实的文献出处；找不到出处就删掉该论据（宁缺毋假）",
+      "patterns": [
+        "研究表明",
+        "专家(认为|表示|指出)",
+        "据统计|据调查"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "colloquial-subjective",
+      "label": "口语化主观",
+      "severity": "high",
+      "why": "第一人称主观或口语词破坏学术语态",
+      "fix": "改用「本文」「该模型」「求解结果显示」作主语",
+      "patterns": [
+        "我觉得|我认为大概|我们认为大概",
+        "其实[，,]",
+        "搞定了|弄好了",
+        "肯定(最好|最优)"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "binary-contrast",
+      "label": "二元对照句式",
+      "severity": "medium",
+      "why": "「不是…而是…」被高频复用后成为公式化修辞（英文写作中的 not X but Y）",
+      "fix": "直接陈述结论，或用数据对比代替修辞对比；同一段落不连用",
+      "patterns": [
+        "不是[^。\\n]{0,20}而是",
+        "并非[^。\\n]{0,20}而是"
+      ],
+      "max_per_document": 2
+    },
+    {
+      "id": "colon-reveal",
+      "label": "冒号揭晓",
+      "severity": "medium",
+      "why": "「最关键的一点：…」是先卖关子再揭晓的网文笔法，不是学术表述",
+      "fix": "把结论前置，直接在主句里说出来",
+      "patterns": [
+        "最(好|关键|重要|核心)的(部分|一点|地方)[:：]"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "faux-insight",
+      "label": "伪洞察开场",
+      "severity": "high",
+      "why": "「很少有人告诉你」「大家都忽略的是」以制造悬念代替论证",
+      "fix": "删掉悬念铺垫，直接给出问题与依据",
+      "patterns": [
+        "(很少有人|没人|没有人)(告诉|提到|注意|意识)",
+        "大家(都)?忽略的是"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "fake-profound-end",
+      "label": "虚假深刻收尾",
+      "severity": "medium",
+      "why": "「未来已来」式格言收尾不承担论证功能",
+      "fix": "收尾回到本题结论、适用边界或下一步的具体难点",
+      "patterns": [
+        "未来已来",
+        "这只是(开始|第一步)",
+        "在此(背景|前提)下[，,]?让我们"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "empty-adjective",
+      "label": "空泛形容词/程度堆砌",
+      "severity": "high",
+      "why": "「至关重要」「极其重要」「显著提升」这类评价词不携带本题信息，等于用形容词代替结论",
+      "fix": "删掉评价词，改为与本题直接相关的专业表述，并补上具体数值或机制",
+      "patterns": [
+        "至关重要|举足轻重|重中之重",
+        "(十分|非常|极其|极为|尤为|格外)(重要|关键|突出|显著|优异)",
+        "意义(重大|深远)(?!\\s*\\d)",
+        "(显著|明显|大幅|急剧)(提升|提高|改善|增强|降低|缩短|加快)(?!\\s*[（(]?\\s*\\d)",
+        "不可否认|不言而喻|毋庸置疑|毫无疑问|普遍认为"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "verbose-connective",
+      "label": "冗长连接/铺垫语",
+      "severity": "medium",
+      "why": "「简而言之」「从某种意义上说」「不得不说」是为过渡而过渡，删掉后信息量不变",
+      "fix": "直接进入内容，或改用携带信息的衔接句（呼应上问结论、点明下问任务）",
+      "patterns": [
+        "简而言之|一言以蔽之|总而言之",
+        "总的来说|总体来看|整体而言",
+        "从某种意义上(说|讲)|换个角度(看|来说)|不得不说"
+      ],
+      "max_per_document": 2
+    },
+    {
+      "id": "template-purpose",
+      "label": "模板化目的句",
+      "severity": "medium",
+      "why": "「为了更好地…」「旨在…」「以期…」是模板腔的目的铺陈，常与后文实际做法重复",
+      "fix": "直接陈述做法与目标，或点明具体要解决的矛盾",
+      "patterns": [
+        "为了更好地[^。\\n]{0,14}",
+        "旨在[^。\\n]{0,14}",
+        "以期[^。\\n]{0,14}"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "en-slop-word",
+      "label": "英文套词/夸大词",
+      "severity": "high",
+      "why": "delve/leverage/streamline/cutting-edge 等是英文 AI 写作最典型的空洞词，替换成具体动作或事实即可",
+      "fix": "改为具体动词与事实（leverage→use、streamline→cut steps、cutting-edge→new）；仅在英文摘要/图注中检查",
+      "patterns": [
+        "(?i)\\b(delve|foster|leverage|utilize|facilitate|empower|streamline|cutting[- ]edge|paradigm shift|game[- ]chang(er|ing)|tapestry|realm|beacon|multifaceted|meticulous|intricate|paramount|transformative|elevate|embark|supercharge|harness|ever[- ]evolving)\\b"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "en-slop-phrase",
+      "label": "英文空话/铺垫语",
+      "severity": "medium",
+      "why": "it's worth noting / here's the thing / in other words 等短语拖后结论、不携带信息（整理自 no-ai-slop）",
+      "fix": "删掉铺垫直接说结论；确需过渡时用携带信息的句子替代",
+      "patterns": [
+        "(?i)(it'?s worth noting|it is important to note|at the end of the day|when it comes to|at its core|in today'?s world|in the age of|in the world of|the reality is|the truth is|going forward|let'?s dive in|here'?s the thing|let me be clear|i'?ll be honest|the uncomfortable truth is|that last part matters|as you can see|the key point is|this distinction matters|in other words)"
+      ],
+      "max_per_document": 0
+    },
+    {
+      "id": "en-slop-pattern",
+      "label": "英文 slop 句式",
+      "severity": "high",
+      "why": "二元对照、伪洞察、无出处断言、夸大意义与复述式收尾，均为 AI 英语写作的标志性句式（整理自 no-ai-slop）",
+      "fix": "直接陈述结论、点名出处、给出事实；收尾停在最后一个具体结论上",
+      "patterns": [
+        "(?i)(it'?s not (just )?[^.;!?\\n]{0,40}[.,;]?\\s*it'?s|isn'?t [^.;!?\\n]{0,40}[.,;]?\\s*it'?s)",
+        "(?i)((most people|everyone) (skip|get wrong|miss)|(nobody|no one) tells you|what nobody tells you|the part (everyone|most people) (miss|skips))",
+        "(?i)(experts agree|studies show|research shows|widely regarded as|industry reports suggest)",
+        "(?i)(stands? as a testament|marks? a pivotal moment|plays? a (vital|crucial|key) role|solidifies? its position)",
+        "(?i)(in conclusion|to sum up)"
+      ],
+      "max_per_document": 0
+    }
+  ]
+}
