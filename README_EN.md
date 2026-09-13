@@ -318,20 +318,16 @@ integrity ultimately rests with the user; the skills only make the mechanical pa
 
 ## Acknowledgements
 
-- [math-modeling-skill](https://github.com/Escap1ng/math-modeling-skill) — the predecessor project on the same
-  account (a single-file `SKILL.md` modeling assistant, MIT licensed): this kit's main-skill orchestration, algorithm
-  library, visualization and typesetting rules and 100-point rubric evolved from it;
-- [no-ai-slop](https://github.com/petergyang/no-ai-slop) — the phrasing-rule taxonomy of the de-AI skill (clichéd
-  openers, binary contrasts, colon reveals, faux insights, fake-profound endings, …) draws on its AI-slop pattern
-  list; the shared thesis is to **remove the AI taste without flattening the personal voice**. Its English slop
-  catalogue is kept as
-  [`no-ai-slop-reference.md`](skills/mathmodel-deai/docs/no-ai-slop-reference.md) (MIT License, Copyright (c) 2026
-  Peter Yang, upstream notice retained) and enforced as the `en-slop-*` word-list rules;
-- [watermarks-remover](https://github.com/guillaumemeyer/watermarks-remover) — the character set and protection logic
-  (Layer A) of the de-AI skill's `strip_invisible.py` come from its `text_unicode.py`;
-- The Nature colour-role split for data figures and the "look at the rendered figure before shipping" discipline draw
-  on the `math-figure-generator` skill in the community repository
-  [MathModeling-skills](https://github.com/zhnnky329/MathModeling-skills).
+The following open-source projects are the sources of some of this kit's design and rules, credited by order of influence:
+
+| Project | What was drawn from it |
+|---|---|
+| [math-modeling-skill](https://github.com/Escap1ng/math-modeling-skill) · MIT | The predecessor project on the same account (a single-file `SKILL.md` modeling assistant): main-skill orchestration, algorithm library, visualization and typesetting rules, and the 100-point rubric evolved from it |
+| [no-ai-slop](https://github.com/petergyang/no-ai-slop) · MIT | The phrasing-rule taxonomy of the de-AI skill (clichéd openers, binary contrasts, colon reveals, faux insights, fake-profound endings, …); its English slop catalogue is kept as [`no-ai-slop-reference.md`](skills/mathmodel-deai/docs/no-ai-slop-reference.md) (upstream notice retained) and enforced as the `en-slop-*` word-list rules |
+| [watermarks-remover](https://github.com/guillaumemeyer/watermarks-remover) | The character set and protection logic (Layer A) of the de-AI skill's `strip_invisible.py`, taken from its `text_unicode.py` |
+| [MathModeling-skills](https://github.com/zhnnky329/MathModeling-skills) | The Nature colour-role split for data figures and the "look at the rendered figure before shipping" discipline (the `math-figure-generator` skill) |
+
+One shared thesis with `no-ai-slop`: **remove the AI taste without flattening the personal voice**.
 
 ## License
 

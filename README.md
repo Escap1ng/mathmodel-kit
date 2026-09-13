@@ -307,16 +307,16 @@ CI 以 Python 3.12 为最低验证环境。Linux / macOS 上如果没有中文�
 
 ## 致谢
 
-- [math-modeling-skill](https://github.com/Escap1ng/math-modeling-skill) —— 同账号下的前序项目（单文件 `SKILL.md`
-  形式的数学建模辅助技能，MIT 许可）：本套件的主技能编排、算法库、可视化与排版规范、百分制评分体系都从它演化而来；
-- [no-ai-slop](https://github.com/petergyang/no-ai-slop) —— 降 AI 技能的句式规则分类（模板腔开头、二元对照、
-  冒号揭晓、伪洞察、虚假深刻收尾等）参考了它的 AI slop 模式清单，核心主张一致：**去除 AI 味，但不抹平个人声音**；
-  其英文 slop 模式清单已整理为 [`no-ai-slop-reference.md`](skills/mathmodel-deai/docs/no-ai-slop-reference.md)
-  （MIT License，Copyright (c) 2026 Peter Yang，保留上游版权声明），并落为词表的英文规则 `en-slop-*`；
-- [watermarks-remover](https://github.com/guillaumemeyer/watermarks-remover) —— 降 AI 技能字符级清理器
-  `strip_invisible.py` 的字符集与保护逻辑（Layer A）来自它的 `text_unicode.py`；
-- 数据图表的 Nature 用色分工，以及「渲染完先看图再交付」的流程纪律，参考了社区仓库
-  [MathModeling-skills](https://github.com/zhnnky329/MathModeling-skills) 中 `math-figure-generator` 技能的做法。
+以下开源项目为本套件的部分设计与规则提供了来源，按影响顺序致谢：
+
+| 项目 | 借鉴内容 |
+|---|---|
+| [math-modeling-skill](https://github.com/Escap1ng/math-modeling-skill) · MIT | 同账号下的前序项目（单文件 `SKILL.md` 的数模辅助技能）：主技能编排、算法库、可视化与排版规范、百分制评分体系由它演化而来 |
+| [no-ai-slop](https://github.com/petergyang/no-ai-slop) · MIT | 降 AI 技能的句式规则分类（模板腔开头、二元对照、冒号揭晓、伪洞察、虚假深刻收尾等）；英文模式清单整理为 [`no-ai-slop-reference.md`](skills/mathmodel-deai/docs/no-ai-slop-reference.md)（保留上游版权声明），并落为词表规则 `en-slop-*` |
+| [watermarks-remover](https://github.com/guillaumemeyer/watermarks-remover) | 降 AI 技能字符级清理器 `strip_invisible.py` 的字符集与保护逻辑（Layer A）来自它的 `text_unicode.py` |
+| [MathModeling-skills](https://github.com/zhnnky329/MathModeling-skills) | 数据图表的 Nature 用色分工，以及「渲染完先看图再交付」的流程纪律（`math-figure-generator` 技能） |
+
+其中 `no-ai-slop` 的核心主张与本项目一致：**去除 AI 味，但不抹平个人声音**。
 
 ## 许可证
 
