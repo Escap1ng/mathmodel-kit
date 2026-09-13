@@ -15,7 +15,7 @@
   <a href="https://github.com/Escap1ng/mathmodel-kit/actions/workflows/paper.yml"><img src="https://github.com/Escap1ng/mathmodel-kit/actions/workflows/paper.yml/badge.svg" alt="Paper LaTeX build"></a>
   <img src="https://img.shields.io/badge/License-Apache--2.0-1A6FC4?style=flat" alt="License">
   <img src="https://img.shields.io/badge/Python-3-2E9E44?style=flat" alt="Python">
-  <img src="https://img.shields.io/badge/Skills-6-7B5FD6?style=flat" alt="Skills">
+  <img src="https://img.shields.io/badge/Skills-7-7B5FD6?style=flat" alt="Skills">
   <img src="https://img.shields.io/badge/Templates-25-E28E2C?style=flat" alt="Templates">
   <a href="CONTRIBUTING_EN.md"><img src="https://img.shields.io/badge/contribute-welcome-2E9E44?style=flat" alt="Contributing"></a>
 </p>
@@ -82,7 +82,7 @@ When no template fits, draw it per [`nature-standard.md`](skills/mathmodel-figur
 
 ## What is this
 
-`mathmodel-kit` is an **open toolbox for math modeling**: six agent skills that work standalone or chained into a
+`mathmodel-kit` is an **open toolbox for math modeling**: seven agent skills that work standalone or chained into a
 closed loop by the main skill, plus **machine-readable template registries and content contracts** — capabilities you
 can enumerate, validate and consume from other programs, not just a pile of prompts.
 
@@ -91,12 +91,18 @@ Structure checks and scoring default to the **CUMCM** profile (aligned with the 
 
 | Skill | Role | Entry point | Output |
 |---|---|---|---|
-| [`mathmodel-core`](skills/mathmodel-core/SKILL.md) | **Main skill**: orchestrates stages 0–6 (problem analysis → modeling → implementation → paper → grading) | Triggered by submitting a problem or modeling request | Workspace skeleton, code and results, paper and score report |
+| [`mathmodel-core`](skills/mathmodel-core/SKILL.md) | **Main skill (orchestration and routing)**: orchestrates stages 0–6 (problem analysis → modeling → implementation → paper → grading) and hands each stage to the specialist skill | Triggered by submitting a problem or modeling request | Workspace skeleton, code and results, paper and score report |
+| [`mathmodel-methods`](skills/mathmodel-methods/SKILL.md) | **Method library and selection**: by problem family (evaluation/ranking, optimization, prediction, clustering, differential equations, simulation, signals, frontier innovation) it gives candidate methods, selection rationale, implementation entry points and verification | Triggered by "which algorithm fits this problem" or a selection comparison | Method list, candidate comparison table, recommended libraries and minimal skeletons, verification means |
 | [`mathmodel-figure`](skills/mathmodel-figure/SKILL.md) | **Data figures**: 20 matplotlib templates plus a Nature standard for chart types outside the library | `python3 code/tools/render_template.py <id>` | 300 DPI PNG + vector PDF + SVG + editable script |
 | [`mathmodel-diagram`](skills/mathmodel-diagram/SKILL.md) | **Academic diagrams**: 5 JSON-driven layouts, plus hand-drawing and high-fidelity replication from a reference image | `python3 code/tools/render_template.py <id> content.json` | 300 DPI PNG + vector PDF + content JSON |
-| [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | **Paper typesetting**: LaTeX skeleton → PDF → Word, with contest layout tuning and an abstract template | `xelatex` + `word_postprocess.py` | Compliant `.pdf` and `.docx`, abstract template |
+| [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | **Paper writing and typesetting**: writing rules (structure, five-part abstract, model building/solving, formulas, evaluation, appendix, language) + LaTeX skeleton and page setup + pandoc → Word tuning + reference rules | `xelatex` + `word_postprocess.py` | Compliant `.pdf` and `.docx`, abstract template, writing and typesetting rules |
 | [`mathmodel-deai`](skills/mathmodel-deai/SKILL.md) | **De-AI and delivery checks**: word-list de-slopping (templates, platitudes, vague or faux-insight phrasing) + structural checks (long sentences, repeated openings, paragraph rhythm, decimal places) + zero-width/invisible character scrubbing | `check_phrasing.py` + `check_style.py` + `strip_invisible.py` | Phrasing report with risk level, `.pdf`/`.docx` free of invisible characters |
 | [`mathmodel-score`](skills/mathmodel-score/SKILL.md) | **Structure check and scoring**: a chapter-structure contract (three-part abstract, restatement/analysis, numbered assumptions, symbol table, model strengths/weaknesses, appendix source code, AI disclosure, anonymity — aligned with the 2026 CUMCM format rules) plus a 100-point rubric across five dimensions (abstract 30 / model 20 / innovation 20 / writing 15 / layout 15) | `check_chapters.py` + `score_card.py <scorecard.json>` | Unmet-structure list, score table with pass verdict (>=85), deduction list, revision round |
+
+The single source of truth for the skill list is [`skills/manifest.json`](skills/manifest.json): it records each skill's
+kind (core / knowledge / tool), role, entry point, docs and contribution mode (`open` / `maintainer`), and CI checks it
+against the `skills/` directory, the table above and the badge count. **The main skill `mathmodel-core` is
+maintainer-owned**; the other skills accept external contributions.
 
 ## Why use it
 
@@ -117,7 +123,7 @@ hand-synced list or a verbal promise:
 
 | Dimension | What is open | Artifact |
 |---|---|---|
-| **Open contracts** | Template lists, field structures, value constraints, theme structure and chapter checks are all machine-readable | `manifest.json`, `code/templates/schema/*.schema.json`, `themes/theme.schema.json`, `mathmodel-score/code/chapter-checklist.json` (JSON Schema Draft 2020-12) |
+| **Open contracts** | Skill lists, template lists, field structures, value constraints, theme structure and chapter checks are all machine-readable | [`skills/manifest.json`](skills/manifest.json) (skill kind and contribution mode), `manifest.json`, `code/templates/schema/*.schema.json`, `themes/theme.schema.json`, `mathmodel-score/code/chapter-checklist.json` (JSON Schema Draft 2020-12) |
 | **Open interfaces** | Capabilities can be enumerated, validated and orchestrated by other programs | Unified CLIs plus unified exit-code semantics: `0` success / `1` validation or render failure / `2` usage or environment error |
 | **Open collaboration** | Third parties can add templates, fix docs or report bugs by touching two places | One registry line + one index-doc line; CI checks all remaining consistency |
 | **Open licence** | Commercial use and redistribution allowed | [Apache-2.0](LICENSE); contributing means agreeing to the same licence |
@@ -224,13 +230,14 @@ The README covers "what it is and how to use it"; the detail lives in these docu
 | What you want to do | Read this |
 |---|---|
 | Restyle figures, swap palettes, add a template | [`mathmodel-figure/SKILL.md`](skills/mathmodel-figure/SKILL.md) · [`themes/README.md`](skills/mathmodel-figure/themes/README.md) |
-| Write the paper, typeset to contest conventions | [`mathmodel-paper/SKILL.md`](skills/mathmodel-paper/SKILL.md) · [`abstract-template.md`](skills/mathmodel-paper/templates/abstract-template.md) |
+| Write the paper, typeset to contest conventions | [`mathmodel-paper/SKILL.md`](skills/mathmodel-paper/SKILL.md) · [`writing-rules.md`](skills/mathmodel-paper/docs/writing-rules.md) · [`typesetting-rules.md`](skills/mathmodel-paper/docs/typesetting-rules.md) · [`references.md`](skills/mathmodel-paper/docs/references.md) |
 | Remove AI tells, scrub zero-width/invisible characters | [`mathmodel-deai/SKILL.md`](skills/mathmodel-deai/SKILL.md) · [`deai-rules.md`](skills/mathmodel-deai/docs/deai-rules.md) |
 | Score the paper, run the pre-delivery self-check | [`mathmodel-score/SKILL.md`](skills/mathmodel-score/SKILL.md) · [`rubric.md`](skills/mathmodel-score/docs/rubric.md) · [`chapter-checklist.md`](skills/mathmodel-score/docs/chapter-checklist.md) · [`self-check.md`](skills/mathmodel-score/docs/self-check.md) |
 | Draw flowcharts / roadmaps / frameworks | [`mathmodel-diagram/SKILL.md`](skills/mathmodel-diagram/SKILL.md) |
 | Run the whole contest pipeline | [`mathmodel-core/SKILL.md`](skills/mathmodel-core/SKILL.md) |
+| Choose a modeling method / algorithm, compare candidates | [`mathmodel-methods/SKILL.md`](skills/mathmodel-methods/SKILL.md) |
 | Figure rules (the single authority) | [`visualization-rules.md`](skills/mathmodel-figure/docs/guides/visualization-rules.md) · [`nature-standard.md`](skills/mathmodel-figure/docs/guides/nature-standard.md) |
-| Submit code / add a template | [`CONTRIBUTING_EN.md`](CONTRIBUTING_EN.md) ([中文](CONTRIBUTING.md)) |
+| Contribute (modules / standards / review / roles) | [`CONTRIBUTING_EN.md`](CONTRIBUTING_EN.md) ([中文](CONTRIBUTING.md)) |
 | Understand why it is designed this way | [Whitepaper](docs/upgrade-plan_EN.md) ([中文](docs/upgrade-plan.md)) · [`CHANGELOG.md`](CHANGELOG.md) |
 
 ## Repository layout
@@ -243,17 +250,20 @@ mathmodel-kit/
 ├── LICENSE                         # Apache License 2.0
 ├── docs/upgrade-plan.md            # whitepaper: open interfaces, data contracts, governance, versioning
 └── skills/
-    ├── mathmodel-core/             # Main skill: stages 0–6, code and writing rules
+    ├── manifest.json               # skill registry (single source: kind / role / entry / contribution)
+    ├── mathmodel-core/             # Main skill (orchestration and routing): stages 0–6
+    ├── mathmodel-methods/          # Method library and selection: docs/ (library, selection guide, implementation guide)
     ├── mathmodel-figure/           # Data figures: code/templates (20) · code/style · themes/ · examples/previews
     ├── mathmodel-diagram/          # Diagrams: code/templates (5) + schema/ · code/tools · examples/
-    ├── mathmodel-paper/            # Paper: templates/ (paper.tex, abstract) · code/ (Word tuning)
+    ├── mathmodel-paper/            # Paper writing and typesetting: docs/ (writing, typesetting, references) · templates/ · code/ (Word tuning)
     ├── mathmodel-deai/             # De-AI: code/ (phrasing checker + word list + scrubbing) · docs/ (de-AI rules) · examples/
     └── mathmodel-score/            # Structure check and scoring: code/ (chapter contract + checker + score card) · docs/ (rubric, chapter-checklist, self-check) · examples/
 ```
 
-Every skill follows the same internal layout: `code/` (scripts and registries), `docs/` (rules), `examples/`
-(reproducible examples). `code/tools/manifest.json` is the single source of truth for templates — adding one means one
-registry line plus one index-doc line.
+Skills come in three kinds (per [`skills/manifest.json`](skills/manifest.json)): **core** (orchestration and routing,
+only `SKILL.md`), **knowledge** (rules or method library, `SKILL.md` + `docs/`, e.g. `mathmodel-methods`,
+`mathmodel-paper`) and **tool** (`code/` + `docs/` + `examples/`). `code/tools/manifest.json` is the single source of
+truth for templates — adding one means one registry line plus one index-doc line.
 
 ## Dependencies
 
@@ -283,11 +293,22 @@ back — in-figure Chinese may render as boxes, so install `Noto Sans CJK SC`.
 
 ## Extending and contributing
 
-Adding templates, extra example scenarios, doc fixes and bug reports are all welcome; how to do each of the three
-paths is in [`CONTRIBUTING_EN.md`](CONTRIBUTING_EN.md). **Adding a template** is the most common one and needs only
-"one registry line + one index-doc line" — no changes to the CLI, CI or version. Machines decide what they can
-(syntax, registry consistency, content contracts, successful rendering); humans review semantics and originality only.
-Contributors are credited in the registry `author` field and in [CHANGELOG.md](CHANGELOG.md).
+Adding templates, extra example scenarios, doc fixes and bug reports are all welcome. Everything open to
+collaboration is organised into four modules, each documented as **standards → submission rules → review process**;
+cross-module hand-offs and sync rules plus contributor roles and permissions are in
+[`CONTRIBUTING_EN.md`](CONTRIBUTING_EN.md) ([中文](CONTRIBUTING.md)):
+
+| Module | What you can do | Entry |
+|---|---|---|
+| **M1 Docs and examples** | Fix rules, correct errors, add examples and previews | PR (`docs: …`), with the index-table and registry lines in the same commit |
+| **M2 Code and templates** | Add a template (one registry line + one index-doc line), fix scripts and tools | PR (`feat: …`), no CLI or CI changes needed |
+| **M3 Testing and verification** | Run the gates locally, add CI smoke cases | PR with the commands actually run and their output; green CI is the merge gate |
+| **M4 Issues and requests** | Report bugs (with a minimal reproduction), request templates, flag doc problems | [Issue forms](https://github.com/Escap1ng/mathmodel-kit/issues/new/choose) |
+
+**Adding a template** is the most common one and needs only "one registry line + one index-doc line" — no changes to
+the CLI, CI or version. Machines decide what they can (syntax, registry consistency, content contracts, successful
+rendering); humans review semantics and originality only. Contributors are credited in the registry `author` field
+and in [CHANGELOG.md](CHANGELOG.md), with four permission tiers: reporter / contributor / reviewer / maintainer.
 
 [Open an issue to report a bug or propose a template](https://github.com/Escap1ng/mathmodel-kit/issues/new/choose)
 · [browse existing pull requests](https://github.com/Escap1ng/mathmodel-kit/pulls) ·

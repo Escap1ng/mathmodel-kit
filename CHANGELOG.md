@@ -8,6 +8,32 @@
 
 ## [Unreleased]
 
+### 新增
+
+- **建模方法库与选型技能 `mathmodel-methods`**：把主技能中的算法库、选型依据与实现范式拆分为独立技能，按问题族（评价/排序、优化、预测、分类聚类、微分方程、仿真、信号、前沿创新）组织
+  - `docs/method-library.md`：方法清单唯一出处（问题族索引 + 九类方法 + 新增方法收录标准）
+  - `docs/selection-guide.md`：选型流程、候选对比表模板、问题特征对照、按问题类型的验证方式、问题递进关系、常见误用
+  - `docs/implementation-guide.md`：推荐库速查、GA/SA/0-1 规划与数据读取的最小可运行骨架、实现纪律与技能分工
+  - 主技能 `mathmodel-core/SKILL.md` 的「算法库」与「代码实现规范」改为强制项摘要 + 指向新技能；「快速参考」的算法选择速查、算法实现速查与问题递进关系移入新技能，消除两处规范漂移
+- 技能数 6 → 7：README 中英的徽章、技能表、仓库结构与文档地图，`CONTRIBUTING` 的技能数与单一事实源表，白皮书中英的定位段与架构图同步新增 `mathmodel-methods`
+
+### 变更
+
+- **主技能瘦身**：`mathmodel-core/SKILL.md` 由 772 行降至 296 行——论文写作规范、排版规范（LaTeX）、参考文献规范与 Word 后处理条文整体移入 `mathmodel-paper`，主技能只保留强制项摘要与链接
+- **`mathmodel-paper` 升格为论文域技能「论文写作与排版」**：新增 `docs/writing-rules.md`（写作规范）、`docs/typesetting-rules.md`（排版规范，含 Word 后处理）、`docs/references.md`（参考文献规范）三份唯一权威文档；SKILL.md 改为定位 + 文档地图 + 快速流程 + 交付红线，页面设置表与匿名红线清单不再与主技能重复
+- **新增技能注册表 `skills/manifest.json`**：登记每个技能的类型（core / knowledge / tool）、职责、入口、文档与协作口径（`open` / `maintainer`），作为技能清单的单一事实源
+- **CI `manifest-consistency` 扩展**：新增注册表 ↔ `skills/` 目录 ↔ README 技能表 ↔ 徽章计数的交叉校验（技能名集合、入口文件、文档路径、README 技能表登记、kind / contribution 取值）
+- **frontmatter 规范化**：`mathmodel-core` 的 `name` 去引号并补齐 `allowed-tools`，七个技能的 SKILL.md 统一为 `name` / `description` / `allowed-tools` 三字段
+- **协作口径明确**：主技能 `mathmodel-core` 由维护者掌握（外部只提 Issue、不接受直接 PR），其余技能与根文档、CI 接受外部贡献；口径写入 `skills/manifest.json` 与 CONTRIBUTING
+- **CLI 契约**：退出码统一为 0/1/2；`--lang {zh,en}` 明确为面向用户入口的可选参数（8 个入口已覆盖，`word_postprocess.py` 与 `strip_invisible.py` 暂未提供，属 Experimental）
+
+### 文档
+
+- `CONTRIBUTING.md` / `CONTRIBUTING_EN.md` 重构为四个可协作子模块（M1 文档与示例、M2 代码与模板、M3 测试与验证、M4 问题反馈与需求），每个子模块给出贡献标准、提交规范与审核流程；新增「协作接口与信息同步」（单一事实源清单、子模块交接、同步机制）与「贡献者角色与权限」（报告者 / 贡献者 / 评审者 / 维护者及权限边界）两节
+- `README.md` / `README_EN.md` 的「扩展与贡献」改为四个子模块入口表，文档地图同步；各技能 README 的「扩展约定」统一指向 `CONTRIBUTING.md`，避免两处规则漂移
+- 白皮书中英 §7 的贡献路径按四个子模块改写，并说明贡献等级（激励口径）与角色权限（权限口径）的分工
+- 新增缺陷报告 Issue 表单 `.github/ISSUE_TEMPLATE/bug_report.yml`；PR 模板新增「所属子模块」声明与 Stable 契约改动确认项
+
 ## [1.2.0] - 2026-09-13
 
 新增降 AI 与评分两个技能，把原先分散的「去 AI 化规范」「零宽/不可见字符清理」与「论文质量自检 + 百分制评分」收敛为两个独立模块。全部为向后兼容的能力新增：既有命令与产物路径不变。

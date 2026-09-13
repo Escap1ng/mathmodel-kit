@@ -1,6 +1,6 @@
 # 论文质量自检清单（交付前审计）
 
-> 本文件是 `mathmodel-score` 技能的规范条文之一，内容提取自原主技能 `mathmodel-core` 的同名小节，作为**交付前审计**的检查依据；正文写作阶段的口径仍以主技能为准。百分制扣分细则见 [`rubric.md`](rubric.md)，两者同源（评分细则的扣分项与下列自检项一一对应）。
+> 本文件是 `mathmodel-score` 技能的规范条文之一，内容提取自原主技能 `mathmodel-core` 的同名小节，作为**交付前审计**的检查依据；正文写作阶段的口径以 [`mathmodel-paper/docs/writing-rules.md`](../../mathmodel-paper/docs/writing-rules.md) 为准。百分制扣分细则见 [`rubric.md`](rubric.md)，两者同源（评分细则的扣分项与下列自检项一一对应）。
 >
 > **章节结构与格式规范**（摘要三段式、问题重述/分析/假设/符号说明/模型评价/附录/参考文献/AI 使用声明的逐条要求）另见 [`chapter-checklist.md`](chapter-checklist.md)，其中可判定项由 `python3 code/check_chapters.py <论文文件>` 自动核对；本文件偏「论文整体质量」的终检。
 

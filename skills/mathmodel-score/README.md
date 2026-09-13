@@ -49,3 +49,4 @@ examples/chapter-sample.tex        # 结构正例须保持 hard 全过；反例�
 - 维度 `id` 与自检项 `id` 都是机器契约的一部分，改动即为破坏性变更，须记入 `CHANGELOG.md`。
 - 脚本一律提供 `argparse` 入口，退出码统一为 `0` 通过 / `1` 有未过项 / `2` 用法或输入错误。
 - 扣分项与 `docs/self-check.md` 的自检项保持一一对应，避免两处口径漂移。
+- 分模块的贡献标准、提交规范与审核流程见仓库根目录 [CONTRIBUTING.md](../../CONTRIBUTING.md)；评分维度与自检项属 Stable 契约，改动前先确认版本策略。

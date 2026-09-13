@@ -1,0 +1,66 @@
+name: 缺陷报告
+description: 报告可复现的缺陷（脚本、模板、契约或文档）
+title: "[缺陷] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        最小复现能更快定位问题：请给出**内容 JSON（或脚本片段）+ 命令 + 实际输出 + 期望输出**。
+        若报错来自校验器或渲染器，请附退出码。
+  - type: dropdown
+    id: module
+    attributes:
+      label: 属于哪个子模块
+      options:
+        - M1 文档与示例
+        - M2 代码与模板
+        - M3 测试与验证
+    validations:
+      required: true
+  - type: dropdown
+    id: skill
+    attributes:
+      label: 涉及哪个技能
+      options:
+        - mathmodel-figure（数据图表）
+        - mathmodel-diagram（学术示意图）
+        - mathmodel-paper（论文排版）
+        - mathmodel-deai（降 AI 与字符清理）
+        - mathmodel-score（结构自检与评分）
+        - mathmodel-core（主技能）
+        - 仓库级（README / CI / 贡献指南）
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 最小复现
+      description: 命令、输入文件（内容 JSON 或脚本片段）与运行环境（Python 与依赖版本）。
+      placeholder: |
+        1. python code/tools/render_template.py <id> content.json
+        2. 输入：content.json（附关键字段）
+        3. 环境：Python 3.12 / matplotlib 3.x
+    validations:
+      required: true
+  - type: textarea
+    id: behaviour
+    attributes:
+      label: 期望行为与实际行为
+      description: 附实际输出与退出码；截图可一并贴上。
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充信息（可选）
+      description: 已尝试的排查、相关 Issue 或 PR。
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已搜过现有 Issue，确认不是重复报告
+          required: true
+        - label: 我附上了可复现的命令与输入，而不是只描述现象
+          required: true

@@ -10,11 +10,13 @@ anything inferred rather than verified is marked as such.
 
 ## 1. Positioning Diagnosis: Where the Gaps Are
 
-The current form is a **prompt-centric skill set with a small number of CLI tools**: `mathmodel-core` is a pure
-specification orchestrator (no code), while `mathmodel-figure` (20 data-chart templates), `mathmodel-diagram` (5
-JSON-driven diagram templates), `mathmodel-paper` (LaTeX/Word typesetting pipeline), `mathmodel-deai` (de-AI
-phrasing plus invisible-character scrubbing) and `mathmodel-score` (paper self-check plus 100-point scoring) are the
-five executable landing points.
+The current form is a **prompt-centric skill set with a small number of CLI tools**: `mathmodel-core` (six-stage
+orchestration) and `mathmodel-methods` (a method library and selection guide organised by problem family) are the pure
+specification and knowledge layer (no code), while `mathmodel-figure` (20 data-chart templates), `mathmodel-diagram` (5
+JSON-driven diagram templates), `mathmodel-paper` (paper writing rules plus a LaTeX/Word typesetting pipeline and
+reference rules), `mathmodel-deai` (de-AI phrasing
+plus invisible-character scrubbing) and `mathmodel-score` (paper self-check plus 100-point scoring) are the five
+CLI-bearing landing points.
 
 A "toolbox" does not require more features; it requires **contracts other people can depend on**. The gaps by layer:
 
@@ -79,7 +81,7 @@ user's own agent host and local TeX/Python environment. The marginal cost is rev
 |---|---|---|---|
 | 1 | **Crowded field** | Existing 5000+ star peer projects and 32 catalogued open-source projects; heavy homogenisation | Do not join the "fully automatic" arms race; press the differentiation on **determinism, reproducibility, verifiability** (§10) |
 | 2 | **Contest compliance** | Contest rules on AI use vary and are tightening | Hold the line on "mechanical correctness to the tools, modeling judgement stays with the human"; position as an efficiency and verification tool, never promise ghostwriting |
-| 3 | **Specification duplication drift** | The main `SKILL.md` and `mathmodel-paper/SKILL.md` share wording and can fall out of sync | Establish one authority (specialised skills defer to the main skill); index-like content is validated from the registry by CI |
+| 3 | **Specification duplication drift** | The same rule repeated across several skill docs can fall out of sync | Establish one authority: each rule lives in exactly one place (paper domain in `mathmodel-paper/docs/`, methods domain in `mathmodel-methods/docs/`, phrasing domain in `mathmodel-deai/docs/`) and the main skill keeps only a mandatory-item summary; skill and template lists are validated from the registries by CI |
 | 4 | **Registry drift** | Adding a template used to require editing several lists | Reduced to "one registry line + one index row"; CI `manifest-consistency` checks registry ↔ filesystem ↔ index docs ↔ version ↔ README badges |
 | 5 | **Schema vs docstring duplication** | Both describe the same contract | Clear division: the Schema is the **machine authority**, docstrings stay human-readable; CI verifies examples against the Schema |
 | 6 | **Chinese coupling** | Default directory names, error messages and in-figure text are Chinese | `--lang {zh,en}` at the code layer; content (template copy, specifications) is not translated, avoiding half-baked localisation |
@@ -96,6 +98,7 @@ Three layers, coupled only through files and CLIs:
 
 ```
 ┌─ Contract layer (machine-readable) ───────────────────────────┐
+│  skills/manifest.json (skills, kinds, contribution scope)     │
 │  code/tools/manifest.json (figures)                           │
 │  code/templates/manifest.json (diagrams)                      │
 │  code/templates/schema/*.schema.json (5 content contracts)    │
@@ -113,9 +116,13 @@ Three layers, coupled only through files and CLIs:
 │  Score: score_card.py                                          │
 └───────────────────────────────────────────────────────────────┘
               ▲ invoked by
-┌─ Orchestration layer (judgement and process) ─────────────────┐
-│  mathmodel-core: six stages + writing rules + self-check       │
-│  + scoring                                                     │
+┌─ Orchestration & knowledge layer (judgement and process) ─────┐
+│  mathmodel-core: six stages + routing (methods / paper /       │
+│  figures / de-AI / scoring)                                    │
+│  mathmodel-methods: method library and selection (family index │
+│  + candidate comparison + implementation patterns)             │
+│  mathmodel-paper: paper writing and typesetting (writing /     │
+│  typesetting / reference rules)                                │
 └───────────────────────────────────────────────────────────────┘
 ```
 
@@ -226,12 +233,18 @@ They are **not premised on being pip-installable**, so no package-level API stab
 
 ### 7.1 Contribution paths (lowest to highest cost)
 
-1. **New template**: write the script → add `docs/templates/<id>.md` (per-slot character budgets and semantic
-   conventions) → add `example.json` and `preview.png` → **add one line to the registry**. CI validates all other
-   consistency; **no changes to the CLI, CI or index docs are needed**;
-2. **Improve an existing template**: edit the script → re-render the preview → update the budgets;
-3. **Docs and examples**: corrections and additional scenarios;
-4. **Bug reports**: with a minimal reproduction (content JSON + command + expectation).
+Contributions are organised into four modules; their **standards, submission rules and review processes**, plus the
+**roles and permissions**, live in [CONTRIBUTING_EN.md](../../CONTRIBUTING_EN.md) as the single authority:
+
+1. **New template** (M2 code and templates): write the script → add `docs/templates/<id>.md` (per-slot character budgets
+   and semantic conventions) → add `example.json` and `preview.png` → **add one line to the registry**. CI validates all
+   other consistency; **no changes to the CLI, CI or index docs are needed**;
+2. **Improve an existing template** (M2): edit the script → re-render the preview → update the budgets;
+3. **Docs and examples** (M1 docs and examples): corrections and additional scenarios, with the index-table and registry
+   lines in the same commit;
+4. **Bug reports and requests** (M4 issues and requests): with a minimal reproduction (content JSON + command +
+   expectation), or through the template-request form;
+5. **Testing and verification** (M3): run the gates locally and paste the commands and output into the PR; green CI is the merge gate.
 
 ### 7.2 What machines check vs what humans review (the key split)
 
@@ -254,7 +267,14 @@ on judgement.
 ### 7.4 Attribution and licence
 
 Contributing implies agreement to distribute under Apache-2.0; template authors are permanently credited in the
-registry's `author` field (§8).
+registry's `author` field (§8). The contribution tiers here are the **incentive dimension**, while the roles
+(reporter / contributor / reviewer / maintainer) are the **permission dimension**; the two complement each other and are
+defined in [CONTRIBUTING_EN.md](../../CONTRIBUTING_EN.md) section 6. Decisions on the Stable contract items above rest
+with maintainers.
+
+Per-skill scope is registered in `skills/manifest.json` (the `contribution` field): **the main skill `mathmodel-core`
+is maintainer-owned (outsiders may file issues, not PRs), while the other skills plus the root docs and CI accept
+external contributions.**
 
 ---
 
@@ -377,6 +397,7 @@ to limited capability but a **durable position**: it does not depend on how tole
 | Environment patch dependency | CI `sed` for fonts | **0 patches** | 0 | `paper.yml` contains no `sed` |
 | Content-contract validity | No Schemas | 100% of examples pass strict validation | 5/5 (including strict jsonschema mode) | `validate_content.py --all` |
 | Palette swappability | 0 (hardcoded in code constants and script headers; source edits only) | Declared theme + CLI switch + Schema validation + CI rejects invalid themes | Delivered: 1 default theme covering the 9 module-based templates and hand-drawn figures; colour equivalence confirmed by point-by-point comparison at 101 samples | `--theme` / `validate_theme.py --all` / CI `Theme contract validation` |
+| Skill list and contribution scope machine-readable | None (README skill table maintained by hand in several places) | Skill registry + CI checks registry ↔ directories ↔ README skill table ↔ badge count | Delivered: `skills/manifest.json` (kind / role / entry / contribution scope) | CI `manifest-consistency` |
 
 ### 11.3 Review cadence
 

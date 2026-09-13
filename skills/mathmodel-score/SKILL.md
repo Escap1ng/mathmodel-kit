@@ -13,7 +13,7 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 - **章节结构自检**：按 [`docs/chapter-checklist.md`](docs/chapter-checklist.md) 逐章核对（摘要三段式、问题重述/分析、假设编号、符号说明三线表、模型建立与求解链条、模型评价优缺点、参考文献、附录源程序、AI 使用声明、匿名与篇幅），可判定项由 `code/check_chapters.py` 自动执行——整理自《优秀论文自检表》与全国大学生数学建模竞赛论文格式规范（2026 年修订稿），契约在 `code/chapter-checklist.json`。
 - **整体质量自检**：按 [`docs/self-check.md`](docs/self-check.md) 逐项核对（致命 / 严重 / 中等 / 轻微四级）。
 - **评分**：按 [`docs/rubric.md`](docs/rubric.md) 的百分制五维口径打分；结构 hard 项未过不可进入评分。`code/score_card.py` 校验评分卡并渲染评分表，给出达标判定与优化轮次。
-- 不管：赛题分析、算法选择、代码实现、正文写作、版式排版、去 AI 与字符清理——分别以主技能 `mathmodel-core`、`mathmodel-paper`、`mathmodel-deai` 为准。
+- 不管：赛题分析、算法选择、代码实现、论文写作与版式排版、去 AI 与字符清理——分别以 `mathmodel-core`、`mathmodel-paper`、`mathmodel-deai` 为准。
 - **表述口径以 `mathmodel-deai` 为准**：模板腔/套话/句式与段落节奏/零宽字符的判定权在该技能，本技能只引用其退出码与报告折算扣分；已知协调见 `docs/rubric.md`「与去 AI 模块的分工」（编号分点不计入句式与段落统计；统一格式指信息结构而非字数齐平）。
 - **规范条文以本技能 `docs/` 为唯一权威出处**；主技能只保留强制项摘要并指向本文件，避免两处规范漂移。
 

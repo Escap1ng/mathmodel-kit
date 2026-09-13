@@ -120,6 +120,34 @@ jobs:
 
           skills = sorted(p.name for p in (root / "skills").iterdir() if p.is_dir())
           readme = (root / "README.md").read_text(encoding="utf-8")
+
+          registry = root / "skills" / "manifest.json"
+          if not registry.exists():
+              errors.append("skills/manifest.json missing")
+          else:
+              reg = load(registry)
+              entries = reg.get("skills", [])
+              reg_names = sorted(e.get("name") for e in entries)
+              if reg_names != skills:
+                  errors.append(f"skills/manifest.json names {reg_names} != directories {skills}")
+              for e in entries:
+                  name = e.get("name")
+                  tag = f"skills/manifest.json:{name}"
+                  if e.get("kind") not in ("core", "knowledge", "tool"):
+                      errors.append(f"{tag}: invalid kind {e.get('kind')!r}")
+                  if e.get("contribution") not in ("open", "maintainer"):
+                      errors.append(f"{tag}: invalid contribution {e.get('contribution')!r}")
+                  skill_dir = root / "skills" / str(name)
+                  if not (skill_dir / e.get("entry", "SKILL.md")).exists():
+                      errors.append(f"{tag}: entry not found")
+                  if not (skill_dir / "README.md").exists():
+                      errors.append(f"{tag}: README.md missing")
+                  for rel in e.get("docs", []):
+                      if not (skill_dir / rel).exists():
+                          errors.append(f"{tag}: doc not found ({rel})")
+                  if f"skills/{name}/SKILL.md" not in readme:
+                      errors.append(f"{tag}: not listed in README.md skill table")
+
           for label, encoded, expected in (("技能", "%E6%8A%80%E8%83%BD", str(len(skills))),
                                            ("模板", "%E6%A8%A1%E6%9D%BF", str(total))):
               if f"{encoded}-{expected}-" not in readme:

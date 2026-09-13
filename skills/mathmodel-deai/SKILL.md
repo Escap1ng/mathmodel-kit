@@ -13,7 +13,7 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 - **词表级**：`code/check_phrasing.py` 按词表 `code/phrasing-blacklist.json` 扫出模板腔、套话、空泛、伪洞察等 AI 痕迹用词与句式（含英文规则 `en-slop-*`，用于英文摘要与图注），命中即退出 1，改写后复检。
 - **结构级**：`code/check_style.py` 检查过长被动句、句式重复、过渡词密度、长短句比例、相邻段落节奏与结果小数位，并给出 `低/中/高/极高` 风险等级；逻辑自审、图表与文献规范以人工核对清单执行。
 - **字符级**：`code/strip_invisible.py` 清除零宽字符、bidi 控制、tag 字符、变体选择符等不可见 Unicode（字符集移植自 watermarks-remover 的 Layer A），覆盖 `.tex` / `.docx` / `.pdf`。
-- 不管：赛题分析、算法选择、代码实现、论文骨架与版式、百分制评分——这些分别以主技能 `mathmodel-core`、`mathmodel-paper`、`mathmodel-score` 为准。
+- 不管：赛题分析、算法选择、代码实现、论文写作与版式、百分制评分——分别以 `mathmodel-core`、`mathmodel-paper`、`mathmodel-score` 为准。
 - **规范条文以本技能 `docs/deai-rules.md` 为唯一权威出处**；主技能只保留强制项摘要并指向本文件，避免两处规范漂移。
 - **边界**：降 AI 只处理表述与字符，不改动数学模型、数据与结论；去 AI ≠ 口语化，个性化判据是「只有这篇论文写得出」。
 

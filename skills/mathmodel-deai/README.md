@@ -29,7 +29,7 @@ mathmodel-deai/
 - **一级按内容类型分**（`code/` `docs/` `examples/`）：与 `mathmodel-figure`、`mathmodel-diagram`、`mathmodel-paper` 共用同一份目录词表，跨技能检索时语义不变——`code/` 恒为「可执行脚本与数据」、`docs/` 恒为「规范」、`examples/` 恒为「可复现示例」。
 - **词表是数据不是代码**：`phrasing-blacklist.json` 是可被检查器读取、可被第三方程序消费的规则数据；加词只改这一处，`docs/deai-rules.md` 与检查器同步生效。
 - **字符集移植自上游**：`strip_invisible.py` 的字符集与保护逻辑来自 [watermarks-remover](https://github.com/guillaumemeyer/watermarks-remover) 的 Layer A；句式规则与结构指标分类参考 [no-ai-slop](https://github.com/petergyang/no-ai-slop)，其英文 slop 模式清单整理为 `docs/no-ai-slop-reference.md`（MIT，保留上游版权声明与来源 SHA），中文规则与词表出处写在 `docs/deai-rules.md` 第九节。
-- **规范条文不在此仓库复制**：正文写作与评分的其余条文留在主技能 `mathmodel-core/SKILL.md`，本技能只承接「去 AI 化 + 字符清理」这一类，避免两处规范漂移。
+- **规范条文不在此仓库复制**：正文写作与排版条文在 `mathmodel-paper/docs/`，评分条文在 `mathmodel-score/docs/`，本技能只承接「去 AI 化 + 字符清理」这一类，避免两处规范漂移。
 - **层级最深 2 层**。
 
 ## 扩展约定
@@ -49,3 +49,4 @@ examples/                          # 必要时补正/反例 fixture
 - 正则用 Python `re` 语法；写错正则应报错而非静默跳过（加载时预编译）。
 - 规范文档里出现的反例一律用反引号包成行内代码，使其自身通过 `check_phrasing.py` 自检。
 - 脚本一律提供 `argparse` 入口，退出码统一为 `0` 成功 / `1` 校验失败 / `2` 用法或环境错误。
+- 分模块的贡献标准、提交规范与审核流程见仓库根目录 [CONTRIBUTING.md](../../CONTRIBUTING.md)（词表与规范文档属 M1/M2，示例回归属 M3）。

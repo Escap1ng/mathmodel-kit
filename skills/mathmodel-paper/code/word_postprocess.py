@@ -10,8 +10,8 @@
 三线表核对），**禁止用它从头生成全文或重建内容**（不得 add_paragraph / add_table /
 add_page_break 新增任何段落或表格），**禁止手工插入公式**，否则 Word 中将丢失全部数学公式。
 
-来源：主技能 skills/mathmodel-core/SKILL.md
-      「Word 文档后处理模块（python-docx，用于 pandoc 转换后的版式微调）」小节。
+来源：本技能 docs/typesetting-rules.md
+      「Word 后处理（pandoc 转换后）」小节。
 """
 import argparse
 

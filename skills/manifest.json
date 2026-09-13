@@ -1,0 +1,79 @@
+{
+  "manifest_version": "1.0",
+  "title": "技能注册表",
+  "description": "项目内每个技能的单一事实源：技能清单、类型、职责、入口、文档与协作口径。CI 校验本文件 ↔ skills/ 目录 ↔ README 技能表 ↔ README 徽章计数一致；新增技能时先改本文件。",
+  "kinds": {
+    "core": "主技能：只做编排与路由，无 CLI",
+    "knowledge": "知识型技能：规范或方法库，无 CLI",
+    "tool": "工具型技能：带可执行脚本与模板"
+  },
+  "contribution": {
+    "open": "接受外部贡献（文档 / 模板 / 代码），流程见 CONTRIBUTING.md",
+    "maintainer": "由维护者掌握，外部只可提 Issue 反馈，不接受直接 PR"
+  },
+  "cli_contract": {
+    "exit_codes": "0 成功 / 1 校验或渲染失败 / 2 用法或环境错误",
+    "lang": "--lang {zh,en} 为面向用户入口的可选参数（Experimental），未覆盖的脚本不视为契约缺口"
+  },
+  "skills": [
+    {
+      "name": "mathmodel-core",
+      "kind": "core",
+      "role": "主技能：阶段零至阶段六编排 + 路由到各专项技能",
+      "entry": "SKILL.md",
+      "contribution": "maintainer"
+    },
+    {
+      "name": "mathmodel-methods",
+      "kind": "knowledge",
+      "role": "建模方法库与选型：问题族索引、选型依据、实现范式与验证方式",
+      "entry": "SKILL.md",
+      "contribution": "open",
+      "docs": [
+        "docs/method-library.md",
+        "docs/selection-guide.md",
+        "docs/implementation-guide.md"
+      ]
+    },
+    {
+      "name": "mathmodel-paper",
+      "kind": "knowledge",
+      "role": "论文写作与排版：写作规范、LaTeX 骨架与页面设置、pandoc/Word 输出、参考文献规范",
+      "entry": "SKILL.md",
+      "contribution": "open",
+      "docs": [
+        "docs/writing-rules.md",
+        "docs/typesetting-rules.md",
+        "docs/references.md"
+      ]
+    },
+    {
+      "name": "mathmodel-figure",
+      "kind": "tool",
+      "role": "数据图表：20 个 matplotlib 模板 + 模板库外的 Nature 出图标准",
+      "entry": "SKILL.md",
+      "contribution": "open"
+    },
+    {
+      "name": "mathmodel-diagram",
+      "kind": "tool",
+      "role": "学术示意图：5 个 JSON 驱动版式模板 + 手写与高保真复刻",
+      "entry": "SKILL.md",
+      "contribution": "open"
+    },
+    {
+      "name": "mathmodel-deai",
+      "kind": "tool",
+      "role": "降 AI 与交付核查：词表级 + 结构级表述检查、零宽/不可见字符清理",
+      "entry": "SKILL.md",
+      "contribution": "open"
+    },
+    {
+      "name": "mathmodel-score",
+      "kind": "tool",
+      "role": "结构自检与评分：章节结构契约 + 百分制五维评分卡",
+      "entry": "SKILL.md",
+      "contribution": "open"
+    }
+  ]
+}

@@ -14,7 +14,7 @@
   <a href="https://github.com/Escap1ng/mathmodel-kit/actions/workflows/paper.yml"><img src="https://github.com/Escap1ng/mathmodel-kit/actions/workflows/paper.yml/badge.svg" alt="Paper LaTeX build"></a>
   <img src="https://img.shields.io/badge/%E8%AE%B8%E5%8F%AF%E8%AF%81-Apache--2.0-1A6FC4?style=flat" alt="许可证">
   <img src="https://img.shields.io/badge/Python-3-2E9E44?style=flat" alt="Python">
-  <img src="https://img.shields.io/badge/%E6%8A%80%E8%83%BD-6-7B5FD6?style=flat" alt="技能数">
+  <img src="https://img.shields.io/badge/%E6%8A%80%E8%83%BD-7-7B5FD6?style=flat" alt="技能数">
   <img src="https://img.shields.io/badge/%E6%A8%A1%E6%9D%BF-25-E28E2C?style=flat" alt="模板数">
   <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/contribute-welcome-2E9E44?style=flat" alt="贡献指南"></a>
 </p>
@@ -32,7 +32,7 @@
 
 ## 快速开始
 
-六步跑通。六个技能彼此独立——复制哪一个到技能目录，哪一个就能单独用，也能由主技能串成一条完整流程。
+六步跑通。七个技能彼此独立——复制哪一个到技能目录，哪一个就能单独用，也能由主技能串成一条完整流程。
 
 ```bash
 # 1. 装技能：复制进宿主的技能目录即可，不需要安装任何框架（示例为 Claude Code）
@@ -82,7 +82,7 @@ python3 code/score_card.py scorecard.json --json                                
 
 ## 这是什么
 
-`mathmodel-kit` 是一个**开放的数模工具箱**：六个技能既能单独用，也能由主技能串成一条完整流程，
+`mathmodel-kit` 是一个**开放的数模工具箱**：七个技能既能单独用，也能由主技能串成一条完整流程，
 另配一套**机器可读的模板注册表与内容契约**——别的程序能列举、校验并调用这些能力，而不是面对一堆提示词。
 
 评分与结构自检**默认按国赛口径**（对齐 2026 格式规范），可用 `--rules mcm` 切到**美赛**；去 AI 词表中英双语，
@@ -90,12 +90,17 @@ python3 code/score_card.py scorecard.json --json                                
 
 | 技能 | 职责 | 入口 | 产物 |
 |---|---|---|---|
-| [`mathmodel-core`](skills/mathmodel-core/SKILL.md) | **主技能**：按阶段零至阶段六编排全程（赛题分析 → 模型构建 → 算法实现 → 论文输出 → 评分优化） | 提交赛题或建模需求即触发 | 工作目录骨架、代码与结果、论文与评分报告 |
+| [`mathmodel-core`](skills/mathmodel-core/SKILL.md) | **主技能（编排与路由）**：按阶段零至阶段六编排全程（赛题分析 → 模型构建 → 算法实现 → 论文输出 → 评分优化），并把各环节交给对应专项技能 | 提交赛题或建模需求即触发 | 工作目录骨架、代码与结果、论文与评分报告 |
+| [`mathmodel-methods`](skills/mathmodel-methods/SKILL.md) | **建模方法库与选型**：按问题族（评价/排序、优化、预测、分类聚类、微分方程、仿真、信号、前沿创新）给出候选方法、选型依据、实现入口与验证方式 | 问「这题用什么算法」或需要选型对比时触发 | 方法清单、候选对比表、推荐库与最小骨架、验证方式 |
 | [`mathmodel-figure`](skills/mathmodel-figure/SKILL.md) | **数据图表**：20 个 matplotlib 模板 + 模板库外的 Nature 出图标准 | `python3 code/tools/render_template.py <模板id>` | 300 DPI PNG + 矢量 PDF + SVG + 可改脚本 |
 | [`mathmodel-diagram`](skills/mathmodel-diagram/SKILL.md) | **学术示意图**：5 个 JSON 驱动版式模板，另支持从零手绘与照参考图高保真复刻 | `python3 code/tools/render_template.py <模板id> content.json` | 300 DPI PNG + 矢量 PDF + content JSON |
-| [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | **论文排版**：LaTeX 骨架 → PDF → Word，含竞赛版式微调与摘要模板 | `xelatex` + `word_postprocess.py` | 合规 `.pdf` 与 `.docx`、摘要模板 |
+| [`mathmodel-paper`](skills/mathmodel-paper/SKILL.md) | **论文写作与排版**：写作规范（结构/摘要五段式/模型建立与求解/公式/评价/附录/语言表述）+ LaTeX 骨架与页面设置 + pandoc → Word 版式微调 + 参考文献规范 | `xelatex` + `word_postprocess.py` | 合规 `.pdf` 与 `.docx`、摘要模板、写作与排版规范 |
 | [`mathmodel-deai`](skills/mathmodel-deai/SKILL.md) | **降 AI 与交付核查**：词表级去 AI（模板腔/套话/空泛/伪洞察）+ 结构级（长句/句式重复/段落节奏/小数位）+ 零宽/不可见字符清理 | `check_phrasing.py` + `check_style.py` + `strip_invisible.py` | 表述级检查报告与风险等级、无不可见字符的 `.pdf`/`.docx` |
 | [`mathmodel-score`](skills/mathmodel-score/SKILL.md) | **结构自检与评分**：章节结构契约（摘要三段式、问题重述/分析、假设编号、符号说明三线表、模型评价优缺点、附录源程序、AI 使用声明、匿名，对齐国赛 2026 格式规范）+ 百分制五维（摘要 30 / 算法模型 20 / 创新性 20 / 写作 15 / 排版 15） | `check_chapters.py` + `score_card.py <评分卡.json>` | 结构未过清单、评分表与达标判定（≥85）、扣分明细、优化轮次 |
+
+技能清单的单一事实源是 [`skills/manifest.json`](skills/manifest.json)：登记每个技能的类型（core / knowledge / tool）、职责、入口、
+文档与协作口径（`open` / `maintainer`），CI 校验它与 `skills/` 目录、上表与徽章计数一致。**主技能 `mathmodel-core` 由维护者掌握**，
+其余技能接受外部贡献。
 
 ## 为什么用它
 
@@ -115,7 +120,7 @@ python3 code/score_card.py scorecard.json --json                                
 
 | 维度 | 开放了什么 | 产物在哪 |
 |---|---|---|
-| **契约开放** | 模板清单、字段结构、取值范围、主题结构、章节检查项全部机器可读 | `manifest.json`、`code/templates/schema/*.schema.json`、`themes/theme.schema.json`、`mathmodel-score/code/chapter-checklist.json`（JSON Schema Draft 2020-12） |
+| **契约开放** | 技能清单、模板清单、字段结构、取值范围、主题结构、章节检查项全部机器可读 | [`skills/manifest.json`](skills/manifest.json)（技能类型与协作口径）、`manifest.json`、`code/templates/schema/*.schema.json`、`themes/theme.schema.json`、`mathmodel-score/code/chapter-checklist.json`（JSON Schema Draft 2020-12） |
 | **接口开放** | 能力可列举、可校验、可被别的程序编排 | 统一的命令行入口，加上统一的退出码约定：`0` 成功 / `1` 校验或渲染失败 / `2` 用法或环境出错 |
 | **协作开放** | 外部开发者能加模板、改文档、报缺陷，而且只改两处 | 注册表加一行 + 索引文档加一行，其余一致性由 CI 自动校验 |
 | **许可开放** | 可商用、可二次分发 | [Apache-2.0](LICENSE)，贡献即表示同意以同一许可发布 |
@@ -218,13 +223,14 @@ README 只讲「是什么、怎么用」，细节在下面这些文档里——�
 | 你想做什么 | 看哪份 |
 |---|---|
 | 改图、换配色、加模板 | [`mathmodel-figure/SKILL.md`](skills/mathmodel-figure/SKILL.md) · [`themes/README.md`](skills/mathmodel-figure/themes/README.md) |
-| 写论文、按竞赛口径排版 | [`mathmodel-paper/SKILL.md`](skills/mathmodel-paper/SKILL.md) · [`abstract-template.md`](skills/mathmodel-paper/templates/abstract-template.md) |
+| 写论文、按竞赛口径排版 | [`mathmodel-paper/SKILL.md`](skills/mathmodel-paper/SKILL.md) · [`writing-rules.md`](skills/mathmodel-paper/docs/writing-rules.md) · [`typesetting-rules.md`](skills/mathmodel-paper/docs/typesetting-rules.md) · [`references.md`](skills/mathmodel-paper/docs/references.md) |
 | 去 AI 味、清零宽/不可见字符 | [`mathmodel-deai/SKILL.md`](skills/mathmodel-deai/SKILL.md) · [`deai-rules.md`](skills/mathmodel-deai/docs/deai-rules.md) |
 | 给论文打分、交付前自检 | [`mathmodel-score/SKILL.md`](skills/mathmodel-score/SKILL.md) · [`rubric.md`](skills/mathmodel-score/docs/rubric.md) · [`chapter-checklist.md`](skills/mathmodel-score/docs/chapter-checklist.md) · [`self-check.md`](skills/mathmodel-score/docs/self-check.md) |
 | 画流程图 / 路线图 / 框架图 | [`mathmodel-diagram/SKILL.md`](skills/mathmodel-diagram/SKILL.md) |
 | 走完整个竞赛流程 | [`mathmodel-core/SKILL.md`](skills/mathmodel-core/SKILL.md) |
+| 选建模方法 / 定算法 / 做选型对比 | [`mathmodel-methods/SKILL.md`](skills/mathmodel-methods/SKILL.md) |
 | 出图规范（唯一权威） | [`visualization-rules.md`](skills/mathmodel-figure/docs/guides/visualization-rules.md) · [`nature-standard.md`](skills/mathmodel-figure/docs/guides/nature-standard.md) |
-| 提交代码 / 新增模板 | [`CONTRIBUTING.md`](CONTRIBUTING.md)（[English](CONTRIBUTING_EN.md)） |
+| 参与贡献（子模块 / 标准 / 审核 / 角色权限） | [`CONTRIBUTING.md`](CONTRIBUTING.md)（[English](CONTRIBUTING_EN.md)） |
 | 了解为什么这样设计 | [白皮书](docs/upgrade-plan.md)（[English](docs/upgrade-plan_EN.md)）· [`CHANGELOG.md`](CHANGELOG.md) |
 
 ## 仓库结构
@@ -237,16 +243,19 @@ mathmodel-kit/
 ├── LICENSE                         # Apache License 2.0
 ├── docs/upgrade-plan.md            # 白皮书：开放接口、数据契约、治理与版本策略
 └── skills/
-    ├── mathmodel-core/             # 主技能：阶段零至阶段六工作流、代码与论文规范、评分口径
+    ├── manifest.json               # 技能注册表（唯一来源：类型 / 职责 / 入口 / 协作口径）
+    ├── mathmodel-core/             # 主技能（编排与路由）：阶段零至阶段六工作流
+    ├── mathmodel-methods/          # 建模方法库与选型：docs/（方法库、选型指南、实现指南）
     ├── mathmodel-figure/           # 数据图表：code/templates（20 模板）· code/style · themes/ · examples/previews
     ├── mathmodel-diagram/          # 学术示意图：code/templates（5 模板）+ schema/ · code/tools · examples/
-    ├── mathmodel-paper/            # 论文排版：templates/（paper.tex、摘要模板）· code/（Word 微调）
+    ├── mathmodel-paper/            # 论文写作与排版：docs/（写作、排版、参考文献规范）· templates/ · code/（Word 微调）
     ├── mathmodel-deai/             # 降 AI：code/（表述级检查器 + 词表 + 零宽清理器）· docs/（降 AI 规范）· examples/
     └── mathmodel-score/            # 结构自检与评分：code/（章节契约 + 检查器 + 评分卡）· docs/（rubric、chapter-checklist、self-check）· examples/
 ```
 
-每个技能内部结构一致：`code/` 放脚本与注册表，`docs/` 放规范，`examples/` 放可复现示例。
-`code/tools/manifest.json` 是模板的唯一来源，新增模板只需在注册表和索引文档各加一行。
+技能分三类（以 [`skills/manifest.json`](skills/manifest.json) 为准）：**core**（编排与路由，只有 `SKILL.md`）、
+**knowledge**（规范或方法库，`SKILL.md` + `docs/`，如 `mathmodel-methods`、`mathmodel-paper`）、
+**tool**（`code/` + `docs/` + `examples/`）。`code/tools/manifest.json` 是模板的唯一来源，新增模板只需在注册表和索引文档各加一行。
 
 ## 依赖
 
@@ -276,10 +285,18 @@ CI 以 Python 3.12 为最低验证环境。Linux / macOS 上如果没有中文�
 
 ## 扩展与贡献
 
-加模板、补示例、改文档、报缺陷，都欢迎。三条路径各自怎么改，见 [`CONTRIBUTING.md`](CONTRIBUTING.md)：
+加模板、补示例、改文档、报缺陷，都欢迎。可协作的事收敛成四个子模块，每个子模块都给出**贡献标准 → 提交规范 → 审核流程**；子模块间的交接与同步规则、贡献者角色与权限见 [`CONTRIBUTING.md`](CONTRIBUTING.md)（[English](CONTRIBUTING_EN.md)）：
+
+| 子模块 | 你可以做什么 | 入口 |
+|---|---|---|
+| **M1 文档与示例** | 补规范、纠错、加示例与预览 | PR（`docs: …`），索引表与注册表同一次提交 |
+| **M2 代码与模板** | 新增模板（注册表一行 + 索引文档一行）、修脚本与工具 | PR（`feat: …`），CLI 与 CI 无需改动 |
+| **M3 测试与验证** | 本地跑门禁、补 CI 冒烟用例 | PR 附实际跑过的命令与输出，CI 全绿是合并门槛 |
+| **M4 问题反馈与需求** | 报缺陷（附最小复现）、提模板需求、指出文档问题 | [Issue 表单](https://github.com/Escap1ng/mathmodel-kit/issues/new/choose) |
+
 其中**加模板**最常见，只需「注册表一行 + 索引文档一行」，不用动命令行、CI 和版本号。
 能由机器判定的（语法、注册表一致性、内容契约、渲染能否成功）交给 CI，人只审语义与原创性；
-贡献者会在注册表 `author` 字段和 [CHANGELOG.md](CHANGELOG.md) 里署名。
+贡献者会在注册表 `author` 字段和 [CHANGELOG.md](CHANGELOG.md) 里署名，角色权限分报告者 / 贡献者 / 评审者 / 维护者四档。
 
 [开 Issue 报缺陷或提新模板](https://github.com/Escap1ng/mathmodel-kit/issues/new/choose)
 · [看已有的 PR](https://github.com/Escap1ng/mathmodel-kit/pulls) ·
