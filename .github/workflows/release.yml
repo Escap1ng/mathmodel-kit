@@ -1,0 +1,63 @@
+# 发版流程：推送 v* 标签触发。校验「标签 == VERSION == CHANGELOG 小节」后，
+# 以 CHANGELOG 对应小节作为 Release notes 发布。
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Verify version and publish release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify tag, VERSION and CHANGELOG agree; extract release notes
+        shell: bash
+        run: |
+          python - <<'PYEOF'
+          import os
+          import sys
+          from pathlib import Path
+
+          tag = os.environ["GITHUB_REF_NAME"]
+          version = Path("VERSION").read_text(encoding="utf-8").strip()
+          changelog = Path("CHANGELOG.md").read_text(encoding="utf-8")
+
+          if tag != f"v{version}":
+              sys.exit(f"tag {tag!r} does not match VERSION {version!r}")
+
+          heading = f"## [{version}]"
+          if heading not in changelog:
+              sys.exit(f"CHANGELOG.md has no section {heading}")
+
+          lines = changelog.splitlines()
+          start = next(i for i, line in enumerate(lines) if line.startswith(heading))
+          body = [lines[start]]
+          for line in lines[start + 1:]:
+              if line.startswith("## ["):
+                  break
+              body.append(line)
+
+          notes = "\n".join(body).strip()
+          Path("release-notes.md").write_text(notes + "\n", encoding="utf-8")
+          Path(os.environ["GITHUB_ENV"]).open("a", encoding="utf-8").write(
+              f"RELEASE_TAG={tag}\n")
+          print(notes)
+          PYEOF
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: ${{ env.RELEASE_TAG }}
+          body_path: release-notes.md
+          draft: false
+          prerelease: false

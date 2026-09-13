@@ -2,6 +2,9 @@
 
 每个 id 对应 `code/templates/` 下的一个内置脚本。
 
+> 本表内容由 `code/tools/manifest.json`（模板注册表，单一事实源）派生，两者必须一致；
+> 由 CI 的 `manifest-consistency` job 强制校验。新增模板时先在注册表登记，再回到本表加一行。
+
 | id | 脚本 | 图题 |
 | --- | --- | --- |
 | `multiclass-shap-combo` | `make_multiclass_shap_combo.py` | 多分类 SHAP 柱状图与蜂群图组合图 |

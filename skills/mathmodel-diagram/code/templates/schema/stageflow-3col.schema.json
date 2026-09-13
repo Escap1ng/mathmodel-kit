@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Escap1ng/mathmodel-kit/skills/mathmodel-diagram/code/templates/schema/stageflow-3col.schema.json",
+  "title": "stageflow-3col content",
+  "description": "分阶段流程框架图（左方法链 / 中彩色流程块 / 右阶段说明）的内容契约。画布宽 1000 固定，高度按内容自动生长。强制字段来自 code/templates/stageflow_3col.py 第 188 行的直接下标访问（blocks、stages 必需，rights 可整段删除）。",
+  "type": "object",
+  "required": ["blocks", "stages"],
+  "properties": {
+    "headers": {
+      "description": "可选，默认 [研究框架, 研究内容, 研究方法]",
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "string" }
+    },
+    "stages": {
+      "description": "左栏竖排方法链",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": { "type": "string", "minLength": 1 },
+          "block": { "type": "integer", "minimum": 0 },
+          "at": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "rights": {
+      "description": "右栏阶段说明，可整段删除",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": { "type": "string", "minLength": 1 },
+          "block": { "type": "integer", "minimum": 0 },
+          "at": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "blocks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["title", "tone", "sections"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1 },
+          "tone": {
+            "description": "每块一个色系（实色标题条 + 深浅内容）",
+            "enum": ["teal", "green", "olive", "orange", "blue"]
+          },
+          "sections": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/section" } }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "$defs": {
+    "labeledItems": {
+      "type": "object",
+      "required": ["header", "items"],
+      "properties": {
+        "header": { "type": "string", "minLength": 1 },
+        "items": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "section": {
+      "oneOf": [
+        {
+          "description": "cards：并列卡片（标题 + 描述）",
+          "type": "object",
+          "required": ["type", "cards"],
+          "properties": {
+            "type": { "const": "cards" },
+            "cards": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["header", "desc"],
+                "properties": {
+                  "header": { "type": "string", "minLength": 1 },
+                  "desc": { "type": "string", "minLength": 1 }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "description": "groups：分组清单（组标题 + 条目）",
+          "type": "object",
+          "required": ["type", "groups"],
+          "properties": {
+            "type": { "const": "groups" },
+            "groups": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/labeledItems" } }
+          },
+          "additionalProperties": true
+        },
+        {
+          "description": "list_grid：左清单 + 右矩阵",
+          "type": "object",
+          "required": ["type", "left", "right"],
+          "properties": {
+            "type": { "const": "list_grid" },
+            "left": { "$ref": "#/$defs/labeledItems" },
+            "right": {
+              "type": "object",
+              "required": ["header", "rows"],
+              "properties": {
+                "header": { "type": "string", "minLength": 1 },
+                "rows": { "type": "array", "minItems": 1, "items": { "type": "array", "minItems": 1, "items": { "type": "string" } } }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "description": "scenarios：多场景决策（输入 → 决策 ← 约束 → 输出）",
+          "type": "object",
+          "required": ["type", "scenarios"],
+          "properties": {
+            "type": { "const": "scenarios" },
+            "scenarios": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["name", "left", "decide", "right", "out"],
+                "properties": {
+                  "name": { "type": "string", "minLength": 1 },
+                  "left": { "type": "string", "minLength": 1 },
+                  "decide": { "type": "string", "minLength": 1 },
+                  "right": { "type": "string", "minLength": 1 },
+                  "out": { "type": "string", "minLength": 1 }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "description": "fanout：中心成果分发到多个产出",
+          "type": "object",
+          "required": ["type", "center", "outs"],
+          "properties": {
+            "type": { "const": "fanout" },
+            "center": { "type": "string", "minLength": 1 },
+            "outs": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+          },
+          "additionalProperties": true
+        }
+      ]
+    }
+  },
+  "additionalProperties": true
+}

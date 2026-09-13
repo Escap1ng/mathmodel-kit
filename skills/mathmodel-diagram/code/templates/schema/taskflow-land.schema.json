@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Escap1ng/mathmodel-kit/skills/mathmodel-diagram/code/templates/schema/taskflow-land.schema.json",
+  "title": "taskflow-land content",
+  "description": "横版任务流水线图（若干任务块，块内流水线，块间粗箭头串联）的内容契约。画布宽 1360 固定，高度按内容自动生长。强制字段来自 code/templates/taskflow_land.py 第 221 行的直接下标访问。",
+  "type": "object",
+  "required": ["blocks"],
+  "properties": {
+    "blocks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["title", "sections"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1 },
+          "layout": {
+            "description": "half：两个半宽块并排，中间可放 cylinder；缺省为通栏",
+            "enum": ["full", "half"]
+          },
+          "cylinder": { "description": "两个半宽块之间的圆柱中转标签", "type": "string" },
+          "sections": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/section" } }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "$defs": {
+    "sideBox": {
+      "description": "步骤旁挂的做法细节面板；rows 与 items 二选一",
+      "type": "object",
+      "properties": {
+        "frame": { "enum": ["black", "blue"], "description": "缺省 blue" },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "description": "cols：并排小盒",
+                "type": "object",
+                "required": ["cols"],
+                "properties": { "cols": { "type": "array", "minItems": 1, "items": { "type": "string" } } },
+                "additionalProperties": true
+              },
+              {
+                "description": "full：通栏说明",
+                "type": "object",
+                "required": ["full"],
+                "properties": { "full": { "type": "string", "minLength": 1 } },
+                "additionalProperties": true
+              },
+              {
+                "description": "table：左右两列",
+                "type": "object",
+                "required": ["table"],
+                "properties": {
+                  "table": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "string" } }
+                  }
+                },
+                "additionalProperties": true
+              }
+            ]
+          }
+        },
+        "items": {
+          "description": "简写形式，等价于每项一个 full 行",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      },
+      "anyOf": [{ "required": ["rows"] }, { "required": ["items"] }],
+      "additionalProperties": true
+    },
+    "section": {
+      "oneOf": [
+        {
+          "description": "pipeline：横向流水线，每步可挂 detail 细节面板",
+          "type": "object",
+          "required": ["type", "steps"],
+          "properties": {
+            "type": { "const": "pipeline" },
+            "steps": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["text"],
+                "properties": {
+                  "text": { "type": "string", "minLength": 1 },
+                  "emph": { "enum": ["blue", "black"], "description": "强调盒配色" },
+                  "tone2": { "description": "切换为第二色系的步骤盒", "type": "boolean" },
+                  "detail": { "$ref": "#/$defs/sideBox" }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "description": "vchain：纵向步骤链，每步可挂 side 细节面板",
+          "type": "object",
+          "required": ["type", "steps"],
+          "properties": {
+            "type": { "const": "vchain" },
+            "steps": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["text"],
+                "properties": {
+                  "text": { "type": "string", "minLength": 1 },
+                  "tone2": { "type": "boolean" },
+                  "side": { "$ref": "#/$defs/sideBox" }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "description": "pairs：左右配对清单（左条目数不必等于右说明数）",
+          "type": "object",
+          "required": ["type", "left", "right"],
+          "properties": {
+            "type": { "const": "pairs" },
+            "left": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+            "right": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+          },
+          "additionalProperties": true
+        }
+      ]
+    }
+  },
+  "additionalProperties": true
+}

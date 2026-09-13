@@ -67,12 +67,23 @@ python3 code/templates/<template_id>.py content.json --check       # 只校验�
 ## 五、交付清单
 
 ```
-code/templates/<template_id>.py
-docs/templates/<template_id>.md      # 语义 + 槽位字数预算（两节，带目录）
-examples/<template_id>/example.json  # 填满的真实示例，不要占位符
-examples/<template_id>/preview.png   # 用本模板渲染器导出的 1:1 预览
-SKILL.md                             # 在模板索引表加一行
+code/templates/<template_id>.py                    # 渲染脚本（CLI 与容量校验见第二节）
+code/templates/schema/<template_id>.schema.json    # 内容契约（必备字段以脚本实际访问为准）
+docs/templates/<template_id>.md                    # 语义 + 槽位字数预算（两节，带目录）
+examples/<template_id>/example.json                # 填满的真实示例，不要占位符
+examples/<template_id>/preview.png                 # 用本模板渲染器导出的 1:1 预览
+code/templates/manifest.json                       # 注册表加一行
+SKILL.md                                           # 模板索引表加一行
 ```
+
+注册表是**单一事实源**：能力枚举（`--list`）、CI 的数量断言与一致性校验都从它派生，
+因此**不需要改动 CLI、CI 与版本号**。CI 的 `manifest-consistency` 会校验
+「登记表 ↔ 文件系统 ↔ 索引文档 ↔ 版本号 ↔ README 徽章」，Schema 与内置示例则由
+`code/tools/validate_content.py` 校验。
+
+Schema 写法要点：必备字段**以代码事实为准**——只有 `need()` 调用或 `c['key']` 下标访问的字段才是必备，
+其余走 `.get(默认值)` 的字段列为可选；`additionalProperties` 保持开放，允许 `_comment` 等元信息。
+渲染入口统一为 `python3 code/tools/render_template.py <template_id> content.json -o out.png`。
 
 `docs/templates/<template_id>.md` 必须包含：每个字段的**汉字预算**（用脚本算，不要手估）、
 数量允许区间、以及"哪些槽位是并列/汇流/对比"的语义约定——语义放错比字数超框严重得多。

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Escap1ng/mathmodel-kit/skills/mathmodel-diagram/code/templates/schema/roadmap-5band.schema.json",
+  "title": "roadmap-5band content",
+  "description": "五带技术路线图的内容契约。几何为 954×1296 固定标定，各带内部数量可变。rails 必须正好 5 项（代码强校验）；五个 band 是完整成图的必要条件，故列为 required（代码对 band 缺失走 .get 默认，但缺带即残缺图）。",
+  "type": "object",
+  "required": ["title", "rails", "band1", "band2", "band3", "band4", "band5"],
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "rails": {
+      "description": "左旗标，必须正好 5 项，与 band1..band5 一一对应",
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["chevron", "label"],
+        "properties": {
+          "chevron": { "description": "竖排 chevron 文字", "type": "string", "minLength": 1 },
+          "label": { "description": "右竖排带名", "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "band1": {
+      "description": "带一：提出问题 / 目标拆解",
+      "type": "object",
+      "required": ["headline", "items"],
+      "properties": {
+        "headline": { "type": "string", "minLength": 1 },
+        "items": { "description": "子问题清单，2–5 项", "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "band2": {
+      "description": "带二：数据与指标",
+      "type": "object",
+      "required": ["sources", "prep", "assumptions", "symbols", "left_vertical", "content",
+                   "subframe", "dims", "right_vertical", "metrics", "aggregator", "datasource"],
+      "properties": {
+        "sources": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "prep": { "type": "string", "minLength": 1 },
+        "assumptions": { "type": "string", "minLength": 1 },
+        "symbols": { "type": "string", "minLength": 1 },
+        "left_vertical": { "description": "竖排标签", "type": "string", "minLength": 1 },
+        "content": { "type": "string", "minLength": 1 },
+        "subframe": { "type": "string", "minLength": 1 },
+        "dims": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "right_vertical": { "type": "string", "minLength": 1 },
+        "metrics": {
+          "description": "两列口径表：[[口径名, 取值说明], ...]",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "string" } }
+        },
+        "aggregator": { "type": "string", "minLength": 1 },
+        "datasource": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "band3": {
+      "description": "带三：方法与机制",
+      "type": "object",
+      "required": ["top", "bottom", "left", "left_vertical", "content", "right_vertical", "right"],
+      "properties": {
+        "top": { "type": "string", "minLength": 1 },
+        "bottom": { "type": "string", "minLength": 1 },
+        "left": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "left_vertical": { "type": "string", "minLength": 1 },
+        "content": { "type": "string", "minLength": 1 },
+        "right_vertical": { "type": "string", "minLength": 1 },
+        "right": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "band4": {
+      "description": "带四：结果对比",
+      "type": "object",
+      "required": ["banner", "left_vertical", "left_items", "middle", "right_vertical",
+                   "right_items", "right_spans"],
+      "properties": {
+        "banner": { "type": "string", "minLength": 1 },
+        "left_vertical": { "type": "string", "minLength": 1 },
+        "left_arrow_labels": { "description": "可选，默认两项空串", "type": "array", "items": { "type": "string" } },
+        "left_items": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "middle": { "type": "string", "minLength": 1 },
+        "right_vertical": { "type": "string", "minLength": 1 },
+        "right_arrow_labels": { "type": "array", "items": { "type": "string" } },
+        "right_items": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "right_spans": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "band5": {
+      "description": "带五：评价推广",
+      "type": "object",
+      "required": ["left_items", "corner", "pill", "cycle", "content", "hex", "eval", "metrics", "cases"],
+      "properties": {
+        "left_items": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "corner": { "type": "string", "minLength": 1 },
+        "pill": { "type": "string", "minLength": 1 },
+        "cycle": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "content": { "type": "string", "minLength": 1 },
+        "hex": { "type": "string", "minLength": 1 },
+        "eval": { "type": "string", "minLength": 1 },
+        "metrics": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "cases": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -35,6 +35,12 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 4. 渲染（写文件前逐槽校验字数，超框报出具体预算并以非零码退出）：
 
 ```bash
+# 统一入口（推荐：id/别名/中文片段均可，模板清单来自 code/templates/manifest.json）
+python3 code/tools/render_template.py <模板 id> content.json -o out.png
+python3 code/tools/render_template.py <模板 id> content.json --check
+python3 code/tools/render_template.py --list          # 列出全部模板 id（--list --json 输出注册表）
+
+# 等价的逐模板调用（继续可用）
 python3 code/templates/roadmap_5band.py  content.json -o out.png   # 模板 roadmap-5band
 python3 code/templates/framework_3col.py content.json -o out.png   # 模板 framework-3col
 python3 code/templates/stageflow_3col.py content.json -o out.png   # 模板 stageflow-3col
@@ -43,6 +49,9 @@ python3 code/templates/problem_flow.py   content.json -o out.png   # 模板 prob
 ```
 
 每个模板同时产出同名 `.pdf`（矢量）。只要校验不要出图：把 `-o ...` 换成 `--check`。
+
+内容契约（JSON Schema）在 `code/templates/schema/<模板 id>.schema.json`，可用
+`python3 code/tools/validate_content.py <模板 id> content.json` 校验（`--all` 校验全部内置示例）。
 
 新增模板见 `docs/templates/adding-templates.md`。
 

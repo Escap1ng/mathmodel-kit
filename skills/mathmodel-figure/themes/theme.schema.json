@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Escap1ng/mathmodel-kit/skills/mathmodel-figure/themes/theme.schema.json",
+  "title": "mathmodel-figure theme",
+  "description": "图表主题契约：把「颜色只承担身份/基准/方向/层级四种职责」这组规则从代码里提出来，变成可声明、可替换、可校验的数据。字段名是契约（Stable），色值是内容（可随主题变化）。",
+  "type": "object",
+  "required": ["schema_version", "name", "title", "roles", "cmaps"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "name": { "description": "主题名，供 --theme 按名解析；同一目录下不可重名", "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "title": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "author": { "type": "string" },
+    "roles": {
+      "type": "object",
+      "required": ["identity", "baseline", "signal", "neutral"],
+      "additionalProperties": false,
+      "properties": {
+        "identity": {
+          "description": "身份色：回答「这是哪条系列」，跨图含义必须一致",
+          "type": "object",
+          "required": ["main", "main_light", "main_pale", "accents"],
+          "additionalProperties": false,
+          "properties": {
+            "main": { "$ref": "#/$defs/hex" },
+            "main_light": { "$ref": "#/$defs/hex" },
+            "main_pale": { "$ref": "#/$defs/hex" },
+            "accents": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/hex" } }
+          }
+        },
+        "baseline": {
+          "description": "基准色：对照、均值、参考线一律用它，不抢身份",
+          "type": "object",
+          "required": ["base", "dark"],
+          "additionalProperties": false,
+          "properties": {
+            "base": { "$ref": "#/$defs/hex" },
+            "dark": { "$ref": "#/$defs/hex" }
+          }
+        },
+        "signal": {
+          "description": "方向色：只用于有正负之分的变化量，并配 ↑/↓ 以便灰度打印",
+          "type": "object",
+          "required": ["positive", "negative"],
+          "additionalProperties": false,
+          "properties": {
+            "positive": { "$ref": "#/$defs/hex" },
+            "negative": { "$ref": "#/$defs/hex" }
+          }
+        },
+        "neutral": {
+          "description": "中性色：文字、轴线、网格、底色（禁纯黑 #000000）",
+          "type": "object",
+          "required": ["bg", "light", "mid", "dark", "ink"],
+          "additionalProperties": false,
+          "properties": {
+            "bg": { "$ref": "#/$defs/hex" },
+            "light": { "$ref": "#/$defs/hex" },
+            "mid": { "$ref": "#/$defs/hex" },
+            "dark": { "$ref": "#/$defs/hex" },
+            "ink": { "$ref": "#/$defs/hex" }
+          }
+        }
+      }
+    },
+    "cmaps": {
+      "description": "色图端点（按低→高顺序），需与身份色协调",
+      "type": "object",
+      "required": ["divergent", "sequential"],
+      "additionalProperties": false,
+      "properties": {
+        "divergent": { "type": "array", "minItems": 3, "items": { "$ref": "#/$defs/hex" } },
+        "sequential": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/hex" } }
+      }
+    }
+  },
+  "$defs": {
+    "hex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+  },
+  "additionalProperties": false
+}

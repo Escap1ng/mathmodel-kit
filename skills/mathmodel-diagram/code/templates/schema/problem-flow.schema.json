@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Escap1ng/mathmodel-kit/skills/mathmodel-diagram/code/templates/schema/problem-flow.schema.json",
+  "title": "problem-flow content",
+  "description": "问题分析流程图 / 系统架构图的内容契约。强制字段来自 code/templates/problem_flow.py 的 need() 调用；additionalProperties 保持开放，允许附加 _comment 等元信息而不破坏校验。",
+  "type": "object",
+  "required": ["modules", "edges"],
+  "properties": {
+    "canvas": {
+      "description": "画布像素尺寸，1 px = 0.01 inch；缺省 800×650",
+      "type": "object",
+      "properties": {
+        "w": { "type": "number", "exclusiveMinimum": 0 },
+        "h": { "type": "number", "exclusiveMinimum": 0 }
+      },
+      "additionalProperties": true
+    },
+    "font_size": {
+      "description": "可选，默认 16 px（≈11.5 pt，≥9 pt 红线）",
+      "type": "number",
+      "minimum": 9,
+      "maximum": 40
+    },
+    "title": { "type": "string" },
+    "modules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "text", "kind", "x", "y", "w", "h"],
+        "properties": {
+          "id": { "description": "模块唯一标识，供 edges 引用", "type": "string", "minLength": 1 },
+          "text": { "description": "模块文案，\\n 手动断行", "type": "string", "minLength": 1 },
+          "kind": { "enum": ["algo", "config", "output"], "description": "三类语义模块，决定填充色与描边样式" },
+          "x": { "description": "盒左上角 x（px）", "type": "number" },
+          "y": { "description": "盒左上角 y（px），y 轴向下", "type": "number" },
+          "w": { "type": "number", "exclusiveMinimum": 0 },
+          "h": { "type": "number", "exclusiveMinimum": 0 },
+          "icon": { "description": "可选单字符图标", "type": "string", "maxLength": 1 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to"],
+        "properties": {
+          "from": { "type": "string", "minLength": 1 },
+          "to": { "type": "string", "minLength": 1 },
+          "primary": { "description": "默认 true；false 走次要数据流虚线", "type": "boolean" },
+          "from_side": { "enum": ["top", "right", "bottom", "left"], "default": "bottom" },
+          "to_side": { "enum": ["top", "right", "bottom", "left"], "default": "top" },
+          "via": {
+            "description": "中间拐点，非空时全接管正交折线",
+            "type": "array",
+            "items": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": { "type": "number" }
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Escap1ng/mathmodel-kit/skills/mathmodel-diagram/code/templates/schema/framework-3col.schema.json",
+  "title": "framework-3col content",
+  "description": "三栏研究框架图（左阶段链 / 中研究内容 / 右方法清单）的内容契约。画布宽 1026 固定，高度按内容自动生长。强制字段来自 code/templates/framework_3col.py 中 build() 的直接下标访问。",
+  "type": "object",
+  "required": ["blocks", "stages", "methods"],
+  "properties": {
+    "headers": {
+      "description": "可选，默认 [研究框架, 研究内容, 研究方法]",
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "string" }
+    },
+    "stages": {
+      "description": "左栏阶段旗标",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": { "type": "string", "minLength": 1 },
+          "tone": { "enum": ["teal", "sky"], "default": "teal" },
+          "block": { "description": "对齐到第几个内容块（0 基）", "type": "integer", "minimum": 0 },
+          "at": { "description": "块内相对位置 0–1，默认 0.5", "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "methods": {
+      "description": "右栏方法清单，元素可为字符串或对象",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["text"],
+            "properties": {
+              "text": { "type": "string", "minLength": 1 },
+              "block": { "type": "integer", "minimum": 0 },
+              "at": { "type": "number", "minimum": 0, "maximum": 1 }
+            },
+            "additionalProperties": true
+          }
+        ]
+      }
+    },
+    "blocks": {
+      "description": "中栏内容块，每块的 sections 由若干版式段拼成",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["title", "sections"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1 },
+          "sections": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/section" } }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "$defs": {
+    "labeledItems": {
+      "type": "object",
+      "required": ["header", "items"],
+      "properties": {
+        "header": { "type": "string", "minLength": 1 },
+        "items": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "section": {
+      "oneOf": [
+        {
+          "description": "columns：并列分栏，语义为横向并列",
+          "type": "object",
+          "required": ["type", "columns"],
+          "properties": {
+            "type": { "const": "columns" },
+            "columns": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/labeledItems" } }
+          },
+          "additionalProperties": true
+        },
+        {
+          "description": "chain：串行推进链",
+          "type": "object",
+          "required": ["type", "items"],
+          "properties": {
+            "type": { "const": "chain" },
+            "items": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+          },
+          "additionalProperties": true
+        },
+        {
+          "description": "converge：多组汇流，每组给出 items 与 outs（结论产出）",
+          "type": "object",
+          "required": ["type", "groups"],
+          "properties": {
+            "type": { "const": "converge" },
+            "groups": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["header", "items", "outs"],
+                "properties": {
+                  "header": { "type": "string", "minLength": 1 },
+                  "items": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+                  "outs": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        {
+          "description": "mechanism：影响因素 → 中心维度 → 影响机理",
+          "type": "object",
+          "required": ["type", "left", "left_label", "center", "right_label", "right", "bottom"],
+          "properties": {
+            "type": { "const": "mechanism" },
+            "left": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+            "left_label": { "type": "string", "minLength": 1 },
+            "center": { "type": "string", "minLength": 1 },
+            "right_label": { "type": "string", "minLength": 1 },
+            "right": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+            "bottom": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": true
+        },
+        {
+          "description": "pair：左右配对，左列清单 + 右两列映射表",
+          "type": "object",
+          "required": ["type", "left", "right"],
+          "properties": {
+            "type": { "const": "pair" },
+            "left": { "$ref": "#/$defs/labeledItems" },
+            "right": {
+              "type": "object",
+              "required": ["header", "rows"],
+              "properties": {
+                "header": { "type": "string", "minLength": 1 },
+                "rows": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "string" } }
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    }
+  },
+  "additionalProperties": true
+}

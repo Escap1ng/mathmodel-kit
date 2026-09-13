@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "skill": "mathmodel-diagram",
+  "script_dir": ".",
+  "description": "示意图模板注册表：唯一事实源。新增模板只需在本清单登记一行，不再改动 CLI 与 CI。除 script 相对 script_dir 外，其余相对路径均相对本文件所在目录（code/templates/）。",
+  "templates": [
+    {
+      "id": "roadmap-5band",
+      "script": "roadmap_5band.py",
+      "title": "五带技术路线图",
+      "summary": "954×1296 竖版，五条点线带 + 左旗标 + 右竖排标签；适合提出问题 → 数据与指标 → 方法与机制 → 结果对比 → 评价推广",
+      "canvas": { "w": 954, "h": 1296, "grow": "fixed" },
+      "schema": "schema/roadmap-5band.schema.json",
+      "example": "../../examples/roadmap-5band/example.json",
+      "preview": "../../examples/roadmap-5band/preview.png",
+      "doc": "../../docs/templates/roadmap-5band.md",
+      "aliases": ["roadmap", "route-map"],
+      "cjk_hints": ["技术路线", "路线图", "全文概览"],
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "framework-3col",
+      "script": "framework_3col.py",
+      "title": "三栏研究框架图",
+      "summary": "1026 宽三栏（左阶段链 / 中内容块 / 右方法清单），高度自适应；表达研究内容全景",
+      "canvas": { "w": 1026, "h": null, "grow": "auto" },
+      "schema": "schema/framework-3col.schema.json",
+      "example": "../../examples/framework-3col/example.json",
+      "preview": "../../examples/framework-3col/preview.png",
+      "doc": "../../docs/templates/framework-3col.md",
+      "aliases": ["framework", "frame"],
+      "cjk_hints": ["研究框架", "框架图", "内容全景"],
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "stageflow-3col",
+      "script": "stageflow_3col.py",
+      "title": "三栏阶段流程图",
+      "summary": "1000 宽三栏（左方法链 / 中彩色流程块 / 右阶段说明），每块实色标题条 + 独立色系，高度自适应",
+      "canvas": { "w": 1000, "h": null, "grow": "auto" },
+      "schema": "schema/stageflow-3col.schema.json",
+      "example": "../../examples/stageflow-3col/example.json",
+      "preview": "../../examples/stageflow-3col/preview.png",
+      "doc": "../../docs/templates/stageflow-3col.md",
+      "aliases": ["stageflow", "stage-flow"],
+      "cjk_hints": ["阶段流程", "执行流程", "推进流程"],
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "taskflow-land",
+      "script": "taskflow_land.py",
+      "title": "横版任务流水线图",
+      "summary": "横版 1360 宽，若干任务块，块内流水线 + 每步挂做法细节；适合课题拆成「任务一…任务四」，16:9",
+      "canvas": { "w": 1360, "h": null, "grow": "auto" },
+      "schema": "schema/taskflow-land.schema.json",
+      "example": "../../examples/taskflow-land/example.json",
+      "preview": "../../examples/taskflow-land/preview.png",
+      "doc": "../../docs/templates/taskflow-land.md",
+      "aliases": ["taskflow", "task-flow"],
+      "cjk_hints": ["任务流水线", "任务分解", "横向流程"],
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "problem-flow",
+      "script": "problem_flow.py",
+      "title": "问题分析流程图 / 系统架构图",
+      "summary": "任意画布，总分布局（顶层居中 → 并行分支 → 底层收拢）+ 反馈虚线；论文第二章问题分析图",
+      "canvas": { "w": 800, "h": 650, "grow": "json" },
+      "schema": "schema/problem-flow.schema.json",
+      "example": "../../examples/problem-flow/example.json",
+      "preview": "../../examples/problem-flow/preview.png",
+      "doc": "../../docs/templates/problem-flow.md",
+      "aliases": ["problem", "architecture"],
+      "cjk_hints": ["问题分析", "架构图", "系统架构"],
+      "author": "mathmodel-kit"
+    }
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "schema_version": "1.0",
+  "skill": "mathmodel-figure",
+  "script_dir": "../templates",
+  "description": "数据图表模板注册表：唯一事实源，取代原先硬编码在 render_template.py 中的 SCRIPT_MAP / ALIASES / CJK_HINTS 三张字典。数组顺序即模板注册顺序；--list 输出为 id 的字典序。除 script 相对 script_dir 外，其余路径均相对本文件所在目录（code/tools/）。",
+  "templates": [
+    {
+      "id": "multiclass-shap-combo",
+      "script": "make_multiclass_shap_combo.py",
+      "title": "多分类 SHAP 柱状图与蜂群图组合图",
+      "group": "advanced",
+      "aliases": ["shap", "multiclass-shap"],
+      "cjk_hints": ["多分类", "shap"],
+      "preview": "../../examples/previews/multiclass_shap_combo_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "paired-raincloud",
+      "script": "make_paired_raincloud.py",
+      "title": "配对云雨图",
+      "group": "advanced",
+      "aliases": ["raincloud"],
+      "cjk_hints": ["云雨"],
+      "preview": "../../examples/previews/paired_raincloud_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "cv-roc-ci",
+      "script": "make_cv_roc_ci.py",
+      "title": "交叉验证 ROC 曲线与置信区间图",
+      "group": "advanced",
+      "aliases": ["roc", "cv-roc"],
+      "cjk_hints": ["roc"],
+      "preview": "../../examples/previews/cv_roc_ci_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "taylor-diagram",
+      "script": "make_taylor_diagram.py",
+      "title": "多模型评价泰勒图",
+      "group": "advanced",
+      "aliases": ["taylor"],
+      "cjk_hints": ["泰勒"],
+      "preview": "../../examples/previews/taylor_diagram_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "correlation-pairgrid",
+      "script": "make_correlation_pairgrid.py",
+      "title": "数据分布、拟合线、置信区间、相关系数组合图",
+      "group": "advanced",
+      "aliases": ["pairgrid", "correlation"],
+      "cjk_hints": ["相关矩阵组合", "拟合线"],
+      "preview": "../../examples/previews/correlation_pairgrid_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "prediction-marginal-grid",
+      "script": "make_prediction_marginal_grid.py",
+      "title": "预测值与真实值边缘分布组合图",
+      "group": "advanced",
+      "aliases": ["pred-true", "prediction"],
+      "cjk_hints": ["预测", "真实"],
+      "preview": "../../examples/previews/prediction_marginal_grid_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "rf-tpe-surface",
+      "script": "make_rf_tpe_surface.py",
+      "title": "TPE 优化 RF 模型 3D 曲面图",
+      "group": "advanced",
+      "aliases": ["surface", "tpe", "3d-surface"],
+      "cjk_hints": ["tpe", "曲面"],
+      "preview": "../../examples/previews/rf_tpe_surface_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "grouped-corr-split-violin",
+      "script": "make_grouped_corr_split_violin.py",
+      "title": "下三角相关矩阵 + 分组半边小提琴图",
+      "group": "advanced",
+      "aliases": ["split-violin"],
+      "cjk_hints": ["半边小提琴"],
+      "preview": "../../examples/previews/grouped_corr_split_violin_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "grouped-circular-heatmap",
+      "script": "make_grouped_circular_heatmap.py",
+      "title": "分组环形热图",
+      "group": "advanced",
+      "aliases": ["circular-heatmap"],
+      "cjk_hints": ["环形热图"],
+      "preview": "../../examples/previews/grouped_circular_heatmap_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "urban-park-cooling-combo",
+      "script": "make_urban_park_cooling_combo.py",
+      "title": "堆叠图 + 云雨图 + 箱线图组合图",
+      "group": "advanced",
+      "aliases": ["urban-cooling"],
+      "cjk_hints": ["城市公园", "堆叠"],
+      "preview": "../../examples/previews/urban_park_cooling_combo_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "nature-chord-diagram",
+      "script": "make_nature_chord_diagram.py",
+      "title": "Nature 风格和弦图",
+      "group": "advanced",
+      "aliases": ["chord", "circos"],
+      "cjk_hints": ["和弦", "circos"],
+      "preview": "../../examples/previews/nature_chord_diagram_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "heatmap-annotated",
+      "script": "make_heatmap_annotated.py",
+      "title": "相关热力图（数值标注 + 上三角遮罩）",
+      "group": "basic",
+      "aliases": ["heatmap"],
+      "cjk_hints": ["热力图"],
+      "preview": "../../examples/previews/heatmap_annotated_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "fit-conf-residual",
+      "script": "make_fit_confidence_residual.py",
+      "title": "拟合对比图（置信带 + 残差双子图 a/b）",
+      "group": "basic",
+      "aliases": ["fitting"],
+      "cjk_hints": ["置信带", "残差"],
+      "preview": "../../examples/previews/fit_confidence_residual_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "convergence-curve",
+      "script": "make_convergence_curve.py",
+      "title": "迭代收敛曲线（最优/均值 + 收敛代数标注）",
+      "group": "basic",
+      "aliases": ["convergence"],
+      "cjk_hints": ["收敛"],
+      "preview": "../../examples/previews/convergence_curve_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "pareto-front",
+      "script": "make_pareto_front.py",
+      "title": "Pareto 前沿图（非支配解集 + 拐点与理想点）",
+      "group": "basic",
+      "aliases": ["pareto"],
+      "cjk_hints": ["帕累托", "pareto"],
+      "preview": "../../examples/previews/pareto_front_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "line-compare",
+      "script": "make_line_compare.py",
+      "title": "性能对比折线图（线尾直接标注 + 线型标记冗余）",
+      "group": "basic",
+      "aliases": ["line"],
+      "cjk_hints": ["折线"],
+      "preview": "../../examples/previews/line_compare_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "grouped-bar",
+      "script": "make_grouped_bar.py",
+      "title": "分组柱状图（多方案指标对比 + 增益标注）",
+      "group": "basic",
+      "aliases": ["bar"],
+      "cjk_hints": ["柱状"],
+      "preview": "../../examples/previews/grouped_bar_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "boxplot-jitter",
+      "script": "make_boxplot_jitter.py",
+      "title": "箱线图 + 抖动散点（分布与稳定性）",
+      "group": "basic",
+      "aliases": ["boxplot"],
+      "cjk_hints": ["箱线"],
+      "preview": "../../examples/previews/boxplot_jitter_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "pie-modules",
+      "script": "make_pie_modules.py",
+      "title": "模块占比环形图（≤5 类明度层级 + 引线直标）",
+      "group": "basic",
+      "aliases": ["pie", "donut"],
+      "cjk_hints": ["饼", "占比"],
+      "preview": "../../examples/previews/pie_modules_replica.png",
+      "author": "mathmodel-kit"
+    },
+    {
+      "id": "hbar-longlabel",
+      "script": "make_hbar_longlabel.py",
+      "title": "长类别横向条形图（降序排名）",
+      "group": "basic",
+      "aliases": ["hbar"],
+      "cjk_hints": ["条形"],
+      "preview": "../../examples/previews/hbar_longlabel_replica.png",
+      "author": "mathmodel-kit"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "name": "nature",
+  "title": "Nature 标准（默认主题）",
+  "description": "小字无衬线、细轴线、去冗余图例；颜色只承担身份（哪种系列）/ 基准（对照参考）/ 方向（升与降）/ 层级（主次）四种职责，灰度打印仍可辨。这是默认值而非规定：复制本文件改名即可做出自己的主题（见 themes/ 说明与 docs/guides/visualization-rules.md）。适用范围为共用 code/style/plot_style.py 的图表模板与按同一模块自绘的图；其余模板的配色写在其脚本头部。",
+  "author": "mathmodel-kit",
+  "roles": {
+    "identity": {
+      "main": "#1A6FC4",
+      "main_light": "#5B9BD5",
+      "main_pale": "#B4D4F0",
+      "accents": ["#E28E2C", "#7B5FD6", "#33B5A5", "#D9544D", "#B89BD9"]
+    },
+    "baseline": {
+      "base": "#767676",
+      "dark": "#4D4D4D"
+    },
+    "signal": {
+      "positive": "#2E9E44",
+      "negative": "#E53935"
+    },
+    "neutral": {
+      "bg": "#F5F5F5",
+      "light": "#D8D8D8",
+      "mid": "#A8A8A8",
+      "dark": "#606060",
+      "ink": "#333333"
+    }
+  },
+  "cmaps": {
+    "divergent": ["#1A6FC4", "#F5F5F5", "#D9544D"],
+    "sequential": ["#F2F5FA", "#1A6FC4"]
+  }
+}

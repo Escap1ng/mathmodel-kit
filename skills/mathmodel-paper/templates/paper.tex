@@ -24,8 +24,12 @@
 \usepackage{xcolor}
 \usepackage{seqsplit}                % 长单词断行
 
-% ========== 西文字体 Times New Roman ==========
-\setmainfont{Times New Roman}        % 西文和数字使用 Times New Roman
+% ========== 西文字体：优先 Times New Roman，缺失时回退度量兼容的 TeX Gyre Termes ==========
+% 竞赛交付环境（Windows/Word）使用 Times New Roman；TeX Live 等不含该商业字体的环境自动
+% 回退到度量兼容字体，因此 CI 不再需要替换字体，用户侧仍得到 Times New Roman。
+\IfFontExistsTF{Times New Roman}
+  {\setmainfont{Times New Roman}}
+  {\setmainfont{TeX Gyre Termes}}
 
 % ========== 页面设置（四边2.5cm） ==========
 \geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}

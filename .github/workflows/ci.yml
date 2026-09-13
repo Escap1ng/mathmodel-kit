@@ -1,4 +1,6 @@
-# 轻量验证：全部 Python 脚本语法 + 20 个数据图表模板渲染 + 5 个示意图模板校验/渲染 + 零宽字符清理器冒烟
+# 轻量验证：全部 Python 脚本语法 + 模板注册表一致性（含内容契约与主题契约）
+# + 20 个数据图表模板渲染 + 5 个示意图模板校验/渲染 + 零宽字符清理器冒烟
+# 模板数量与清单均由 code/**/manifest.json 派生，不再硬编码，新增模板无需改本文件。
 name: CI
 
 on:
@@ -23,8 +25,125 @@ jobs:
       - name: Compile all bundled scripts
         run: python -m compileall -q skills
 
+  manifest-consistency:
+    name: Manifest & contract consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install jsonschema
+        run: |
+          python -m pip install --upgrade pip
+          pip install jsonschema
+      - name: Registries vs filesystem / index docs / version / badges
+        shell: bash
+        run: |
+          python - "$GITHUB_WORKSPACE" <<'PYEOF'
+          import json
+          import sys
+          from pathlib import Path
+
+          root = Path(sys.argv[1]).resolve()
+          errors = []
+
+          FIGURE = root / "skills" / "mathmodel-figure" / "code" / "tools" / "manifest.json"
+          DIAGRAM = root / "skills" / "mathmodel-diagram" / "code" / "templates" / "manifest.json"
+          FIGURE_KEYS = ["id", "script", "title", "group", "aliases", "cjk_hints", "preview", "author"]
+          DIAGRAM_KEYS = ["id", "script", "title", "summary", "canvas", "schema", "example",
+                          "preview", "doc", "aliases", "cjk_hints", "author"]
+
+          def load(path):
+              try:
+                  return json.loads(path.read_text(encoding="utf-8"))
+              except (OSError, json.JSONDecodeError) as exc:
+                  errors.append(f"{path}: unreadable manifest ({exc})")
+                  return {"templates": []}
+
+          def check(manifest_path, keys, index_doc, glob_pattern, extra_paths):
+              manifest = load(manifest_path)
+              base = manifest_path.parent
+              script_dir = (base / manifest.get("script_dir", ".")).resolve()
+              entries = manifest.get("templates", [])
+              if not entries:
+                  errors.append(f"{manifest_path}: no templates registered")
+
+              ids = [e.get("id") for e in entries]
+              if len(ids) != len(set(ids)):
+                  errors.append(f"{manifest_path}: duplicate ids {sorted(ids)}")
+
+              for entry in entries:
+                  tag = f"{manifest_path.name}:{entry.get('id')}"
+                  for key in keys:
+                      if key not in entry:
+                          errors.append(f"{tag}: missing key '{key}'")
+                  if not (script_dir / entry.get("script", "")).exists():
+                      errors.append(f"{tag}: script not found ({script_dir / entry.get('script', '')})")
+                  for key in extra_paths:
+                      value = entry.get(key)
+                      if value is not None and not (base / value).exists():
+                          errors.append(f"{tag}: {key} not found ({base / value})")
+                  if entry.get("id") and f"`{entry['id']}`" not in index_doc.read_text(encoding="utf-8"):
+                      errors.append(f"{tag}: not listed in {index_doc.relative_to(root)}")
+
+              orphans = sorted({p.name for p in script_dir.glob(glob_pattern)}
+                               - {e.get("script") for e in entries})
+              if orphans:
+                  errors.append(f"{manifest_path.name}: unregistered template scripts {orphans}")
+              return entries
+
+          figure_entries = check(FIGURE, FIGURE_KEYS,
+                                 root / "skills/mathmodel-figure/docs/templates/figure-catalog.md",
+                                 "make_*.py", ["preview"])
+          diagram_entries = check(DIAGRAM, DIAGRAM_KEYS,
+                                  root / "skills/mathmodel-diagram/SKILL.md",
+                                  "*.py", ["schema", "example", "preview", "doc"])
+          total = len(figure_entries) + len(diagram_entries)
+
+          version_file = root / "VERSION"
+          version = version_file.read_text(encoding="utf-8").strip() if version_file.exists() else ""
+          if not version:
+              errors.append("VERSION missing or empty")
+          else:
+              changelog = root / "CHANGELOG.md"
+              if not changelog.exists():
+                  errors.append("CHANGELOG.md missing")
+              elif f"## [{version}]" not in changelog.read_text(encoding="utf-8"):
+                  errors.append(f"CHANGELOG.md has no section for {version}")
+
+          default_theme = root / "skills" / "mathmodel-figure" / "themes" / "nature.theme.json"
+          if not default_theme.exists():
+              errors.append("default theme themes/nature.theme.json missing "
+                            "(plot_style.py fallback chain points at it)")
+
+          skills = sorted(p.name for p in (root / "skills").iterdir() if p.is_dir())
+          readme = (root / "README.md").read_text(encoding="utf-8")
+          for label, encoded, expected in (("技能", "%E6%8A%80%E8%83%BD", str(len(skills))),
+                                           ("模板", "%E6%A8%A1%E6%9D%BF", str(total))):
+              if f"{encoded}-{expected}-" not in readme:
+                  errors.append(f"README {label} badge does not say {expected}")
+
+          print(f"skills={len(skills)} figures={len(figure_entries)} diagrams={len(diagram_entries)} "
+                f"templates={total} version={version or 'n/a'}")
+          for line in errors:
+              print("ERROR:", line)
+          sys.exit(1 if errors else 0)
+          PYEOF
+      - name: JSON Schema self-check and bundled example validation
+        shell: bash
+        run: |
+          cd skills/mathmodel-diagram
+          python code/tools/validate_content.py --schemas
+          python code/tools/validate_content.py --all
+      - name: Theme contract validation
+        shell: bash
+        run: |
+          cd skills/mathmodel-figure
+          python code/tools/validate_theme.py --all
+
   figures:
-    name: Figure templates render (20)
+    name: Figure templates render
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +162,7 @@ jobs:
         shell: bash
         run: |
           cd skills/mathmodel-figure
+          expected=$(python -c "import json,pathlib;print(len(json.loads(pathlib.Path('code/tools/manifest.json').read_text(encoding='utf-8'))['templates']))")
           count=0
           for id in $(python code/tools/render_template.py --list); do
             echo "::group::render $id"
@@ -54,17 +174,51 @@ jobs:
                 exit 1
               fi
             done
+            scripts="$RUNNER_TEMP/ci-figs/$id/scripts"
+            if [ -f "$scripts/plot_style.py" ] && [ ! -f "$scripts/theme.json" ]; then
+              echo "ERROR: plot_style.py copied without theme.json for $id"
+              exit 1
+            fi
             count=$((count+1))
             echo "::endgroup::"
           done
-          if [ "$count" -ne 20 ]; then
-            echo "ERROR: expected 20 templates, rendered $count"
+          if [ "$count" -ne "$expected" ]; then
+            echo "ERROR: manifest registers $expected templates, rendered $count"
             exit 1
           fi
           echo "All $count figure templates rendered with PNG/PDF/SVG outputs."
+      - name: Theme override smoke (custom theme reaches the workspace)
+        shell: bash
+        run: |
+          cd skills/mathmodel-figure
+          python - <<'PYEOF'
+          import json, subprocess, sys, tempfile
+          from pathlib import Path
+
+          theme = json.loads(Path("themes/nature.theme.json").read_text(encoding="utf-8"))
+          theme["name"] = "ci-probe"
+          theme["roles"]["identity"]["main"] = "#0B7285"
+
+          work = Path(tempfile.mkdtemp())
+          custom = work / "probe.theme.json"
+          custom.write_text(json.dumps(theme), encoding="utf-8")
+
+          subprocess.run([sys.executable, "code/tools/render_template.py", "grouped-bar",
+                          "--project", str(work / "out"), "--theme", str(custom)], check=True)
+          landed = json.loads((work / "out" / "scripts" / "theme.json").read_text(encoding="utf-8"))
+          assert landed["roles"]["identity"]["main"] == "#0B7285", landed
+
+          probe = subprocess.run(
+              [sys.executable, "-c",
+               "import sys;sys.path.insert(0,r'%s');import plot_style as s;print(s.COLOR_MAIN)"
+               % (work / "out" / "scripts")],
+              capture_output=True, text=True, check=True)
+          assert probe.stdout.strip() == "#0B7285", probe.stdout
+          print("theme override smoke OK: custom theme reached workspace plot_style")
+          PYEOF
 
   diagrams:
-    name: Diagram templates check & render (5)
+    name: Diagram templates check & render
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -83,25 +237,33 @@ jobs:
         shell: bash
         run: |
           cd skills/mathmodel-diagram
-          for entry in "problem_flow problem-flow" "framework_3col framework-3col" "roadmap_5band roadmap-5band" "stageflow_3col stageflow-3col" "taskflow_land taskflow-land"; do
-            set -- $entry
-            echo "::group::$1 --check"
-            python "code/templates/$1.py" "examples/$2/example.json" --check
+          example_of() {
+            python -c "import json,os,sys;m=json.load(open('code/templates/manifest.json',encoding='utf-8'));e=next(t for t in m['templates'] if t['id']==sys.argv[1]);print(os.path.normpath(os.path.join('code/templates',e['example'])))" "$1"
+          }
+          for id in $(python code/tools/render_template.py --list); do
+            echo "::group::$id --check"
+            python code/tools/render_template.py "$id" "$(example_of "$id")" --check
             echo "::endgroup::"
           done
       - name: Render bundled examples and verify PNG/PDF outputs
         shell: bash
         run: |
           cd skills/mathmodel-diagram
-          for entry in "problem_flow problem-flow" "framework_3col framework-3col" "roadmap_5band roadmap-5band" "stageflow_3col stageflow-3col" "taskflow_land taskflow-land"; do
-            set -- $entry
-            echo "::group::render $1"
-            python "code/templates/$1.py" "examples/$2/example.json" -o "$RUNNER_TEMP/ci-diag/$2.png"
-            test -s "$RUNNER_TEMP/ci-diag/$2.png" || { echo "ERROR: missing PNG for $1"; exit 1; }
-            test -s "$RUNNER_TEMP/ci-diag/$2.pdf" || { echo "ERROR: missing PDF for $1"; exit 1; }
+          expected=$(python -c "import json,pathlib;print(len(json.loads(pathlib.Path('code/templates/manifest.json').read_text(encoding='utf-8'))['templates']))")
+          count=0
+          for id in $(python code/tools/render_template.py --list); do
+            echo "::group::render $id"
+            python code/tools/render_template.py "$id" "examples/$id/example.json" -o "$RUNNER_TEMP/ci-diag/$id.png"
+            test -s "$RUNNER_TEMP/ci-diag/$id.png" || { echo "ERROR: missing PNG for $id"; exit 1; }
+            test -s "$RUNNER_TEMP/ci-diag/$id.pdf" || { echo "ERROR: missing PDF for $id"; exit 1; }
+            count=$((count+1))
             echo "::endgroup::"
           done
-          echo "All 5 diagram examples passed capacity checks and rendered PNG+PDF."
+          if [ "$count" -ne "$expected" ]; then
+            echo "ERROR: manifest registers $expected templates, rendered $count"
+            exit 1
+          fi
+          echo "All $count diagram examples passed capacity checks and rendered PNG+PDF."
 
   strip-invisible:
     name: Invisible-char scrubber smoke
