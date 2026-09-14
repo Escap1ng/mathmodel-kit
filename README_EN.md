@@ -217,7 +217,7 @@ Nothing that a machine can decide relies on eyeballing:
 |---|---|---|
 | Chinese text width check | Before every diagram render, per slot | Reports the overflowing slot and its budget, exits non-zero |
 | Content contract validation | When a content JSON is written or reused | Fails on JSON Schema violations (`--all` validates every bundled example) |
-| Registry consistency | Every push / PR | Registry ↔ filesystem ↔ index docs ↔ version ↔ README badges must agree |
+| Registry consistency | Every push / PR | Figure and diagram registries ↔ filesystem ↔ index docs ↔ version ↔ README template badges, plus the skill registry ↔ skill directories ↔ README skill table ↔ skill badge, must all agree |
 | Zero-width character scrubbing | Before paper delivery | Both PDF and Word must be cleaned and re-checked; delivery requires exit code 0 |
 | Phrasing de-AI check | After the paper text and abstract are final | Word-list `check_phrasing.py` scans clichés/platitudes/vague claims (bilingual); structural `check_style.py` scans sentence length, repeated openings, paragraph rhythm and decimal places; any hit exits non-zero and must be rewritten and re-checked, and a `high`/`extreme` risk level blocks delivery. **This skill owns the phrasing call**, and the scoring module's docs must pass the same two checks |
 | Chapter structure check | After the paper is drafted, before scoring | `check_chapters.py` verifies the hard items (symbol table, model strengths/weaknesses, runnable appendix code, anonymity, no table of contents for CUMCM); unmet items must be fixed and are not scored, while soft items are deducted per dimension (use `--rules mcm` for the MCM profile) |
@@ -274,7 +274,9 @@ truth for templates — adding one means one registry line plus one index-doc li
 | Word tuning / reading problem attachments | `python-docx`; `openpyxl` (`xlrd` for legacy `.xls`), `PyMuPDF` |
 | Contract validation (optional) | `jsonschema`; without it, validators fall back to a built-in minimal check |
 
-CI verifies against Python 3.12 as the minimum. On Linux/macOS without CJK fonts the style module warns and falls
+CI verifies against Python 3.12 as the minimum. These dependencies are **not version-pinned and the repo ships no
+`requirements.txt`**, so CI installs the latest releases each run; pin versions yourself if you need a reproducible
+environment. On Linux/macOS without CJK fonts the style module warns and falls
 back — in-figure Chinese may render as boxes, so install `Noto Sans CJK SC`.
 
 ## FAQ

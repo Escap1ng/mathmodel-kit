@@ -459,11 +459,12 @@ def main() -> int:
     backup = not args.no_backup
 
     dirty = 0
+    missing = False
     for raw in args.paths:
         path = Path(raw)
         if not path.is_file():
             print(f"[missing] {path}", file=sys.stderr)
-            dirty += 1
+            missing = True
             continue
         hits = dispatch(path, args.clean, backup)
         if hits:
@@ -472,6 +473,8 @@ def main() -> int:
             print(f"[{action}] {path}: {fmt_hits(hits)}")
         else:
             print(f"[clean] {path}")
+    if missing:
+        return 2
     return 1 if dirty else 0
 
 

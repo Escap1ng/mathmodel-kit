@@ -50,7 +50,7 @@ Opening up the project does **not** break existing users — that is the precond
 
 ### 2.2 Ecosystem
 
-- Licensing is ready: Apache-2.0 ([LICENSE](../../LICENSE)) permits commercial use and redistribution, a prerequisite
+- Licensing is ready: Apache-2.0 ([LICENSE](../LICENSE)) permits commercial use and redistribution, a prerequisite
   for third parties to depend on the project;
 - Quality gates are ready: CI covers syntax, template rendering, schema validation, registry consistency and LaTeX
   compilation, so contributors can verify their own work;
@@ -234,7 +234,7 @@ They are **not premised on being pip-installable**, so no package-level API stab
 ### 7.1 Contribution paths (lowest to highest cost)
 
 Contributions are organised into four modules; their **standards, submission rules and review processes**, plus the
-**roles and permissions**, live in [CONTRIBUTING_EN.md](../../CONTRIBUTING_EN.md) as the single authority:
+**roles and permissions**, live in [CONTRIBUTING_EN.md](../CONTRIBUTING_EN.md) as the single authority:
 
 1. **New template** (M2 code and templates): write the script → add `docs/templates/<id>.md` (per-slot character budgets
    and semantic conventions) → add `example.json` and `preview.png` → **add one line to the registry**. CI validates all
@@ -269,7 +269,7 @@ on judgement.
 Contributing implies agreement to distribute under Apache-2.0; template authors are permanently credited in the
 registry's `author` field (§8). The contribution tiers here are the **incentive dimension**, while the roles
 (reporter / contributor / reviewer / maintainer) are the **permission dimension**; the two complement each other and are
-defined in [CONTRIBUTING_EN.md](../../CONTRIBUTING_EN.md) section 6. Decisions on the Stable contract items above rest
+defined in [CONTRIBUTING_EN.md](../CONTRIBUTING_EN.md) section 6. Decisions on the Stable contract items above rest
 with maintainers.
 
 Per-skill scope is registered in `skills/manifest.json` (the `contribution` field): **the main skill `mathmodel-core`

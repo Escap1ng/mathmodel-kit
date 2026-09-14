@@ -13,7 +13,6 @@ mpl.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.lines import Line2D
 from matplotlib.patches import Patch, Rectangle
 
 

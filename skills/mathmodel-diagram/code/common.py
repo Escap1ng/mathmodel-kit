@@ -516,13 +516,6 @@ class Recorder:
         return fig, ax
 
 
-def add_common_path() -> None:
-    """模板脚本在 code/templates/ 下，import common 前调用它把 code/ 加进 sys.path。"""
-    code_dir = str(pathlib.Path(__file__).resolve().parent)
-    if code_dir not in sys.path:
-        sys.path.insert(0, code_dir)
-
-
 def guard(problems, quiet: bool = False) -> None:
     """有超框就逐条报出槽位与预算并非零退出（各模板共用的机器门禁）。"""
     if not problems:

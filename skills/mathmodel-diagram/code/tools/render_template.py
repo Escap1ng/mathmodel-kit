@@ -86,7 +86,8 @@ def resolve_template(value: str, lang: str = "zh", path: Path = MANIFEST_PATH) -
             if hint.lower() in lowered:
                 return entry
     ids = ", ".join(sorted(e["id"] for e in items))
-    raise SystemExit(MSG[lang]["unknown"].format(value=value, ids=ids))
+    print(MSG[lang]["unknown"].format(value=value, ids=ids), file=sys.stderr)
+    raise SystemExit(2)
 
 
 def main() -> None:

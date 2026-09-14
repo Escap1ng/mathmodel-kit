@@ -142,9 +142,32 @@ validates everything else.
 
 - Run the gates you can run locally before submitting; a new or changed template must actually render non-empty
   artifacts — "it should work" is not accepted;
-- Unified exit-code semantics: `0` success / `1` validation or render failure / `2` usage or environment error;
+- Unified exit-code semantics: `0` success / `1` validation or render failure / `2` usage or environment error; every
+  CLI complies today, so both an unknown template id and a missing input file exit `2`;
 - Contract-touching changes (schemas, registries, word lists, scoring dimensions) update the examples and expected
   results in the same PR.
+
+**Local self-check before submitting** (pick by scope; every check is judged by exit code):
+
+```bash
+python -m compileall -q skills                        # every script compiles
+
+cd skills/mathmodel-figure                            # figure template changes
+python code/tools/render_template.py <template-id> --project /tmp/out
+python code/tools/validate_theme.py --all             # required when themes/ changes
+
+cd ../mathmodel-diagram                               # diagram template changes
+python code/tools/validate_content.py --all           # content contracts + bundled examples
+
+cd ../mathmodel-deai                                  # docs or paper text changes
+python code/check_phrasing.py <file>                  # word-list gate; required for rule docs
+python code/check_style.py <paper.tex>                # structural gate; paper text only
+python code/strip_invisible.py <pdf|docx|tex>         # character-level gate
+
+cd ../mathmodel-score                                 # structure contract / score-card changes
+python code/check_chapters.py examples/chapter-sample.tex
+python code/score_card.py examples/example-scorecard.json
+```
 
 **Submission rules**
 
@@ -159,7 +182,7 @@ validates everything else.
 | Check | Contents |
 |---|---|
 | `syntax` | All Python scripts compile |
-| `manifest-consistency` | Registry ↔ filesystem ↔ index docs ↔ version ↔ README badges agree; schemas are valid and every bundled example passes strict validation |
+| `manifest-consistency` | Figure/diagram registries ↔ filesystem ↔ index docs ↔ version ↔ README template badges, plus the skill registry ↔ skill directories ↔ README skill table ↔ skill badge, must all agree; schemas are valid and every bundled example passes strict validation |
 | `figures` / `diagrams` | Every template renders non-empty artifacts |
 | `strip-invisible` | The invisible-character scrubber round-trips correctly |
 | `deai-phrasing` / `scorecard` | The de-AI gate and score-card smoke cases exit as expected |
@@ -275,7 +298,8 @@ skills are exempt from the `README.md` requirement.
 - Python: 4-space indentation, standard library first; scripts use `argparse` with the existing flag style
   (`-o/--out`, `--check`, `--list`, `--lang`);
 - **Exit-code semantics**: `0` success / `1` validation or rendering failure / `2` usage or environment error;
-- **CLI contract**: exit codes are unified everywhere; `--lang {zh,en}` is an optional flag on user-facing entry points
+- **CLI contract**: every CLI complies with `0/1/2` today (an unknown template id or a missing input file exits `2`);
+  `--lang {zh,en}` is an optional flag on user-facing entry points
   (8 covered today; `word_postprocess.py` and `strip_invisible.py` do not provide it yet — Experimental, so adding it
   is not a breaking change);
 - Comments and docstrings are Chinese (matching the repository); user-facing messages are bilingual where

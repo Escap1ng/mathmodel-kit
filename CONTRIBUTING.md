@@ -117,8 +117,31 @@
 **贡献标准**
 
 - 提交前在本地把能跑的门禁跑一遍；新增或修改的模板必须实际渲染出非空产物，不接受「应该能跑」；
-- 统一退出码语义：`0` 成功 / `1` 校验或渲染失败 / `2` 用法或环境错误；
+- 统一退出码语义：`0` 成功 / `1` 校验或渲染失败 / `2` 用法或环境错误；全部 CLI 已对齐，模板 id 不存在、
+  待处理文件缺失均归 `2`；
 - 变更涉及契约时（Schema、注册表、词表、评分维度），同步更新示例与期望结果。
+
+**提交前本地自检**（按改动范围选择，全部以退出码判定）：
+
+```bash
+python -m compileall -q skills                        # 全部脚本可编译
+
+cd skills/mathmodel-figure                            # 图表模板改动
+python code/tools/render_template.py <模板id> --project /tmp/out
+python code/tools/validate_theme.py --all             # 改 themes/ 时必跑
+
+cd ../mathmodel-diagram                               # 示意图模板改动
+python code/tools/validate_content.py --all           # 内容契约 + 内置示例
+
+cd ../mathmodel-deai                                  # 文档或论文稿改动
+python code/check_phrasing.py <文件>                  # 词表级，规范类文档必跑
+python code/check_style.py <论文tex>                  # 结构级，仅面向论文稿
+python code/strip_invisible.py <pdf|docx|tex>         # 字符级
+
+cd ../mathmodel-score                                 # 结构契约 / 评分卡改动
+python code/check_chapters.py examples/chapter-sample.tex
+python code/score_card.py examples/example-scorecard.json
+```
 
 **提交规范**
 
@@ -133,7 +156,7 @@
 | 检查 | 内容 |
 |---|---|
 | `syntax` | 全部 Python 脚本可编译 |
-| `manifest-consistency` | 注册表 ↔ 文件系统 ↔ 索引文档 ↔ 版本号 ↔ README 徽章 互相一致；JSON Schema 合法且内置示例通过严格校验 |
+| `manifest-consistency` | 登记表 ↔ 文件系统 ↔ 索引文档 ↔ 版本号 ↔ README 模板徽章，以及技能清单 ↔ 技能目录 ↔ README 技能表 ↔ 技能徽章，均须一致；JSON Schema 合法且内置示例通过严格校验 |
 | `figures` / `diagrams` | 每个模板都能渲染出非空产物 |
 | `strip-invisible` | 零宽字符清理器往返行为正常 |
 | `deai-phrasing` / `scorecard` | 去 AI 门禁与评分卡的冒烟用例按预期退出码通过 |
@@ -236,8 +259,8 @@ README 技能表 ↔ 徽章计数一致；其中 core 类技能不要求 `README
 - Python：4 空格缩进，标准库优先；脚本用 `argparse`，参数风格对齐既有脚本
   （`-o/--out`、`--check`、`--list`、`--lang`）；
 - **退出码语义**：`0` 成功 / `1` 校验或渲染失败 / `2` 用法或环境错误；
-- **CLI 契约**：退出码全量统一；`--lang {zh,en}` 是面向用户入口的可选参数（8 个入口已覆盖，`word_postprocess.py`
-  与 `strip_invisible.py` 暂未提供，属 Experimental，补齐不视为破坏性变更）；
+- **CLI 契约**：全部 CLI 已对齐 `0/1/2`（模板 id 不存在、待处理文件缺失均归 `2`）；`--lang {zh,en}` 是面向用户入口的
+  可选参数（8 个入口已覆盖，`word_postprocess.py` 与 `strip_invisible.py` 暂未提供，属 Experimental，补齐不视为破坏性变更）；
 - 注释与文档字符串用中文（与仓库一致），面向用户的消息提供 `--lang {zh,en}` 时中英并行；
 - 不引入新的格式化/检查工具链（仓库不依赖 ruff/black/pytest）；
 - 不提交生成物（工作区目录、`.aux`、PDF/PNG 产物等，见 `.gitignore`）。

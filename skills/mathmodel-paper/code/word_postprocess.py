@@ -14,6 +14,8 @@ add_page_break 新增任何段落或表格），**禁止手工插入公式**，�
       「Word 后处理（pandoc 转换后）」小节。
 """
 import argparse
+import sys
+from pathlib import Path
 
 from docx import Document
 from docx.shared import Pt, Cm
@@ -68,21 +70,6 @@ def set_three_line_table(table):
             btm.set(qn('w:color'), '000000')
             cell_borders.append(btm)
             tcPr.append(cell_borders)
-
-
-def set_cell_center(cell, text=None, font_name='宋体', font_size=Pt(12)):
-    """设置单元格文字上下左右居中（text=None 时仅调整既有内容样式，不重建内容）"""
-    if text is not None:
-        cell.text = ''
-    p = cell.paragraphs[0]
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER  # 水平居中
-    if text is None:
-        for r in p.runs:
-            set_cjk_font(r, font_name, font_size)
-    else:
-        run = p.add_run(text)
-        set_cjk_font(run, font_name, font_size)
-    cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER  # 垂直居中
 
 
 def restyle_word_paper(doc_path='../paper/paper.docx'):
@@ -155,7 +142,7 @@ def restyle_word_paper(doc_path='../paper/paper.docx'):
     print(f'Word 版式微调完成：{doc_path}')
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description='pandoc 转换后的 Word 版式微调（仅改样式，禁止重建内容/手工插入公式）'
     )
@@ -164,8 +151,13 @@ def main():
         help='待微调的 .docx 路径（pandoc 转换结果，原地覆盖写回），默认 paper/paper.docx'
     )
     args = parser.parse_args()
-    restyle_word_paper(args.docx)
+    doc_path = Path(args.docx)
+    if not doc_path.is_file():
+        print(f'文件不存在：{doc_path}', file=sys.stderr)
+        return 2
+    restyle_word_paper(doc_path)
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())
