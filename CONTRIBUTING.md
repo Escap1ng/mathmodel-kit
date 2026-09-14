@@ -227,10 +227,9 @@ python code/score_card.py examples/example-scorecard.json
 ### 5.1 开发环境
 
 - Python 3.12 及以上（CI 以 3.12 为最低验证版本）
-- 数据图表：`pip install matplotlib numpy seaborn`
-- 示意图：`pip install matplotlib numpy`
-- 契约校验：`pip install jsonschema`（可选；未安装时校验器会降级为内置最小校验器）
-- 论文链路：`xelatex`、`pandoc`，Word 后处理需 `python-docx`
+- Python 依赖统一走仓库根目录的 `requirements.txt`：`pip install -r requirements.txt`（下限约束，与 CI 同一份）；
+  它只列自带脚本实际引用的包（`matplotlib` / `numpy` / `seaborn` / `python-docx` / `PyMuPDF` / `jsonschema`）
+- 论文链路另需外部工具：`xelatex`、`pandoc`
 
 提交前请在本地跑一遍：
 

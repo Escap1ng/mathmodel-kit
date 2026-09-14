@@ -2,6 +2,9 @@
 # 骨架的西文字体自带回退（Times New Roman → TeX Gyre Termes），故此处无需替换字体。
 name: Paper LaTeX build
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]
@@ -23,16 +26,16 @@ jobs:
     name: Compile skeleton with XeLaTeX
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Build PDF
-        uses: xu-cheng/latex-action@v3
+        uses: xu-cheng/latex-action@e2f99d4b3685b0da93f97e1b86ad8fab81105098 # v3
         with:
           root_file: skills/mathmodel-paper/templates/paper.tex
           compiler: xelatex
           work_in_root_file_dir: true
       - name: Verify PDF artifact
         run: test -s skills/mathmodel-paper/templates/paper.pdf
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: paper-skeleton-pdf
           path: skills/mathmodel-paper/templates/paper.pdf

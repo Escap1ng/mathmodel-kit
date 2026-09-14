@@ -264,10 +264,10 @@ Each fact is maintained in exactly one place; other locations read it or are ali
 ### 5.1 Development environment
 
 - Python 3.12+ (CI pins 3.12 as the minimum verified version)
-- Figures: `pip install matplotlib numpy seaborn`
-- Diagrams: `pip install matplotlib numpy`
-- Contract validation: `pip install jsonschema` (optional; the validator falls back to a built-in minimal checker)
-- Paper pipeline: `xelatex`, `pandoc`, and `python-docx` for Word post-processing
+- Python dependencies come from the repo-root `requirements.txt`: `pip install -r requirements.txt` (lower bounds, the
+  same file CI uses). It lists only the packages bundled scripts actually import (`matplotlib` / `numpy` / `seaborn` /
+  `python-docx` / `PyMuPDF` / `jsonschema`).
+- The paper pipeline additionally needs external tools: `xelatex` and `pandoc`.
 
 Please run this locally before submitting:
 

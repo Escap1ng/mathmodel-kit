@@ -4,6 +4,9 @@
 # 模板数量与清单均由 code/**/manifest.json 派生，不再硬编码，新增模板无需改本文件。
 name: CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]
@@ -19,8 +22,8 @@ jobs:
     name: Python syntax (compileall)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Compile all bundled scripts
@@ -30,14 +33,14 @@ jobs:
     name: Manifest & contract consistency
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Install jsonschema
         run: |
           python -m pip install --upgrade pip
-          pip install jsonschema
+          pip install -r requirements.txt
       - name: Registries vs filesystem / index docs / version / badges
         shell: bash
         run: |
@@ -175,8 +178,8 @@ jobs:
     name: Figure templates render
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Install CJK fonts (图内中文渲染)
@@ -186,7 +189,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install matplotlib numpy seaborn
+          pip install -r requirements.txt
       - name: Render every template and verify PNG/PDF/SVG outputs
         shell: bash
         run: |
@@ -250,8 +253,8 @@ jobs:
     name: Diagram templates check & render
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Install CJK fonts (容量校验与图内中文量宽)
@@ -261,7 +264,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install matplotlib numpy
+          pip install -r requirements.txt
       - name: Capacity checks (--check on bundled examples)
         shell: bash
         run: |
@@ -298,14 +301,14 @@ jobs:
     name: Invisible-char scrubber smoke
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pymupdf python-docx
+          pip install -r requirements.txt
       - name: tex / docx / pdf round-trip (FOUND -> CLEANED -> clean)
         shell: bash
         run: |
@@ -396,8 +399,8 @@ jobs:
     name: De-AI phrasing gate smoke
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Word-list samples flagged/pass, docs self-clean (zh + en)
@@ -449,8 +452,8 @@ jobs:
     name: Scorecard & chapter gate smoke
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
       - name: Chapter structure gate (sample passes, missing-sample fails)
@@ -504,4 +507,60 @@ jobs:
           assert r2.returncode == 2, r2.stdout + r2.stderr
 
           print("scorecard gate smoke OK")
+          PYEOF
+
+  word-postprocess:
+    name: Word post-processing smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Missing input exits 2; restyling edits style only, never content
+        shell: bash
+        run: |
+          cd skills/mathmodel-paper
+          set +e
+          python code/word_postprocess.py no_such.docx > /dev/null 2>&1
+          miss=$?
+          set -e
+          echo "missing input exit=$miss (want 2)"
+          if [ "$miss" -ne 2 ]; then echo "ERROR: missing input should exit 2"; exit 1; fi
+          python - <<'PYEOF'
+          import subprocess, sys, tempfile
+          from pathlib import Path
+
+          import docx
+
+          work = Path(tempfile.mkdtemp())
+          src = work / "paper.docx"
+          d = docx.Document()
+          d.add_heading("一、问题重述", level=1)
+          d.add_paragraph("正文段落，含中文与数字 12.4。")
+          table = d.add_table(rows=2, cols=2)
+          table.cell(0, 0).text = "指标"
+          table.cell(1, 0).text = "MAE"
+          d.sections[0].header.paragraphs[0].text = "XX大学 张三 2026"
+          d.save(src)
+
+          opened = docx.Document(src)
+          before = (len(opened.paragraphs), len(opened.tables))
+          assert opened.sections[0].header.paragraphs[0].text.strip() == "XX大学 张三 2026"
+
+          r = subprocess.run([sys.executable, "code/word_postprocess.py", str(src)],
+                             capture_output=True, text=True)
+          print(r.stdout.strip() or r.stderr.strip())
+          assert r.returncode == 0, (r.returncode, r.stdout, r.stderr)
+
+          after_doc = docx.Document(src)
+          after = (len(after_doc.paragraphs), len(after_doc.tables))
+          assert before == after, f"content changed: {before} -> {after}"
+          assert after_doc.sections[0].header.paragraphs[0].text.strip() == "", "header not cleared"
+          assert "PAGE" in after_doc.sections[0].footer._element.xml, "footer page field missing"
+          print("word post-process smoke OK:", before)
           PYEOF

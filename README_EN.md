@@ -248,6 +248,7 @@ mathmodel-kit/
 ├── CONTRIBUTING.md · CONTRIBUTING_EN.md
 ├── CHANGELOG.md · VERSION          # changelog and version (release.yml checks all three agree)
 ├── LICENSE                         # Apache License 2.0
+├── requirements.txt                # dependency list for bundled scripts (lower bounds, CI and local share it)
 ├── docs/upgrade-plan.md            # whitepaper: open interfaces, data contracts, governance, versioning
 └── skills/
     ├── manifest.json               # skill registry (single source: kind / role / entry / contribution)
@@ -269,14 +270,16 @@ truth for templates — adding one means one registry line plus one index-doc li
 
 | Purpose | Requirements |
 |---|---|
-| Data figures / diagrams | Python 3.12+ with `matplotlib` / `numpy` (figures also need `seaborn` / `pandas`; the replication calibration script needs `scipy` / `Pillow`) |
+| Data figures / diagrams | Python 3.12+ with `matplotlib` / `numpy`; figures also need `seaborn` |
 | Paper compilation | `xelatex` (with CJK font support) + `pandoc` |
-| Word tuning / reading problem attachments | `python-docx`; `openpyxl` (`xlrd` for legacy `.xls`), `PyMuPDF` |
+| Word restyling | `python-docx` |
+| PDF invisible-character scrubbing | `PyMuPDF` |
 | Contract validation (optional) | `jsonschema`; without it, validators fall back to a built-in minimal check |
 
-CI verifies against Python 3.12 as the minimum. These dependencies are **not version-pinned and the repo ships no
-`requirements.txt`**, so CI installs the latest releases each run; pin versions yourself if you need a reproducible
-environment. On Linux/macOS without CJK fonts the style module warns and falls
+The dependency list for the bundled scripts is [`requirements.txt`](requirements.txt) (lower bounds, the same file CI
+uses: `pip install -r requirements.txt`). `pandas`, `scipy`, `openpyxl` and friends are only needed if you write your
+own data-processing code — no bundled script depends on them.
+CI verifies against Python 3.12 as the minimum. On Linux/macOS without CJK fonts the style module warns and falls
 back — in-figure Chinese may render as boxes, so install `Noto Sans CJK SC`.
 
 ## FAQ

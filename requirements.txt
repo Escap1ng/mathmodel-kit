@@ -1,0 +1,12 @@
+# mathmodel-kit 运行与校验依赖
+#
+# 只列仓库自带脚本实际引用到的包（依据 skills/**/*.py 的 import 统计），
+# 采用下限约束而非锁定版本；需要完全可复现的环境时，请在此基础上自行 pip freeze。
+# 用法说明见 README「依赖」一节。
+
+matplotlib>=3.7          # 数据图表与学术示意图
+numpy>=1.24              # 同上
+seaborn>=0.12            # 图表样式模块 plot_style.py 与热图模板
+python-docx>=1.1         # mathmodel-paper：pandoc 转换后的 Word 版式微调
+PyMuPDF>=1.23            # mathmodel-deai：PDF 的零宽/不可见字符清理
+jsonschema>=4.20         # 契约校验器（缺失时降级为内置最小校验；CI 中必须存在）

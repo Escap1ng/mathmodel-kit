@@ -241,6 +241,7 @@ mathmodel-kit/
 ├── CONTRIBUTING.md · CONTRIBUTING_EN.md
 ├── CHANGELOG.md · VERSION          # 更新日志与版本号（发版时 release.yml 校验三处一致）
 ├── LICENSE                         # Apache License 2.0
+├── requirements.txt                # 自带脚本的依赖清单（下限约束，CI 与本地共用）
 ├── docs/upgrade-plan.md            # 白皮书：开放接口、数据契约、治理与版本策略
 └── skills/
     ├── manifest.json               # 技能注册表（唯一来源：类型 / 职责 / 入口 / 协作口径）
@@ -261,13 +262,16 @@ mathmodel-kit/
 
 | 用途 | 需要什么 |
 |---|---|
-| 数据图表 / 学术示意图 | Python 3.12+ 与 `matplotlib` / `numpy`（图表另需 `seaborn` / `pandas`；高保真复刻的标定脚本另需 `scipy` / `Pillow`） |
+| 数据图表 / 学术示意图 | Python 3.12+ 与 `matplotlib` / `numpy`；图表另需 `seaborn` |
 | 论文编译 | `xelatex`（需支持中文）+ `pandoc` |
-| Word 微调 / 读取赛题附件 | `python-docx`；`openpyxl`（旧版 `.xls` 需 `xlrd`）、`PyMuPDF` |
+| Word 版式微调 | `python-docx` |
+| PDF 零宽字符清理 | `PyMuPDF` |
 | 契约校验（可选） | `jsonschema`；没装时校验器自动降级为内置的最小校验 |
 
-CI 以 Python 3.12 为最低验证环境。以上依赖**未锁版本、仓库也不提供 `requirements.txt`**，CI 每次安装最新版本；
-需要可复现环境时自行固定版本。Linux / macOS 上如果没有中文字体，样式模块会告警并回退，
+自带脚本的依赖清单是 [`requirements.txt`](requirements.txt)（下限约束，CI 与本地共用同一份：
+`pip install -r requirements.txt`）。`pandas`、`scipy`、`openpyxl` 等只在你自己写数据处理代码时才会用到，
+仓库自带脚本不依赖它们。
+CI 以 Python 3.12 为最低验证环境。Linux / macOS 上如果没有中文字体，样式模块会告警并回退，
 图里的中文可能显示成方框，装 `Noto Sans CJK SC` 即可。
 
 ## 常见问题
