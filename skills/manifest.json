@@ -3,7 +3,7 @@
   "title": "技能注册表",
   "description": "项目内每个技能的单一事实源：技能清单、类型、职责、入口、文档与协作口径。CI 校验本文件 ↔ skills/ 目录 ↔ README 技能表 ↔ README 徽章计数一致；新增技能时先改本文件。",
   "kinds": {
-    "core": "主技能：只做编排与路由，无 CLI",
+    "core": "主技能：只做编排与路由，无 CLI，仅 SKILL.md（不要求 README.md）",
     "knowledge": "知识型技能：规范或方法库，无 CLI",
     "tool": "工具型技能：带可执行脚本与模板"
   },

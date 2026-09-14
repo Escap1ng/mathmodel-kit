@@ -266,8 +266,9 @@ skills/<skill>/
 ```
 
 Skills come in three kinds (see `skills/manifest.json`): **core** (`SKILL.md` only), **knowledge** (`SKILL.md` +
-`docs/`) and **tool** (`code/` + `docs/` + `examples/`). A new skill is registered first, and CI checks that the
-registry ↔ directories ↔ README skill table ↔ badge count agree.
+`README.md` + `docs/`) and **tool** (`SKILL.md` + `README.md` + `code/` + `docs/` + `examples/`). A new skill is
+registered first, and CI checks that the registry ↔ directories ↔ README skill table ↔ badge count agree; core-kind
+skills are exempt from the `README.md` requirement.
 
 ### 5.3 Code style
 

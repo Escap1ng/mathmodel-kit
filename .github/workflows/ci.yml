@@ -140,8 +140,8 @@ jobs:
                   skill_dir = root / "skills" / str(name)
                   if not (skill_dir / e.get("entry", "SKILL.md")).exists():
                       errors.append(f"{tag}: entry not found")
-                  if not (skill_dir / "README.md").exists():
-                      errors.append(f"{tag}: README.md missing")
+                  if e.get("kind") != "core" and not (skill_dir / "README.md").exists():
+                      errors.append(f"{tag}: README.md missing (required for knowledge/tool kinds)")
                   for rel in e.get("docs", []):
                       if not (skill_dir / rel).exists():
                           errors.append(f"{tag}: doc not found ({rel})")

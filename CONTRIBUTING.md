@@ -227,8 +227,9 @@ skills/<skill>/
 └── examples/           # 示例与预览图
 ```
 
-技能分三类（见 `skills/manifest.json`）：**core**（只有 `SKILL.md`）、**knowledge**（`SKILL.md` + `docs/`）、
-**tool**（`code/` + `docs/` + `examples/`）。新增技能要先在注册表登记，CI 校验注册表 ↔ 目录 ↔ README 技能表 ↔ 徽章计数一致。
+技能分三类（见 `skills/manifest.json`）：**core**（只有 `SKILL.md`）、**knowledge**（`SKILL.md` + `README.md` + `docs/`）、
+**tool**（`SKILL.md` + `README.md` + `code/` + `docs/` + `examples/`）。新增技能要先在注册表登记，CI 校验注册表 ↔ 目录 ↔
+README 技能表 ↔ 徽章计数一致；其中 core 类技能不要求 `README.md`。
 
 ### 5.3 代码风格
 
