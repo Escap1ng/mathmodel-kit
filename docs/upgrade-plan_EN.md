@@ -1,6 +1,6 @@
 # Upgrading mathmodel-kit: From a Skill Set to an Open Modeling Toolbox
 
-> Version: v1.1.0 ｜ Status: Phase 1 delivered ｜ Chinese original: [upgrade-plan.md](upgrade-plan.md)
+> Version: v2.0.0 ｜ Status: Phase 1 delivered ｜ Chinese original: [upgrade-plan.md](upgrade-plan.md)
 
 This document answers one question: **how does mathmodel-kit move from "a prompt-centric agent skill set" to "an open,
 collaborative mathematical-modeling toolbox"?** Claims are tied to real files and line numbers in the repository;
@@ -303,7 +303,7 @@ no points, tokens or rankings (we cannot honour them).
 ### 9.1 Cadence and version
 
 - Semantic versioning; `VERSION` is the single source;
-- This plan corresponds to **`1.1.0`** (backward-compatible capability additions);
+- The plan version follows `VERSION` as the single source; Phase 1 shipped as `1.1.0`, and `2.0.0` is a `MAJOR` bump under §9.2 because CLI exit-code semantics changed (an unknown template id or a missing input file now exits `2` instead of `1`);
 - Release action: push a `v*` tag → `release.yml` verifies "tag == VERSION == CHANGELOG section" → generates release notes.
 
 ### 9.2 Compatibility commitments

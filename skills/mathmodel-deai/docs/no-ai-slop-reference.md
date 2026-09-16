@@ -82,9 +82,9 @@ uncertainty, contrast or a natural spoken rhythm.
 **Throat-clearing openers.** `Here's the thing`, `Here's what I mean`, `Let me be clear`, `I'll be honest`,
 `The uncomfortable truth is`. Cut them and state the point.
 
-**Faux-insight setups.** `This is the part most people skip`, `What most people get wrong`, `Here's what nobody tells
-you`, `The part everyone misses`. These flatter the writer as the lone expert; cut the setup and make the claim stand
-alone. `The part everyone misses: distribution is the real moat` → `Distribution is the moat.`
+**Faux-insight setups.** `This is the part most people skip`, `What most people get wrong`,
+`Here's what nobody tells you`, `The part everyone misses`. These flatter the writer as the lone expert; cut the setup
+and make the claim stand alone. `The part everyone misses: distribution is the real moat` → `Distribution is the moat.`
 
 **Colon reveals.** A noun phrase, a colon, then a lowercase dramatic reveal: `The best part: it learns.` Rewrite as a
 plain sentence. Use colons for lists, labels and quotes, not fake drama; prefer sentence case after a colon unless
@@ -94,13 +94,13 @@ grammar, a proper noun, a title or code requires otherwise.
 `reflecting`, `showcasing`. `The launch adds file search, highlighting the team's commitment...` → `The launch adds file
 search, so users can find old drafts without leaving the editor.`
 
-**Importance puffery.** `Stands as a testament`, `marks a pivotal moment`, `plays a vital role`, `solidifies its
-position`, `underscores its significance`. State the fact and let the reader judge. `The launch marks a pivotal moment
-for the company` → `The launch is the company's first paid product.`
+**Importance puffery.** `Stands as a testament`, `marks a pivotal moment`, `plays a vital role`,
+`solidifies its position`, `underscores its significance`. State the fact and let the reader judge.
+`The launch marks a pivotal moment for the company` → `The launch is the company's first paid product.`
 
-**Interpretive metadiscourse.** Cut lines that step outside the subject to tell the reader what to notice: `That last
-part matters more than it sounds`, `The key point is`, `As you can see`, `This distinction matters`, and redundant
-`In other words`.
+**Interpretive metadiscourse.** Cut lines that step outside the subject to tell the reader what to notice:
+`That last part matters more than it sounds`, `The key point is`, `As you can see`, `This distinction matters`,
+and redundant `In other words`.
 
 **Weasel attribution.** `Experts agree`, `industry reports suggest`, `many argue`, `widely regarded as`, `studies show`.
 Name the source or cut the claim; if there is no source, ask instead of inventing one. (Mirrors the Chinese

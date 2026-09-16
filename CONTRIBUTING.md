@@ -159,7 +159,7 @@ python code/score_card.py examples/example-scorecard.json
 | `manifest-consistency` | 登记表 ↔ 文件系统 ↔ 索引文档 ↔ 版本号 ↔ README 模板徽章，以及技能清单 ↔ 技能目录 ↔ README 技能表 ↔ 技能徽章，均须一致；JSON Schema 合法且内置示例通过严格校验 |
 | `figures` / `diagrams` | 每个模板都能渲染出非空产物 |
 | `strip-invisible` | 零宽字符清理器往返行为正常 |
-| `deai-phrasing` / `scorecard` | 去 AI 门禁与评分卡的冒烟用例按预期退出码通过 |
+| `deai-phrasing` / `scorecard` | 去 AI 门禁与评分卡的冒烟用例按预期退出码通过；跨模块步骤对中英 README 与**全部 `docs/` 文档**跑词表级检查（清单由 `git ls-files` 派生，新增文档自动纳入） |
 | `Paper LaTeX build` | 论文骨架可编译 |
 
 - 机器能判定的（语法、一致性、Schema、渲染成功、退出码）不再进入人工评审，人只处理 CI 判不了的语义与原创性。

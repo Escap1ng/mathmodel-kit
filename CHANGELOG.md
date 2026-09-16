@@ -6,7 +6,7 @@
 破坏性变更边界（`MAJOR`）：移除既有 CLI 参数、移除登记表中的字段、移除主题契约字段、
 扩大内容契约或主题契约的必备字段集合。
 
-## [Unreleased]
+## [2.0.0] - 2026-09-13
 
 ### 新增
 
@@ -16,6 +16,8 @@
   - `docs/implementation-guide.md`：推荐库速查、GA/SA/0-1 规划与数据读取的最小可运行骨架、实现纪律与技能分工
   - 主技能 `mathmodel-core/SKILL.md` 的「算法库」与「代码实现规范」改为强制项摘要 + 指向新技能；「快速参考」的算法选择速查、算法实现速查与问题递进关系移入新技能，消除两处规范漂移
 - 技能数 6 → 7：README 中英的徽章、技能表、仓库结构与文档地图，`CONTRIBUTING` 的技能数与单一事实源表，白皮书中英的定位段与架构图同步新增 `mathmodel-methods`
+- **依赖清单 `requirements.txt`**：只列自带脚本实际引用的六个包（`matplotlib` / `numpy` / `seaborn` / `python-docx` / `PyMuPDF` / `jsonschema`），下限约束不锁版本；CI 各 job 由散装包名统一改为 `pip install -r requirements.txt`
+- **CI 新增 `word-postprocess` job**：缺失输入必须退出 2；对真实 docx 微调后段落与表格数量不变、页眉被清空、页脚含 PAGE 域，把脚本「禁止重建内容」的红线变成可执行断言
 
 ### 变更
 
@@ -26,6 +28,17 @@
 - **frontmatter 规范化**：`mathmodel-core` 的 `name` 去引号并补齐 `allowed-tools`，七个技能的 SKILL.md 统一为 `name` / `description` / `allowed-tools` 三字段
 - **协作口径明确**：主技能 `mathmodel-core` 由维护者掌握（外部只提 Issue、不接受直接 PR），其余技能与根文档、CI 接受外部贡献；口径写入 `skills/manifest.json` 与 CONTRIBUTING
 - **CLI 契约**：退出码统一为 0/1/2；`--lang {zh,en}` 明确为面向用户入口的可选参数（8 个入口已覆盖，`word_postprocess.py` 与 `strip_invisible.py` 暂未提供，属 Experimental）
+- **CLI 退出码实装对齐**：图表 / 示意图 `render_template.py` 的未知模板 id、`strip_invisible.py` 的缺失文件、`word_postprocess.py` 的缺失输入均改判 `2`（原为 `1` 或不作处理），与 `check_*` / `score_card.py` 一致
+- **词表级门禁范围扩展到全部 `docs/` 文档**：跨模块步骤改为对中英 README 与 `docs/**/*.md` 全量跑 `check_phrasing.py`，清单由 `git ls-files` 派生，新增文档自动纳入；评分模块 `SKILL.md` 与 `README.md` 仍单独覆盖
+- **CI 权限收窄与 Action 锁定**：`ci.yml` / `paper.yml` 顶层声明 `permissions: contents: read`（`release.yml` 保持 `contents: write`），五个 Action 全部锁到 commit SHA
+
+### 修复
+
+- `skills/mathmodel-deai/docs/no-ai-slop-reference.md` 三处反例段落重排换行：检查器按行配对行内代码跨度，行首继承上一行的闭合反引号会使配对错位、把反例词判成正文，此前该文档因此有 5 处误报
+- `README.md` / `README_EN.md` 依赖表修正过度声明：`pandas` / `scipy` / `Pillow` / `openpyxl` / `xlrd` 无任何自带脚本引用，改为指向 `requirements.txt`，并区分「自带脚本依赖」与「用户自写代码时的依赖」
+- 文档失效引用清理：白皮书中英 6 处相对链接、`mathmodel-core` 快速参考与排版规范中指向已迁移章节的「第3章」；`writing-rules.md` 与白皮书中作为反例引用的禁用词改为行内代码以通过词表门禁
+- `.gitignore` 第 32 行为 GBK 字节，在 UTF-8 文件中显示为乱码，改为 UTF-8
+- 死代码清理：`Line2D` 未使用导入、`validate_theme.py` 的 `import sys`，以及从未被调用的 `set_cell_center()` 与 `add_common_path()`
 
 ### 文档
 
@@ -33,6 +46,7 @@
 - `README.md` / `README_EN.md` 的「扩展与贡献」改为四个子模块入口表，文档地图同步；各技能 README 的「扩展约定」统一指向 `CONTRIBUTING.md`，避免两处规则漂移
 - 白皮书中英 §7 的贡献路径按四个子模块改写，并说明贡献等级（激励口径）与角色权限（权限口径）的分工
 - 新增缺陷报告 Issue 表单 `.github/ISSUE_TEMPLATE/bug_report.yml`；PR 模板新增「所属子模块」声明与 Stable 契约改动确认项
+- README 中英与 CONTRIBUTING 中英维护：注册表一致性门禁与 CI 检查表补入技能清单维度；CONTRIBUTING 新增「提交前本地自检」命令清单；开发环境与依赖说明统一指向 `requirements.txt`；门禁范围与实际 CI 行为对齐
 
 ## [1.2.0] - 2026-09-13
 

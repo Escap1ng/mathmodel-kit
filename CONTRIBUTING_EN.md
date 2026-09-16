@@ -185,7 +185,7 @@ python code/score_card.py examples/example-scorecard.json
 | `manifest-consistency` | Figure/diagram registries ↔ filesystem ↔ index docs ↔ version ↔ README template badges, plus the skill registry ↔ skill directories ↔ README skill table ↔ skill badge, must all agree; schemas are valid and every bundled example passes strict validation |
 | `figures` / `diagrams` | Every template renders non-empty artifacts |
 | `strip-invisible` | The invisible-character scrubber round-trips correctly |
-| `deai-phrasing` / `scorecard` | The de-AI gate and score-card smoke cases exit as expected |
+| `deai-phrasing` / `scorecard` | The de-AI gate and score-card smoke cases exit as expected; a cross-module step runs the word-list gate over both READMEs and **every `docs/` file** (the list is derived from `git ls-files`, so new docs are covered automatically) |
 | `Paper LaTeX build` | The paper skeleton compiles |
 
 - What machines decide (syntax, consistency, schemas, successful rendering, exit codes) does not enter human review;

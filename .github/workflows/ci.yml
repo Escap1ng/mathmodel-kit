@@ -439,13 +439,16 @@ jobs:
       - name: Cross-module docs pass the word-list gate; paper-like examples pass the structural gate
         shell: bash
         run: |
-          # 表述口径以去 AI 模块为准：项目说明文档过词表级；结构级指标面向论文稿与论文样例
+          # 表述口径以去 AI 模块为准：README、全部 docs/ 文档与评分模块文档过词表级；
+          # 结构级指标面向论文稿与论文样例
           cd skills/mathmodel-deai
-          python code/check_phrasing.py ../../README.md ../../README_EN.md \
-            ../mathmodel-score/SKILL.md ../mathmodel-score/README.md \
-            ../mathmodel-score/docs/rubric.md ../mathmodel-score/docs/chapter-checklist.md \
-            ../mathmodel-score/docs/self-check.md
           python code/check_style.py ../mathmodel-score/examples/chapter-sample.tex
+          cd ../..
+          # 清单由 git 派生，新增 docs/ 文档自动纳入，无需改 CI
+          mapfile -t DOCS < <(git ls-files '*.md' | grep -E '(^|/)docs/|^README(_EN)?\.md$')
+          DOCS+=(skills/mathmodel-score/SKILL.md skills/mathmodel-score/README.md)
+          echo "word-list gate over ${#DOCS[@]} files"
+          python skills/mathmodel-deai/code/check_phrasing.py "${DOCS[@]}"
           echo "cross-module de-AI gate OK."
 
   scorecard:
